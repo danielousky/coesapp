@@ -459,6 +459,7 @@ class ImportCsv
 
 	def self.resumen inscritos, existentes, no_inscritos, nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados, periodo_id
 		
+		aux = ""
 		aux = "</br>
 			<b>Resumen:</b>
 			</br></br>Período: <b>#{periodo_id}</b>
@@ -466,11 +467,10 @@ class ImportCsv
 			</br>Total Existentes: <b>#{existentes}</b>
 			</br>Total Nuevas Secciones: <b>#{nuevas_secciones}</b>
 			<hr></hr>Total Secciones No Creadas: <b>#{secciones_no_creadas.count}</b>
-			</br><i>Detalle:</i></br>#{secciones_no_creadas.to_sentence} 
 			<hr></hr>Total Asignaturas Inexistentes: <b>#{asignaturas_inexistentes.uniq.count}</b>
-			</br><i>Detalle:</i></br> #{asignaturas_inexistentes.uniq.to_sentence}
+			</br><i>Detalle últimos 50:</i></br> #{asignaturas_inexistentes.uniq.to_sentence}
 			<hr></hr>Total Estudiantes Inexistentes: <b>#{estudiantes_inexistentes.uniq.count}</b>
-			</br><i>Detalle:</i></br> #{estudiantes_inexistentes.uniq.to_sentence}"
+			</br><i>Detalle últimos 50:</i></br> #{estudiantes_inexistentes.uniq[0..50].to_sentence}"
 
 		if total_calificados and total_calificados.to_i > 0
 			aux += "<hr></hr>Calificaciones:"
