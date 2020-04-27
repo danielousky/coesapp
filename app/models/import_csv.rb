@@ -26,12 +26,12 @@ class ImportCsv
 
 		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
 		# csv.each do |row|
+		csv.group_by{|row| row['ci']}.values.each do |row|
 
-		csv.each do |row|
 			begin
 				# if profe = Profesor.where(usuario_id: row.field(0))
 				hay_usuario = false
-				# row = row[0]
+				row = row[0]
 				row['ci'].strip!
 				row['ci'].delete! '^0-9'
 				plan_id = row['plan_id'] if plan_id.nil?
