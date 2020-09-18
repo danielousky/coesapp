@@ -41,17 +41,17 @@ class ExportarPdf
 
 
 	def self.acta_seccion seccion_id
-		seccion = Seccion.find seccion_id
-
 		# Variable Locales
+		seccion = Seccion.find seccion_id
+		escuela = seccion.escuela
+		escuela = nil unless escuela.id.eql? 'POST'
 		pdf = Prawn::Document.new(top_margin: 275, bottom_margin: 100)
-
 
 		inscripciones = seccion.inscripcionsecciones.sort_by{|h| h.estudiante.usuario.apellidos}
 		
 		pdf.repeat(:all, dynamic: true) do
 			pdf.bounding_box([0, 660], :width => 540, :height => 265) do
-				self.encabezado_central_con_logo pdf, "PLANILLA DE EXÁMENES"
+				self.encabezado_central_con_logo pdf, "PLANILLA DE EXÁMENES", escuela
 				self.tabla_descripcion_convocatoria pdf, seccion
 				self.tabla_descripcion_seccion pdf, seccion
  				pdf.transparent(0) { pdf.stroke_bounds }
@@ -565,6 +565,9 @@ class ExportarPdf
 
 		i = 1
 		inscripciones.each do |h|
+
+			plan = h.grado.ultimo_plan
+			plan = plan.id if plan 
 			if h.tiene_calificacion_posterior?
 				estado_a_letras = 'AP'
 				tipo_calificacion_id = 'NF'
@@ -579,7 +582,7 @@ class ExportarPdf
 				data << [i, 
 				h.estudiante_id,
 				h.estudiante.usuario.apellido_nombre,
-				h.grado.plan_id,
+				plan,
 				estado_a_letras,
 				tipo_calificacion_id,
 				cali_a_letras
@@ -588,7 +591,7 @@ class ExportarPdf
 				data << [i, 
 				h.estudiante_id,
 				h.estudiante.usuario.apellido_nombre,
-				h.grado.plan_id,
+				plan,
 				estado_a_letras,
 				tipo_calificacion_id,
 				h.colocar_nota_final,
@@ -601,7 +604,7 @@ class ExportarPdf
 				data << [i, 
 				h.estudiante_id,
 				h.estudiante.usuario.apellido_nombre,
-				h.grado.plan_id,
+				plan,
 				h.estado_a_letras,
 				h.tipo_calificacion_id,
 				h.colocar_nota_posterior,
@@ -632,7 +635,15 @@ class ExportarPdf
 
 		data = [["FECHA DE LA EMISIÓN: <b>#{Time.now.strftime('%d/%m/%Y %I:%M %p')}</b>", ""]]
 		data << ["EJERCICIO: <b>#{seccion.ejercicio}</b>", "ACTA No.: <b>#{seccion.acta_no.upcase}</b>" ]
-		data << ["ESCUELA: <b>#{seccion.escuela.descripcion.upcase}</b>", "PERÍODO ACADÉMICO: <b>#{seccion.periodo.anno}</b>" ]
+		if seccion.escuela.id.eql? 'POST'
+			plan_id = seccion.asignatura.id[0..3]
+			plan = Plan.find plan_id
+
+			data << ["<b>#{plan.descripcion.upcase if plan}</b>", "PERÍODO ACADÉMICO: <b>#{seccion.periodo.anno}</b>" ]
+
+		else
+			data << ["ESCUELA: <b>#{seccion.escuela.descripcion.upcase}</b>", "PERÍODO ACADÉMICO: <b>#{seccion.periodo.anno}</b>" ]
+		end
 
 		t = pdf.make_table(data, header: false, width: 540, position: :center, cell_style: { inline_format: true, size: 9, align: :left, padding: 1, border_color: 'FFFFFF'})
 		t.draw
@@ -683,10 +694,14 @@ class ExportarPdf
 		pdf.move_down 5
 		pdf.text "FACULTAD DE HUMANIDADES Y EDUCACIÓN", align: :center, size: size
 		pdf.move_down 5
-		pdf.text "CONTROL DE ESTUDIOS DE PREGRADO", align: :center, size: size
-		if escuela
-			pdf.move_down 5
-			pdf.text escuela.descripcion.upcase, align: :center, size: size
+		if escuela and escuela.id.eql? 'POST'
+			pdf.text "CONTROL DE ESTUDIOS DE POSTGRADO", align: :center, size: size
+		else
+			pdf.text "CONTROL DE ESTUDIOS DE PREGRADO", align: :center, size: size
+			if escuela
+				pdf.move_down 5
+				pdf.text escuela.descripcion.upcase, align: :center, size: size
+			end
 		end
 
 		pdf.move_down 5
