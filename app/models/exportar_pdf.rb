@@ -61,7 +61,8 @@ class ExportarPdf
  				pdf.transparent(0) { pdf.stroke_bounds }
 			end
 		end
-		self.insertar_tabla_convocados pdf, inscripciones
+		postgrado = (escuela and escuela.id.eql? 'POST') ?seccion.asignatura.id[0..3] : nil
+		self.insertar_tabla_convocados pdf, inscripciones, postgrado 
 		pdf.number_pages "PÁGINA: <b> <page> / <total> </b>", {at: [pdf.bounds.right - 230, 524], size: 9, inline_format: true}
 		return pdf
 	end
@@ -555,7 +556,7 @@ class ExportarPdf
 	end
 
 
-	def self.insertar_tabla_convocados pdf, inscripciones#, k
+	def self.insertar_tabla_convocados pdf, inscripciones, postgrado = nil#, k
 
 		if inscripciones.first.seccion.asignatura.absoluta?
 			data = [["<b>N°</b>", "<b>CÉDULA DE IDENTIDAD</b>", "<b>APELLIDOS Y NOMBRES</b>", "<b>COD. PLAN</b>", "<b>CALIF. DESCR.</b>", "<b>TIPO</b>", "<b>CALIF. EN LETRAS</b>"]]
@@ -566,8 +567,13 @@ class ExportarPdf
 		i = 1
 		inscripciones.each do |h|
 
-			plan = h.grado.ultimo_plan
-			plan = plan.id if plan 
+			if postgrado
+				plan = postgrado
+			else
+				plan = h.grado.ultimo_plan
+				plan = plan.id if plan
+			end
+
 			if h.tiene_calificacion_posterior?
 				estado_a_letras = 'AP'
 				tipo_calificacion_id = 'NF'
