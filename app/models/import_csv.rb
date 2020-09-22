@@ -34,7 +34,7 @@ class ImportCsv
 				row = row[0]
 				row['ci'].strip!
 				row['ci'].delete! '^0-9'
-				plan_id = row['plan_id'] if plan_id.nil?
+				plan_id = row['plan_id'] #if plan_id.nil?
 				# tipo_ingreso = row['tipo_ingreso'] ? row['tipo_ingreso'] : Grado::TIPO_INGRESOS[0]
 
 				if usuario = Usuario.where(ci: row['ci']).limit(1).first
@@ -91,7 +91,7 @@ class ImportCsv
 							p "ESCUELA ESTUDIANTE AGREGADO"
 							total_agregados += 1 if estudiante.grados.create!(escuela_id: escuela_id, tipo_ingreso: grado['tipo_ingreso'], estado_inscripcion: grado['estado_inscripcion'], estado: grado[:estado])
 						end
-						
+						estudiante.historialplanes.destroy_all
 						if plan_id and !estudiante.historialplanes.where(plan_id: plan_id, periodo_id: periodo_id).any?
 							hp = Historialplan.new
 							grado = estudiante.grados.where(escuela_id: escuela_id).first
