@@ -25,7 +25,7 @@ module Admin
 				Autorizada.where(restringida_id: params[:id], usuario_id: params[:usuario_id]).delete_all
 			end
 
-			render json: 'Desautorizado', status: :ok
+			render json: {data: 'Cambio realizado con éxito'}, status: :ok
 
 			# if autorizada = Autorizada.where(restringida_id: params[:id], usuario_id: params[:usuario_id]).first
 

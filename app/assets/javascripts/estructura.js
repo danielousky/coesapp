@@ -161,6 +161,7 @@ function setTab(type, id){
 
 
 function switches(url){
+	toastr.options.timeOut = 1500;
 	$.ajax({
 	url: url,
 	type: 'POST',
@@ -168,12 +169,13 @@ function switches(url){
 	beforeSend: function() {
 		$('#cargando').modal({keyboard: false, show: true, backdrop: 'static'})
 	},
-	complete: function(){
+	complete: function(json){
+		toastr.success('Cambio realizado con éxito')
+		console.log(json)
 		$('#cargando').modal('hide')
 	}
 	});
 }
-
 
 
 // function sendFormViaAjax(event, este){
