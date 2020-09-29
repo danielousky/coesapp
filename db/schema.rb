@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_05_001358) do
+ActiveRecord::Schema.define(version: 2020_02_18_213243) do
 
   create_table "administradores", primary_key: "usuario_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "rol", null: false
@@ -322,6 +322,19 @@ ActiveRecord::Schema.define(version: 2020_02_05_001358) do
     t.index ["id"], name: "index_parametros_generales_on_id"
   end
 
+  create_table "perfiles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "nombre"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "perfiles_restringidas", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "restringida_id", null: false
+    t.bigint "perfil_id", null: false
+    t.index ["perfil_id"], name: "perfiles_restringidas_perfile_id_fk"
+    t.index ["restringida_id", "perfil_id"], name: "index_perfiles_restringidas_on_restringida_id_and_perfil_id", unique: true
+  end
+
   create_table "periodos", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.date "inicia"
     t.date "culmina"
@@ -503,6 +516,8 @@ ActiveRecord::Schema.define(version: 2020_02_05_001358) do
   add_foreign_key "inscripcionsecciones_copy1", "tipo_estado_calificaciones", name: "inscripcionsecciones_copy1_ibfk_5", on_update: :cascade, on_delete: :nullify
   add_foreign_key "inscripcionsecciones_copy1", "tipo_estado_inscripciones", name: "inscripcionsecciones_copy1_ibfk_7", on_update: :cascade, on_delete: :nullify
   add_foreign_key "inscripcionsecciones_copy1", "tipoasignaturas", name: "inscripcionsecciones_copy1_ibfk_3", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "perfiles_restringidas", "perfiles", name: "perfiles_restringidas_perfile_id_fk", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "perfiles_restringidas", "restringidas", name: "perfiles_restringidas_restringida_id_fk", on_update: :cascade, on_delete: :cascade
   add_foreign_key "planes", "escuelas", on_update: :cascade, on_delete: :cascade
   add_foreign_key "profesores", "departamentos", name: "profesores_ibfk_1", on_update: :cascade, on_delete: :nullify
   add_foreign_key "profesores", "usuarios", primary_key: "ci", name: "profesores_ibfk_2", on_update: :cascade, on_delete: :cascade

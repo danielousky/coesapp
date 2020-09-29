@@ -5,6 +5,10 @@ module Admin
 		# before_action :filtro_admin_mas_altos!, except: [:destroy]
 		# before_action :filtro_ninja!, only: [:destroy]
 
+		# before_action :filtro_autorizado, except: [:index, :buscar_estudiante, :seleccionar, :inscribir, :resumen]
+		# before_action :filtro_autorizado_inscribir, only: [:buscar_estudiante, :seleccionar, :inscribir, :resumen]
+
+		before_action :filtro_autorizado#, except: [:buscar_estudiante, :seleccionar, :resumen]
 		before_action :set_inscripcionseccion, only: [:cambiar_seccion]
 
 		# def set_pci
@@ -132,10 +136,7 @@ module Admin
 				}
 
 				format.json {render json: inscripcion.save, status: :ok}
-
-
 			end
-
 		end
 		
 		def buscar_estudiante
@@ -171,11 +172,10 @@ module Admin
 				@creditLimits = current_periodo.anual? ? 49 : 25
 
 				aux = current_periodo.escuelas.merge @estudiante.escuelas
+
 				# @creditLimits = 31 if aux.ids.include? 'COMU'
 				@creditLimits *= aux.count
-				
 			end
-
 		end
 
 		def inscribir
@@ -242,12 +242,12 @@ module Admin
 
 		end
 
-		def nuevo
-			@accion = params[:accion]
-			@controlador = params[:controlador]
-			@secciones = CalSeccion.all
-			@estudiante = CalEstudiante.find(params[:ci])
-		end
+		# def nuevo
+		# 	@accion = params[:accion]
+		# 	@controlador = params[:controlador]
+		# 	@secciones = CalSeccion.all
+		# 	@estudiante = CalEstudiante.find(params[:ci])
+		# end
 
 		def crear
 			id = params[:estudiante_id]

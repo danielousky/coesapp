@@ -15,13 +15,27 @@ Rails.application.routes.draw do
   end
 
   scope module: :admin do
-    resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios
+    resources :perfiles do
+      member do
+        post 'autorizar_usuario'
+      end
+    end
+
+    resources :escuelaperiodos, only: :show
+    resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas
 
     resources :horarios do
       member do
         get 'get_bloques'
       end
     end
+
+    resources :autorizadas, only: :index do 
+      member do
+        post 'set'
+      end
+    end
+
     resources :grados, only: :index do
       member do
         post 'agregar'
@@ -73,13 +87,13 @@ Rails.application.routes.draw do
     end
 
 
-    resources :periodos, :planes, :departamentos, :catedras, :escuelas
+    resources :periodos, :planes, :departamentos, :catedras
     resources :escuelas do 
       member do
         get 'periodos'
-        post 'set_inscripcion_abierta'
-        post 'set_habilitar_retiro_asignaturas'
-        post 'set_habilitar_cambio_seccion'
+        get 'set_inscripcion_abierta'
+        get 'set_habilitar_retiro_asignaturas'
+        get 'set_habilitar_cambio_seccion'
         get 'limpiar_programacion'
       end
       collection do

@@ -16,7 +16,7 @@
 //= require bootstrap-sprockets
 //= require select2-full
 
-//= require turbolinks
+//= require toastr
 //= require summernote/summernote-bs4.min
 //= require summernote/lang/summernote-es-ES
 //= require summernote-init
@@ -26,3 +26,4 @@ $(document).ready(function() {
 	$('.tooltip-btn').tooltip();
 
 });
+//= require turbolinks

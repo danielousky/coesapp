@@ -159,6 +159,23 @@ function setTab(type, id){
 }
 
 
+
+function switches(url){
+	$.ajax({
+	url: url,
+	type: 'POST',
+	dataType: 'json',
+	beforeSend: function() {
+		$('#cargando').modal({keyboard: false, show: true, backdrop: 'static'})
+	},
+	complete: function(){
+		$('#cargando').modal('hide')
+	}
+	});
+}
+
+
+
 // function sendFormViaAjax(event, este){
 // 	event.preventDefault();
 // 	console.log(este);
@@ -227,3 +244,4 @@ function setAtributosSeccionForm(ele){
 
 
 }
+

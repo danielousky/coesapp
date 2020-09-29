@@ -17,6 +17,9 @@ class Usuario < ApplicationRecord
 	has_one :estudiante
 	has_one :profesor
 
+	has_many :autorizadas
+	has_many :restringidas, through: :autorizadas
+
 	has_many :bitacoras
 	accepts_nested_attributes_for :bitacoras
 
@@ -43,6 +46,18 @@ class Usuario < ApplicationRecord
 	# }
 
 	# FUNCIONES:
+	def autorizado? *args 
+
+		if administrador and administrador.maestros?
+			true
+		else
+			if args[1]
+				restringidas.where(controlador: args[0], accion: args[1]).any?
+			else
+				autorizadas.where(restringida_id: args[0]).any?
+			end
+		end
+	end
 
     def self.naciones
       require 'json'

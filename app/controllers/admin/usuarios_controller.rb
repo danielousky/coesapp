@@ -3,10 +3,15 @@ module Admin
     before_action :filtro_logueado
     before_action :filtro_administrador, except: [:edit, :update, :countries, :getMunicipios, :getParroquias]
     before_action :filtro_admin_mas_altos!, except: [:busquedas, :index, :show, :edit, :update, :countries, :getMunicipios, :getParroquias]
-    before_action :filtro_super_admin!, only: [:set_administrador, :set_estudiante, :set_profesor]
+    before_action :filtro_super_admin!, only: [:set_administrador]
     before_action :filtro_ninja!, only: [:destroy, :delete_rol]
 
-    before_action :set_usuario, except: [:index, :new, :create, :busquedas, :countries, :getMunicipios, :getParroquias]
+
+    # before_action :filtro_autorizado#, only: [:create, :update, :destroy, :set_estudiante, :set_administrador, :set_profesor, :resetear_contrasena, :cambiar_ci]
+
+    before_action :filtro_autorizado#, except: :update, if: :mismo_usuario?
+
+    before_action :set_usuario, except: [:index, :new, :create, :busquedas, :countries, :getMunicipios, :getParroquias, :no_mismo_usuario?]
 
     # GET /usuarios
     # GET /usuarios.json
@@ -107,24 +112,6 @@ module Admin
 
     end
 
-    def delete_rol
-      if params[:estudiante]
-        u = Estudiante.find params[:id]
-      elsif params[:profesor]
-        u = Profesor.find  params[:id]
-      elsif params[:administrador]
-        u = Administrador.find params[:id]
-      else
-        flash[:danger] = "Error: Rol no encontrado."
-      end
-      if u and u.destroy
-        flash[:info] = "Rol Eliminado." 
-        info_bitacora_crud Bitacora::ELIMINACION, u
-      end
-      redirect_back fallback_location: index2_secciones_path
-        
-    end
-
     def set_profesor
 
       if pr = @usuario.profesor
@@ -149,6 +136,26 @@ module Admin
       redirect_to @usuario
 
     end
+
+
+    def delete_rol
+      if params[:estudiante]
+        u = Estudiante.find params[:id]
+      elsif params[:profesor]
+        u = Profesor.find  params[:id]
+      elsif params[:administrador]
+        u = Administrador.find params[:id]
+      else
+        flash[:danger] = "Error: Rol no encontrado."
+      end
+      if u and u.destroy
+        flash[:info] = "Rol Eliminado." 
+        info_bitacora_crud Bitacora::ELIMINACION, u
+      end
+      redirect_back fallback_location: index2_secciones_path
+        
+    end
+
 
     def resetear_contrasena
       @usuario.password = @usuario.ci
@@ -185,7 +192,7 @@ module Admin
       @estudiante = @usuario.estudiante
       @profesor = @usuario.profesor
       @administrador = @usuario.administrador
-
+      @perfil = Perfil.new if @administrador
       #@periodos = @estudiante.escuela.periodos.order("inicia DESC") if @estudiante
 
       if @estudiante
@@ -194,7 +201,8 @@ module Admin
         ids = @estudiante.inscripcionsecciones.select{|ins| ins.pci_pendiente_por_asociar?}.collect{|i| i.id}
         @secciones_pci_pendientes = Inscripcionseccion.where(id: ids)#select{|ins| ins.pci_pendiente_por_asociar?}.ids
       end  
-      @escuelas_disponibles = @estudiante ? current_admin.escuelas.reject{|es| @estudiante.escuelas.include? es} : current_admin.escuelas
+      # @escuelas_disponibles = @estudiante ? current_admin.escuelas.reject{|es| @estudiante.escuelas.include? es} : current_admin.escuelas
+      @escuelas_disponibles = @estudiante ? Escuela.all.reject{|es| @estudiante.escuelas.include? es} : Escuela.all
 
       if @profesor
         @secciones_pendientes = @profesor.secciones.sin_calificar.order('periodo_id DESC, numero ASC')
@@ -399,6 +407,19 @@ module Admin
         format.json { head :no_content }
       end
     end
+    
+    protected
+
+      def mismo_usuario?
+        if action_name.eql? 'index'
+          return true
+        elsif params[:id]
+          @usuario = Usuario.find(params[:id])
+          @usuario.id.eql? current_usuario.id
+        else
+          true
+        end
+      end
 
     private
       # Use callbacks to share common setup or constraints between actions.

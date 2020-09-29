@@ -36,18 +36,16 @@ module ApplicationHelper
 
 	end
 
-	def agregar_onoffswitch titulo_tooltip, onChange, id, value = false
+	def agregar_onoffswitch titulo_tooltip, id, url, value = false
 		# No funciona, no agrega el check_box
-		content_tag :b, class: 'tooltip-btn', 'data_toggle'=> :tooltip, title: titulo_tooltip do
+		content_tag :b, class: 'tooltip-btn', 'data_toggle': :tooltip, title: titulo_tooltip do
 			content_tag :div, class: 'onoffswitch' do
+				aux = check_box nil, :activa, checked: value, class: 'onoffswitch-checkbox switchGeneral', id: "switch#{id}", url: url
+				aux2 = content_tag :label, class: 'onoffswitch-label', for: "switch#{id}" do
+					capture_haml{"<span class='onoffswitch-inner'></span><span class='onoffswitch-switch'></span>"}
+				end
 				capture_haml do
-					check_box nil, :activa, checked: value, class: 'onoffswitch-checkbox', id: "switch_#{id}", onChange: onChange
-					content_tag :label, class: 'onoffswitch-label', for: "switch_#{id}" do
-
-						haml_tag :span, class: 'onoffswitch-inner'
-						haml_tag :span, class: 'onoffswitch-switch'
-
-					end
+					aux+aux2
 				end
 			end
 		end
@@ -190,7 +188,7 @@ module ApplicationHelper
 	end
 
 	def simple_icon_toggle_modal_edit title_tooltip, id_modal
-		simple_icon_toggle_modal title_tooltip, '', 'edit', id_modal
+		simple_icon_toggle_modal title_tooltip, '', 'pencil', id_modal
 	end
 
 	def simple_icon_toggle_modal title_tooltip, color_type, icon, id_modal

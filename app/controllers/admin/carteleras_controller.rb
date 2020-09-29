@@ -1,20 +1,22 @@
 module Admin
   class CartelerasController < ApplicationController
     before_action :filtro_logueado
-    before_action :filtro_super_admin!
-
+    before_action :filtro_administrador
+    before_action :filtro_autorizado#, except: [:new, :edit]
     before_action :set_cartelera, only: [:show, :edit, :update, :destroy, :set_activa, :set_contenido]
+
 
     # GET /carteleras
     # GET /carteleras.json
     def set_activa
       @cartelera.activa = !@cartelera.activa
       if @cartelera.save
-        flash[:info] = "Cartelera #{@cartelera.activada_valor}"
+        aux = @cartelera.activa ? 'Cartelera Activada' : 'Cartelera Desactivada'
+        render json: {data: aux, status: :success}
       else
-        flash[:danger] = "Error: #{@cartelera.errors.full_messages.to_sentence}."
+        render json: {data: "Error al intentar cambiar la noticia : #{@comentario.errors.messages.to_sentence()}", status: :success}
       end
-      redirect_to carteleras_path
+
     end
 
     def index

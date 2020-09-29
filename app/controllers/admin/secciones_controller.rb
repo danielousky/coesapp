@@ -2,10 +2,15 @@ module Admin
   class SeccionesController < ApplicationController
     # Privilegios
     before_action :filtro_logueado
-    before_action :filtro_admin_profe, only: [:show]
-    before_action :filtro_admin_altos!, only: [:cambiar_capacidad, :agregar_profesor_secundario, :seleccionar_profesor, :cambiar_profe_seccion, :desasignar_profesor_secundario]
-    before_action :filtro_admin_mas_altos!, only: [:create, :new, :create, :update]
+    before_action :filtro_administrador, except: [:show]
+    before_action :filtro_admin_profe, only: :show
+
+    # before_action :filtro_admin_altos!, only: [:cambiar_capacidad, :agregar_profesor_secundario, :seleccionar_profesor, :cambiar_profe_seccion, :desasignar_profesor_secundario]
+    # before_action :filtro_admin_mas_altos!, only: [:create, :new, :create, :update]
+
     #before_action :filtro_ninja!, only: [:destroy, :index]
+
+    before_action :filtro_autorizado#, except: [:show, :get_tab_objects, :get_secciones, :index2, :new, :edit, :seleccionar_profesor]
 
     before_action :set_seccion, except: [:index, :index2, :get_secciones, :get_tab_objects, :new, :create, :habilitar_calificar, :get_profesores]
 
@@ -139,7 +144,8 @@ module Admin
     end
 
 
-    def index
+    def index #Reporte PIC
+
       @titulo = "Secciones del Periodo: #{current_periodo.id}"
       if escuela = current_admin.pertenece_a_escuela
         @secciones = escuela.secciones.joins(:asignatura).del_periodo(current_periodo.id).order('asignaturas.descripcion ASC')
@@ -230,11 +236,11 @@ module Admin
       end
     end
 
-    def importar_secciones
-      data = File.readlines("AlemIV.rtf") #read file into array
-      data.map! {|line| line.gsub(/world/, "ruby")} #invoke on each line gsub
-      File.open("test2.txt", "a") {|f| f.puts "Nueva Linea: #{data}"} #output data to other file
-    end
+    # def importar_secciones
+    #   data = File.readlines("AlemIV.rtf") #read file into array
+    #   data.map! {|line| line.gsub(/world/, "ruby")} #invoke on each line gsub
+    #   File.open("test2.txt", "a") {|f| f.puts "Nueva Linea: #{data}"} #output data to other file
+    # end
 
     def calificar
       @estudiantes = params[:est]
@@ -453,8 +459,12 @@ module Admin
     # DELETE /secciones/1
     # DELETE /secciones/1.json
     def destroy
-      info_bitacora_crud Bitacora::ELIMINACION, @seccion
-      @seccion.destroy
+      if @seccion.inscripcionsecciones.any?
+        flash[:danger] = 'No se puede eliminar la sección. Posee Estudiantes inscritos.'
+      else
+        info_bitacora_crud Bitacora::ELIMINACION, @seccion
+        @seccion.destroy
+      end
       respond_to do |format|
       
         format.html { redirect_back fallback_location: index2_secciones_path, notice: 'Seccion Eliminada.' }

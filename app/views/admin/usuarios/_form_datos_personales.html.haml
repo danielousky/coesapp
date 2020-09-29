@@ -25,6 +25,7 @@
         %label.btn.btn-secondary.btn-sm
           = radio_button_tag '[usuario]nacionalidad', k, (@usuario.nacionalidad.eql? k), required: true
           = k.upcase
+
   .form-group.row
     = f.label :nombres, class: 'col-form-label col-md-3 text-right', value: 'Nombres:'
     .col-md-9

@@ -1,0 +1,73 @@
+.border.p-3
+
+  %h5.alert.alert-danger.titulo.text-center
+    PROCESOS DE ACCESSO RESTRINGIDO (PARE)
+  = link_to 'javascript:void(0)', class: "tooltip-btn btn btn-sm btn-outline-success float-right", 'data-toggle': :tooltip, 'data-placement': :left, title: 'Guardar el Perfil Actual', id: 'nuevoPerfil' do
+    Guardar Perfil
+    = glyph 'ok'
+  %br
+  %br
+  #accordion
+    - Restringida::GRUPOS.each do |gr| 
+      - restringidas = Restringida.where(grupo: gr)
+      - if restringidas.any?
+
+        .card
+          .card-header{id: "heading#{gr}"}
+            %h5.mb-0
+              = link_to gr.titleize, "#collapse#{gr}", {"aria-controls": "collapse#{gr}", "aria-expanded": true, "data-target": "#collapse#{gr}", "data-toggle": :collapse, class: "btn btn-link"}   
+              .float-right
+                .onoffswitch
+                  - alguna = @usuario.restringidas.where(grupo: gr).any?
+                  = check_box nil, :activa, checked: alguna, class: 'onoffswitch-checkbox switches', id: "switch#{gr}", url: "#{set_autorizada_path(gr)}?usuario_id=#{@usuario.id}&grupo=true", grupo: "grupo#{gr}"
+                  %label.onoffswitch-label{for: "switch#{gr}"}
+                    %span.onoffswitch-inner
+                    %span.onoffswitch-switch
+
+          .collapse{id: "collapse#{gr}", "aria-labelledby": "heading#{gr}", "data-parent": "#accordion"}
+            .card-body{style: 'max-height: 400px;overflow-y: scroll;'}
+
+              - controladores = restringidas.collect{|r| r.controlador}.uniq.sort
+              - controladores.each do |controlador| 
+                .border.mb-2
+                  - titulo = (controlador.eql? 'Grados') ? 'carrera' : controlador
+                  .titulo.text-center= titulo.upcase
+                  %table.table-striped.table-sm.table-hover.table-condensed.table-responsive-md.m-2{style: 'width: 98%'}
+                    %tboby
+                      - restringidas.where(controlador: controlador).order(nombre_publico: :asc).each do |rest| 
+                        %tr
+                          %td= "#{rest.nombre_publico} - #{rest.accion}"
+
+                          %td{style: 'width:20%'}
+                            .onoffswitch
+                              - autorizado = @usuario.autorizado?(rest.id)
+                              = check_box nil, :activa, checked: autorizado, class: "onoffswitch-checkbox grupo#{gr} switches", id: "switch#{rest.id}", url: "#{set_autorizada_path(rest.id)}?usuario_id=#{@usuario.id}"
+                              %label.onoffswitch-label{for: "switch#{rest.id}"}
+                                %span.onoffswitch-inner
+                                %span.onoffswitch-switch
+
+:javascript
+
+  $(document).ready(function() {
+
+    $('#nuevoPerfil').on('click', function(){
+      $('#perfilForm').attr('action', '/perfiles');
+      $('#perfilForm > #patch').remove();
+      $('#perfil_nombre').prop('value', ''); 
+      $('#perfilModal').modal();
+    })
+    
+    $('.switches').on('change', function(){
+      var obj = $(this);
+      var url = obj.attr('url');
+      var grupo = obj.attr('grupo');
+      if (grupo) $(`.${grupo}`).prop('checked', obj[0].checked)
+      switches(url+'&autorizar='+obj[0].checked)
+      $('.setPerfil').removeClass('active')
+    })
+
+  } );
+
+
+
+
