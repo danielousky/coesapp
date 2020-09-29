@@ -55,6 +55,8 @@
                 = link_to 'Registrar Estudiante', "#{new_usuario_path}?estudiante=true", class: 'dropdown-item' if (current_admin.autorizado? 'Usuarios', 'set_estudiante')
                 - if current_admin.maestros?
                   = link_to 'Registrar Administrador', "#{new_usuario_path}?administrador=true", class: 'dropdown-item'
+                  = link_to 'Lista de Administrador', administradores_path, class: 'dropdown-item'
+
         - if current_admin
           = form_tag(usuarios_path,{class: 'form-inline my-2 my-lg-0', role: :search, method: :get} ) do
             = text_field_tag :search, params[:search],{class: 'form-control mr-sm-2 form-control-sm', required: true, "aria-label" => "Search", placeholder: "Buscar Usuario", type: "search"}

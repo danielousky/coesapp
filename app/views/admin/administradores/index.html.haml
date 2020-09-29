@@ -1,4 +1,8 @@
-%h1 Listing combinaciones
+%h1 
+  Administradores
+  - if current_admin.maestros?
+    = link_to 'Registrar Nuevo Administrador', "#{new_usuario_path}?administrador=true", class: 'btn btn-primary btn-sm float-right'
+
 
 %table.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3
   %tr
@@ -9,7 +13,7 @@
 
   - @administradores.each do |admin| 
     %tr
-      %td= admin.usuario_id
+      %td= link_to admin.usuario_id, usuario_path(admin.usuario_id)
       %td= admin.usuario.apellido_nombre
       %td= admin.desc_rol
 
