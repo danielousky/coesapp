@@ -57,6 +57,7 @@ module Admin
         if @perfil.save
           if params[:usuario_id]
             @usuario = Usuario.find params[:usuario_id]
+            @usuario.administrador.update(perfil_id: @perfil.id) if @usuario.administrador
             @usuario.restringidas.each do |rest|
               PerfilRestringida.create(restringida_id: rest.id, perfil_id: @perfil.id)
             end

@@ -41,7 +41,7 @@
         });
       }
       let url = $(this)[0].attributes['url'].value
-      switchesPerfil(url);
+      switches(url);
       
     });
     $('.editPerfil').on('click', function(){
@@ -64,7 +64,7 @@
       $('#perfilModal').modal();
     });
 
-    function switchesPerfil(url) {
+    function switches(url) {
       toastr.options.timeOut = 1500;
       $.ajax({
       url: url,

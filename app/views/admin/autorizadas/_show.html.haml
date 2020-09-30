@@ -62,28 +62,11 @@
       var url = obj.attr('url');
       var grupo = obj.attr('grupo');
       if (grupo) $(`.${grupo}`).prop('checked', obj[0].checked)
-      switchesPARE(url+'&autorizar='+obj[0].checked)
+      switches(url+'&autorizar='+obj[0].checked)
       $('.setPerfil').removeClass('active')
     })
 
   });
-
-  function switchesPARE(url) {
-    toastr.options.timeOut = 1500;
-    $.ajax({
-    url: url,
-    type: 'POST',
-    dataType: 'json',
-    beforeSend: function() {
-      $('#cargando').modal({keyboard: false, show: true, backdrop: 'static'})
-    },
-    complete: function(json){
-      toastr.success('Cambio realizado con éxito')
-      console.log(json)
-      $('#cargando').modal('hide')
-    }
-    });
-  }
 
 
 
