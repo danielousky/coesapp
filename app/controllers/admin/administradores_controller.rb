@@ -9,7 +9,7 @@ module Admin
     # GET /administradores
     # GET /administradores.json
     def index
-      @administradores = Administrador.all
+      @administradores = Administrador.all.includes(:usuario).order(['usuarios.apellidos ASC', 'usuarios.nombres ASC'])
     end
 
     # GET /administradores/1

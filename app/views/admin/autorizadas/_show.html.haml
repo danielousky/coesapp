@@ -1,7 +1,7 @@
 .border.p-3
 
   %h5.alert.alert-danger.titulo.text-center
-    PROCESOS DE ACCESSO RESTRINGIDO (PARE)
+    PROCESOS DE ACCESO RESTRINGIDO (PARE)
   = link_to 'javascript:void(0)', class: "tooltip-btn btn btn-sm btn-outline-success float-right", 'data-toggle': :tooltip, 'data-placement': :left, title: 'Guardar el Perfil Actual', id: 'nuevoPerfil' do
     Guardar Perfil
     = glyph 'ok'
@@ -36,7 +36,7 @@
                     %tboby
                       - restringidas.where(controlador: controlador).order(nombre_publico: :asc).each do |rest| 
                         %tr
-                          %td= "#{rest.nombre_publico} - #{rest.accion}"
+                          %td= rest.nombre_publico
 
                           %td{style: 'width:20%'}
                             .onoffswitch
@@ -62,11 +62,29 @@
       var url = obj.attr('url');
       var grupo = obj.attr('grupo');
       if (grupo) $(`.${grupo}`).prop('checked', obj[0].checked)
-      switches(url+'&autorizar='+obj[0].checked)
+      switchesPARE(url+'&autorizar='+obj[0].checked)
       $('.setPerfil').removeClass('active')
     })
 
-  } );
+  });
+
+  function switchesPARE(url) {
+    toastr.options.timeOut = 1500;
+    $.ajax({
+    url: url,
+    type: 'POST',
+    dataType: 'json',
+    beforeSend: function() {
+      $('#cargando').modal({keyboard: false, show: true, backdrop: 'static'})
+    },
+    complete: function(json){
+      toastr.success('Cambio realizado con éxito')
+      console.log(json)
+      $('#cargando').modal('hide')
+    }
+    });
+  }
+}
 
 
 

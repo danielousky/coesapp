@@ -160,7 +160,7 @@ function setTab(type, id){
 
 
 
-function switches(url){
+function switches(url) {
 	toastr.options.timeOut = 1500;
 	$.ajax({
 	url: url,

@@ -8,6 +8,8 @@ $(document).ready(function() {
 	$('.dataTable').DataTable({
 		// pageLength: 100,
 		// lengthChange: false,
+
+		order: [],
 		paging: false,
 		responsive: true,
 		/* dom: '<"html5buttons"B>lTfgitp',
