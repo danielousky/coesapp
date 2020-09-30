@@ -2,11 +2,18 @@
   .col-md-6
     %h6.alert.alert-info.p-2
       Roles Existentes:
-      - @usuario.roles_generales.each do |r|    
-        = r.to_s.titleize
-        - if current_admin and (current_admin.autorizado? 'Usuarios', 'delete_rol')
-          = link_to "#{delete_rol_usuario_path(@usuario)}?#{r.downcase}=true", class: 'tooltip-btn btn btn-sm', 'data_toggle': :tolltip, title: "Eliminar rol como #{r.titleize}", data: { confirm: 'Esta acción eliminará irreversiblemente todas las asociaciones del rol de usuario como asignaturas y calificaciones. ¿Está Seguro?'} do
+      - if current_admin.ninja?
+        %span.badge.badge-secondary.py-0.mx-2
+          Usuario
+          = link_to usuario_path(@usuario), method: :delete, class: 'tooltip-btn btn btn-sm', 'data_toggle': :tolltip, title: "Eliminar usuario completamente", data: { confirm: 'Esta acción eliminará irreversiblemente todas las asociaciones del usuario así como sus roles. ¿Está Seguro?'} do
             .text-danger= glyph 'trash'
+
+      - @usuario.roles_generales.each do |r|    
+        %span.badge.badge-secondary.py-0.mx-2
+          = r.to_s.titleize
+          - if current_admin and (current_admin.autorizado? 'Usuarios', 'delete_rol')
+            = link_to "#{delete_rol_usuario_path(@usuario)}?#{r.downcase}=true", class: 'tooltip-btn btn btn-sm', 'data_toggle': :tolltip, title: "Eliminar rol como #{r.titleize}", data: { confirm: 'Esta acción eliminará irreversiblemente todas las asociaciones del rol de usuario como asignaturas y calificaciones. ¿Está Seguro?'} do
+              .text-danger= glyph 'trash'
   .col-md-6
     %h6.alert.alert-success.p-2
       Roles por agregar:
