@@ -22,6 +22,7 @@ module Admin
     def autorizar_usuario
       perfil = Perfil.find params[:id]
       usuario = Usuario.find(params[:usuario_id])
+      usuario.administrador.update(perfil_id: perfil.id) if usuario.administrador
       restringidas_ids = perfil.restringidas.ids
       autorizadas_ids = usuario.autorizadas.ids
       Autorizada.where(id: autorizadas_ids).delete_all if autorizadas_ids.any?

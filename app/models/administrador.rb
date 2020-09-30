@@ -14,6 +14,7 @@ class Administrador < ApplicationRecord
 	belongs_to :departamento, optional: true
 
 	belongs_to :escuela, optional: true
+	belongs_to :perfil, optional: true
 
 	has_many :bitacoras
 	accepts_nested_attributes_for :bitacoras
@@ -73,12 +74,22 @@ class Administrador < ApplicationRecord
 	def desc_rol
 		if self.ninja?
 			return "Maestro"
-		elsif self.admin_escuela?
-			return "Admin Esc. #{self.escuela_id.titleize}"
-		elsif self.admin_departamento?
-			return "Admin Dpto. #{self.departamento_id.capitalize} (#{self.departamento.escuela_id.capitalize})"
+		elsif self.jefe_control_estudio?
+			return "Jefe de Control de Estudio"
 		else
-			return self.rol.titleize
+			if self.perfil
+				aux = self.perfil.nombre
+			elsif self.rol
+				aux = self.rol.titleize
+			else
+				aux = "Admin"
+			end
+			if self.admin_escuela?
+				aux = "#{aux} Esc. #{self.escuela_id.titleize}"
+			elsif self.admin_departamento?
+				aux = "#{aux} Dpto. #{self.departamento_id.capitalize} (#{self.departamento.escuela_id.capitalize})"
+			end
+			return aux
 		end
 	end
 

@@ -10,14 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_18_213243) do
+ActiveRecord::Schema.define(version: 2020_09_30_195237) do
 
   create_table "administradores", primary_key: "usuario_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "rol", null: false
     t.string "departamento_id"
     t.string "escuela_id"
+    t.bigint "perfil_id"
     t.index ["departamento_id"], name: "index_administradores_on_departamento_id"
     t.index ["escuela_id"], name: "index_administradores_on_escuela_id"
+    t.index ["perfil_id"], name: "index_administradores_on_perfil_id"
     t.index ["usuario_id"], name: "index_administradores_on_usuario_id"
   end
 
@@ -326,6 +328,8 @@ ActiveRecord::Schema.define(version: 2020_02_18_213243) do
     t.string "nombre"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "administrador_id"
+    t.index ["administrador_id"], name: "index_perfiles_on_administrador_id"
   end
 
   create_table "perfiles_restringidas", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -468,6 +472,7 @@ ActiveRecord::Schema.define(version: 2020_02_18_213243) do
 
   add_foreign_key "administradores", "departamentos", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administradores", "escuelas", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "administradores", "perfiles"
   add_foreign_key "administradores", "usuarios", primary_key: "ci", on_update: :cascade, on_delete: :cascade
   add_foreign_key "asignaturas", "catedras", on_update: :cascade, on_delete: :cascade
   add_foreign_key "asignaturas", "departamentos", on_update: :cascade, on_delete: :cascade

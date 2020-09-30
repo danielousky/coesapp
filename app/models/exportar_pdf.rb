@@ -620,7 +620,7 @@ class ExportarPdf
 			t.header = true
 			t.row_colors = ["F0F0F0", "FFFFFF"]
 			t.column_widths = {1 => 60, 2 => 220, 5 => 30, 7 => 70}
-			t.cell_style = {:inline_format => true, :size => 9, :padding => 2, align: :center, padding: 3, border_color: '818284' }
+			t.cell_style = {:inline_format => true, :size => 9, align: :center, padding: 3, border_color: '818284' }
 			t.column(2).style(:align => :justify)
 			t.row(0).style(:align => :center)
 			# t.column(1).style(:font_style => :bold)

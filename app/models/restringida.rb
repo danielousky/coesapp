@@ -6,9 +6,9 @@ class Restringida < ApplicationRecord
 
 	validates :nombre_publico, presence: true
 
-	# has_many :perfiles_restringidas
+	has_many :perfiles_restringidas, class_name: 'PerfilRestringida'
 
-	# has_many :perfiles,  through: :perfiles_restringidas
+	has_many :perfiles,  through: :perfiles_restringidas, class_name: 'Perfil'
 
 	enum grupo: GRUPOS 
 

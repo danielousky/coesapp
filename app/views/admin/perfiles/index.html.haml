@@ -41,7 +41,7 @@
         });
       }
       let url = $(this)[0].attributes['url'].value
-      switches(url);
+      switchesPerfil(url);
       
     });
     $('.editPerfil').on('click', function(){
@@ -63,4 +63,22 @@
       $('#perfil_nombre').prop('value', nombre); 
       $('#perfilModal').modal();
     });
+
+    function switchesPerfil(url) {
+      toastr.options.timeOut = 1500;
+      $.ajax({
+      url: url,
+      type: 'POST',
+      dataType: 'json',
+      beforeSend: function() {
+        $('#cargando').modal({keyboard: false, show: true, backdrop: 'static'})
+      },
+      complete: function(json){
+        toastr.success('perfil del administador actualizado con éxito')
+        console.log(json)
+        $('#cargando').modal('hide')
+      }
+      });
+    }
+
   });
