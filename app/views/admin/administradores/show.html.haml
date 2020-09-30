@@ -1,4 +1,8 @@
-%h6.alert.alert-info.text-center.pb-ms-3
+- if current_admin.ninja?
+  = link_to "#{delete_rol_usuario_path(@usuario)}?administrador=true", class: 'btn btn-sm btn-danger float-right tooltip-btn', 'data_toggle': :tolltip, title: "Eliminar Como Administrador", data: { confirm: 'Esta acción eliminará irreversiblemente todas las asociaciones del administrador. ¿Está Seguro?'} do
+    = glyph 'trash'
+
+%h6.alert.alert-info.text-center.pb-ms-3{style: 'width: 97%;'}
   = @administrador.descripcion
   - if current_admin.maestros?
     = simple_icon_toggle_modal_edit "Cambiar Tipo de Administrador a #{@nickname}", 'setAdmin'

@@ -7,25 +7,29 @@
 - url = ''
 = render partial: '/layouts/modal_layout', locals: {url: nil, id_modal: "horarioActualProfe", title: "Horario de #{@profesor.usuario.nombres} para el semestre actual (#{current_periodo.id})", content: content}
 
+- if current_admin.ninja?
+  = link_to "#{delete_rol_usuario_path(@usuario)}?profesor=true", class: 'btn btn-sm btn-danger float-right tooltip-btn', 'data_toggle': :tolltip, title: "Eliminar Como Profesor", data: { confirm: 'Esta acción eliminará irreversiblemente todas las asociaciones del profesor. ¿Está Seguro?'} do
+    = glyph 'trash'
+
 .border.mt-3.p-3
-	%h6.alert.alert-info.pb-ms-3
-		Departamento:
-		= @profesor.departamento.descripcion_completa
+  %h6.alert.alert-info.pb-ms-3
+    Departamento:
+    = @profesor.departamento.descripcion_completa
 
-		- if current_admin and current_admin.maestros?
-			= simple_icon_toggle_modal_edit "Cambiar a Profesor #{@nickname} de Escuela", 'setProfesor'
-			= render partial: '/admin/usuarios/set_profesor'
-	%hr
+    - if current_admin and current_admin.maestros?
+      = simple_icon_toggle_modal_edit "Cambiar a Profesor #{@nickname} de Escuela", 'setProfesor'
+      = render partial: '/admin/usuarios/set_profesor'
+  %hr
 
-	#accordion
-		- if @secciones_pendientes.count > 0
-			- @secciones = @secciones_pendientes
-			= render partial: 'admin/profesores/card_seccion', locals: {tipo: 'pendientes', titulo: 'Como Profesor Principal'}
+  #accordion
+    - if @secciones_pendientes.count > 0
+      - @secciones = @secciones_pendientes
+      = render partial: 'admin/profesores/card_seccion', locals: {tipo: 'pendientes', titulo: 'Como Profesor Principal'}
 
-		-if @secciones_secundarias and @secciones_secundarias.count > 0
-			- @secciones = @secciones_secundarias
-			= render partial: 'admin/profesores/card_seccion', locals: {tipo: 'secundarias', titulo: 'Como Participante'}
+    -if @secciones_secundarias and @secciones_secundarias.count > 0
+      - @secciones = @secciones_secundarias
+      = render partial: 'admin/profesores/card_seccion', locals: {tipo: 'secundarias', titulo: 'Como Participante'}
 
-		- if @secciones_calificadas.count > 0
-			- @secciones = @secciones_calificadas
-			= render partial: 'admin/profesores/card_seccion', locals: {tipo: 'calificadas', titulo: 'Histórico de Calificadas'}
+    - if @secciones_calificadas.count > 0
+      - @secciones = @secciones_calificadas
+      = render partial: 'admin/profesores/card_seccion', locals: {tipo: 'calificadas', titulo: 'Histórico de Calificadas'}
