@@ -103,7 +103,7 @@
       .tab-pane#profesor.border.p-3.border-top-0{class: activeTab}
         = render partial: '/admin/profesores/show'
 
-    - if current_admin.mas_altos? and @administrador
+    - if current_admin.maestros? and @administrador
       - activeTab = (session[:usuarioTypeTab].eql? 'administrador') ? 'active' : ''  
       .tab-pane#administrador.border.p-3.border-top-0{class: activeTab}
         = render file: '/admin/administradores/show'

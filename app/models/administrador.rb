@@ -1,7 +1,7 @@
 class Administrador < ApplicationRecord
 
 	# VARIABLES
-	enum rol: [:ninja, :super, :admin_escuela, :admin_departamento, :taquilla]
+	enum rol: [:ninja, :super, :admin_escuela, :admin_departamento, :taquilla, :jefe_control_estudio]
 
 	# TRIGGERS
 	after_initialize :set_default_taquilla, if: :new_record?
@@ -22,6 +22,8 @@ class Administrador < ApplicationRecord
 	validates :usuario_id,  presence: true, uniqueness: true
 	validates :departamento_id,  presence: true, if: -> {self.admin_departamento?}
 	validates :escuela_id,  presence: true, if: -> {self.admin_escuela?}
+
+	scope :no_maestros, -> {where('rol != 0')}
 
 	def autorizado? *args
 		usuario.autorizado? *args
@@ -99,8 +101,12 @@ class Administrador < ApplicationRecord
 
 	end
 
+	def ninjas_or_jefe_control_estudio?
+		self.ninja? or self.jefe_control_estudio?
+	end
+
 	def maestros?
-		self.ninja? or self.super?
+		self.ninja? or self.jefe_control_estudio? or self.super?
 	end
 
 	def mas_altos?

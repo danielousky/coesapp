@@ -1,9 +1,16 @@
-= hidden_field_tag :id, @usuario.id
 
+= hidden_field_tag :id, @usuario.id
+- if current_admin.ninja?
+  - administradores = Administrador.roles
+- elsif current_admin.jefe_control_estudio?
+  - administradores = Administrador.roles.reject{|a| a.eql? 'ninja'}
+- else
+  - administradores = Administrador.roles.reject{|a| a.eql? 'ninja' or a.eql? 'jefe_control_estudio'}
+- administradores = administradores.map {|k,v| [k.titleize,k]}
 .form-group
   %h6.col-md-12 Rol del Adminstrador
   .col-md-12
-    = select_tag '[administrador]rol', options_for_select(Administrador.roles.reject{|a| a.eql? 'ninja'}.map {|k,v| [k.titleize,k]}), prompt: '-- Seleccione Rol --', required: true, class: 'text_field form-control', id: :roles_admin
+    = select_tag '[administrador]rol', options_for_select(administradores), prompt: '-- Seleccione Rol --', required: true, class: 'text_field form-control', id: :roles_admin
 #adminDepartamento.hideble
   .form-group
     %h6.col-md-12 Departamento

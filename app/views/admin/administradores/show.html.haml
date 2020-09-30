@@ -3,7 +3,7 @@
   - if current_admin.maestros?
     = simple_icon_toggle_modal_edit "Cambiar Tipo de Administrador a #{@nickname}", 'setAdmin'
     = render '/admin/usuarios/set_administrador'
-- unless @administrador.maestros?
+- if !(current_admin.eql? @administrador) and current_admin.ninjas_or_jefe_control_estudio? and !@administrador.ninjas_or_jefe_control_estudio?
   .row.no-gutters
     .col-4
       - @perfiles = Perfil.all.order(nombre: :asc)

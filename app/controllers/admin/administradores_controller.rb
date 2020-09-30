@@ -2,14 +2,15 @@ module Admin
   class AdministradoresController < ApplicationController
     # Privilegios
     before_action :filtro_logueado
-    before_action :filtro_ninja!
+    before_action :filtro_super_admin!
 
     before_action :set_usuario, only: [:show, :edit, :update, :destroy]
 
     # GET /administradores
     # GET /administradores.json
     def index
-      @administradores = Administrador.all.includes(:usuario).order(['usuarios.apellidos ASC', 'usuarios.nombres ASC'])
+      @administradores = Administrador.no_maestros.includes(:usuario).order(['usuarios.apellidos ASC', 'usuarios.nombres ASC'])
+      @titulo = 'Administradores'
     end
 
     # GET /administradores/1

@@ -48,7 +48,7 @@ class Usuario < ApplicationRecord
 	# FUNCIONES:
 	def autorizado? *args 
 
-		if administrador and administrador.maestros?
+		if administrador and administrador.ninjas_or_jefe_control_estudio?
 			true
 		else
 			if args[1]

@@ -1,7 +1,6 @@
-%h1 
-  Administradores
-  - if current_admin.maestros?
-    = link_to 'Registrar Nuevo Administrador', "#{new_usuario_path}?administrador=true", class: 'btn btn-primary btn-sm float-right'
+
+- if current_admin.maestros?
+  = link_to 'Registrar Nuevo Administrador', "#{new_usuario_path}?administrador=true", class: 'btn btn-primary btn-sm float-right'
 
 
 %table.dataTable.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3
