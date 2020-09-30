@@ -1,36 +1,54 @@
+- if current_admin.ninja?
+  = link_to usuario_path(@usuario), method: :delete, class: 'btn btn-sm btn-danger float-right tooltip-btn', 'data_toggle': :tolltip, title: "Eliminar usuario completamente", data: { confirm: 'Esta acción eliminará irreversiblemente todas las asociaciones del usuario así como sus roles. ¿Está Seguro?'} do
+    = glyph 'remove'
 %nav
   .nav.nav-tabs
     - activeTab = (session[:usuarioTypeTab].eql? 'personal') ? 'active' : '' 
     = link_to "#personales", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'personal')" do
+      = glyph 'user'
       Datos Personales y de Contacto
 
     - activeTab = (session[:usuarioTypeTab].eql? 'estudiante') ? 'active' : ''  
-    = link_to 'Como Estudiante', "#historial", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'estudiante')" if @estudiante
+    -  if @estudiante
+      = link_to "#historial", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'estudiante')" do
+        = glyph 'education'
+        Como Estudiante
+
     - activeTab = (session[:usuarioTypeTab].eql? 'profesor') ? 'active' : ''  
-    = link_to 'Como Profesor', "#profesor", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'profesor')" if @profesor
+    - if @profesor
+      = link_to "#profesor", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'profesor')" do
+        = glyph 'book'
+        Como Profesor
     - activeTab = (session[:usuarioTypeTab].eql? 'administrador') ? 'active' : ''  
-    = link_to 'Como Administrador', "#administrador", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'administrador')" if @administrador
+    - if @administrador
+      = link_to "#administrador", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'administrador')" do
+        = glyph 'wrench'
+        Como Administrador
     - if current_admin and current_admin.maestros?
       - activeTab = (session[:usuarioTypeTab].eql? 'bitacora') ? 'active' : ''  
-      = link_to 'Bitácora', "#bitacora", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'bitacora')"
+      = link_to "#bitacora", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'bitacora')" do
+        = glyph 'road'
+        Bitácora
 
     - if !@estudiante and current_admin and (current_admin.autorizado? 'Usuarios', 'set_estudiante')
       = link_to "javascript:void(0)", "data-toggle": :tooltip, class: "text-success nav-item nav-link tooltip-btn", title: "Registrar a #{@nickname} como Estudiante", onclick: "$('#agregarGrado').modal();" do
         = glyph 'plus'
+        = glyph 'education'
         Estudiante
       = render '/admin/usuarios/set_estudiante'
 
     - if !@administrador and current_admin.maestros?
       = link_to "javascript:void(0)", "data-toggle": :tooltip, class: "text-success nav-item nav-link tooltip-btn", title: "Registrar a #{@nickname} como Administrador", onclick: "$('#setAdmin').modal();" do
         = glyph 'plus'
+        = glyph 'wrench'
         Administrador
       = render '/admin/usuarios/set_administrador'
     - if !@profesor and current_admin and (current_admin.autorizado? 'Usuarios', 'set_profesor')
       = link_to "javascript:void(0)", "data-toggle": :tooltip, class: "text-success nav-item nav-link tooltip-btn", title: "Registrar a #{@nickname} como Profesor", onclick: "$('#setProfesor').modal();" do
         = glyph 'plus'
+        = glyph 'book'
         Profesor
       = render '/admin/usuarios/set_profesor'
-
       
   .tab-content
     - activeTab = (session[:usuarioTypeTab].eql? 'personal') ? 'active' : ''  

@@ -1,9 +1,6 @@
 - if current_admin and current_admin.maestros?
 	.float-right
 		= btn_edit_primary edit_usuario_path(@usuario), "Actualizar datos personales y de contacto", 'Actualizar'
-		- if current_admin.ninja?
-			= link_to usuario_path(@usuario), method: :delete, class: 'btn btn-sm btn-danger tooltip-btn', 'data_toggle': :tolltip, title: "Eliminar usuario completamente", data: { confirm: 'Esta acción eliminará irreversiblemente todas las asociaciones del usuario así como sus roles. ¿Está Seguro?'} do
-				= glyph 'trash'
 
 %br
 
