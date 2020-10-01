@@ -1,4 +1,4 @@
-- if current_admin.ninja?
+- if current_admin.ninjas_or_jefe_control_estudio?
   = link_to usuario_path(@usuario), method: :delete, class: 'btn btn-sm btn-danger float-right tooltip-btn', 'data_toggle': :tolltip, title: "Eliminar usuario completamente", data: { confirm: 'Esta acción eliminará irreversiblemente todas las asociaciones del usuario así como sus roles. ¿Está Seguro?'} do
     = glyph 'remove'
 %nav
