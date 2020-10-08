@@ -105,13 +105,22 @@ class ApplicationController < ActionController::Base
 		}
 	end
 
-	def filtro_ninja!
-		if !session[:administrador_id] or (current_admin and !current_admin.ninja?)
+	def filtro_ninjas_or_jefe_control_estudio!
+		if !session[:administrador_id] or (current_admin and !current_admin.ninjas_or_jefe_control_estudio?)
 			reset_session
-			flash[:danger] = "¡Buen intento! Debes tener Dunamis para realizar esta acción"
+			flash[:danger] = "Debes tener privilegios especiales para realizar esta acción."
 			redirect_to root_path
 			return false
 		end		
+	end
+
+	def filtro_ninja!
+		if !session[:administrador_id] or (current_admin and !current_admin.ninja?)
+			reset_session
+			flash[:danger] = "Lo siento, debe tener máximos privilegios administrativos para realizar esta acción."
+			redirect_to root_path
+			return false
+		end
 	end
 
 	def filtro_logueado
@@ -135,7 +144,7 @@ class ApplicationController < ActionController::Base
 	def filtro_super_admin!
 		if !session[:administrador_id] or (current_admin and !current_admin.maestros?)
 			reset_session
-			flash[:danger] = "Debe tener máximos privilegios administrativos. Solicite esta acción a su superior"
+			flash[:danger] = "Debe tener privilegios administrativos. Solicite esta acción a su superior."
 			redirect_to root_path
 			return false
 		end		

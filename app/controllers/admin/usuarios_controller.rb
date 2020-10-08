@@ -4,7 +4,7 @@ module Admin
     before_action :filtro_administrador, except: [:edit, :update, :countries, :getMunicipios, :getParroquias]
     before_action :filtro_admin_mas_altos!, except: [:busquedas, :index, :show, :edit, :update, :countries, :getMunicipios, :getParroquias]
     before_action :filtro_super_admin!, only: [:set_administrador]
-    before_action :filtro_ninja!, only: [:destroy, :delete_rol]
+    before_action :filtro_ninjas_or_jefe_control_estudio!, only: [:destroy, :delete_rol]
 
 
     # before_action :filtro_autorizado#, only: [:create, :update, :destroy, :set_estudiante, :set_administrador, :set_profesor, :resetear_contrasena, :cambiar_ci]
