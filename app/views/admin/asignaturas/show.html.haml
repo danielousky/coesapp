@@ -12,7 +12,7 @@
       = link_to 'Periodo Actual', "#seccionesActual", "data-toggle"=> "tab", class: "nav-item nav-link active show"
     - if @asignatura.secciones.any?
       = link_to 'Histórico de secciones', "#secciones", "data-toggle"=> "tab", class: "nav-item nav-link"
-    - if @bitacoras.any?
+    - if @bitacoras.any? and (current_admin.autorizado? 'Bitacoras', 'index')
       = link_to 'Bitácora', "#bitacora", "data-toggle"=> "tab", class: "nav-item nav-link"
   .tab-content
     - if secciones.any?
@@ -28,9 +28,10 @@
     - if @asignatura.secciones.any?
       .tab-pane#secciones
         = render partial: '/admin/secciones/index_to_asinatura', locals: {secciones: @asignatura.secciones.where("periodo_id != '#{current_periodo.id}'"), historico: true}
-    - if @bitacoras.any?
+    - if @bitacoras.any? and (current_admin.autorizado? 'Bitacoras', 'index')
+
       .tab-pane#bitacora
-        = render '/admin/bitacoras/index'
+        = render file: '/admin/bitacoras/index' 
 
 = render '/admin/secciones/modal_seleccionar_profesor'
 

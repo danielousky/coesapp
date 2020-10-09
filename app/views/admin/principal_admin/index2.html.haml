@@ -37,9 +37,6 @@
 				- @secciones = @mat.secciones.del_periodo (current_periodo.id)
 				= render '/admin/asignaturas/tabla_secciones' 
 
-	#cargando.pagination-centered.text-center.hideble
-		= image_tag 'loading.gif'
-		Cargando...
 	#no_encontrado.pagination-centered.text-center.hideble.p-0
 		.alert-danger No se encontrado secciones
 

@@ -141,6 +141,27 @@ module Admin
         @profesores = Profesor.joins(:usuario).all.order('usuarios.apellidos')
       end
 
+      estudiante = @usuario.estudiante
+      if estudiante and estudiante.direccion
+        @estado = @usuario.estudiante.direccion.estado
+        if @estado
+          @municipios = Direccion.municipios(@estado) 
+          @municipio = estudiante.direccion.municipio
+          if @municipio
+            @parroquias = Direccion.parroquias(@estado, @municipio)
+            @parroquia = estudiante.direccion.ciudad
+          end
+        end
+      else
+        @estado = nil
+        @municipios = []
+        @municipio = nil
+        @parroquias = []
+        @parroquia = nil
+      end
+
+
+
     end
 
 

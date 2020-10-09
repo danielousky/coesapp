@@ -71,8 +71,8 @@
       data: parameters,
       beforeSend: function(xhr) {
         xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
-        $('#cargando a').html(`Cargando... `)
-        $('#cargando').modal({keyboard: false, show: true, backdrop: 'static'})
+        $('#cargando a').html(`Cargando... `);
+        $('#cargando').show();
       },
       success: function (data) {
         let selectorAux = $('#'+children);
@@ -87,13 +87,10 @@
         }
       },
       complete: function(){
-        $('#cargando').modal('hide');
+        $('#cargando').hide();
       }
     });
-    console.log('Datos cargados')
-    return true
   };
-
 
   $(document).ready(function() {
 

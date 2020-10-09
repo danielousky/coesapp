@@ -13,16 +13,18 @@
 		%nav
 			.nav.nav-tabs
 				= link_to 'Datalle Sección', "#seccion", "data-toggle": :tab, class: "nav-item nav-link active show"
-				= link_to 'Bitácora', "#bitacora", "data-toggle": :tab, class: "nav-item nav-link"
+				- if @bitacoras.any? and (current_admin.autorizado? 'Bitacoras', 'index')
+					= link_to 'Bitácora', "#bitacora", "data-toggle": :tab, class: "nav-item nav-link"
 			.tab-content
 				.tab-pane#seccion.active.show
 					- if current_admin and current_admin.maestros? and @seccion.inscripciones.any?
 						.float-right= btn_toggle 'btn-danger', 'trash', delete_all_inscripcions_seccion_path(@seccion), 'Eliminar Todas las Inscripciones', "#{glyph 'education'}", data: {confimation: 'Esta acción es irreversible. ¿Está completamente seguro?'}
 					.border.mt-3.p-3= render '/admin/secciones/detalle_seccion'
-				.tab-pane#bitacora
+				- if @bitacoras.any? and (current_admin.autorizado? 'Bitacoras', 'index')
+					.tab-pane#bitacora
 
-					.text-center.titulo De la Sección:
-					= render '/admin/bitacoras/index'
+						.text-center.titulo De la Sección:
+						= render file: '/admin/bitacoras/index' 
 		
 	- else
 		%br	

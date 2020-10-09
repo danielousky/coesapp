@@ -24,7 +24,7 @@
       = link_to "#administrador", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'administrador')" do
         = glyph 'wrench'
         Como Administrador
-    - if current_admin and current_admin.maestros?
+    - if (current_admin.autorizado? 'Bitacoras', 'index')
       - activeTab = (session[:usuarioTypeTab].eql? 'bitacora') ? 'active' : ''  
       = link_to "#bitacora", "data-toggle"=> "tab", class: "nav-item nav-link #{activeTab}", onclick: "setTab('usuarioTypeTab', 'bitacora')" do
         = glyph 'road'
@@ -128,17 +128,17 @@
       .tab-pane#administrador.border.p-3.border-top-0{class: activeTab}
         = render file: '/admin/administradores/show'
 
-    - if current_admin and current_admin.maestros?
+    - if (current_admin.autorizado? 'Bitacoras', 'index')
       - activeTab = (session[:usuarioTypeTab].eql? 'bitacora') ? 'active' : ''  
       .tab-pane#bitacora.border.p-3.border-top-0{class: activeTab}
         %br
         %h6.text-center.titulo Acciones del usuario:
         - @bitacoras = @usuario.bitacoras.limit(50).order(created_at: :desc)
-        = render '/admin/bitacoras/index'
+        = render file: '/admin/bitacoras/index' 
         %br
         %h6.text-center.titulo Actividades aplicadas al usuario:
         - @bitacoras = Bitacora.search(@usuario.id).limit(50).order(created_at: :desc)
-        = render '/admin/bitacoras/index'
+        = render file: '/admin/bitacoras/index' 
 
 - content = render partial: 'admin/inscripcionsecciones/form_cambio_seccion', locals: {secciones: Seccion.where(id: nil)}
 - url = cambiar_seccion_inscripcionsecciones_path
@@ -162,32 +162,3 @@
     // document.getElementById('cabiarSeccion').modal()
     $('#cambiarSeccion').modal()
   }
-
-- if false #@secciones_pci_pendientes.any?
-  :javascript
-
-    function sendData(url,data){
-      $.ajax({
-        url: url,
-        type: 'GET',
-        data: data,
-        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-        success: function (html) {
-          console.log(html)
-          //$('#alertPCI').html(html);
-        }        
-      });
-
-    }
-    $('.asignar_escuela').change(function(){
-      let pci_escuela_id, inscrip_id;
-      pci_escuela_id = $(this).val()
-      inscrip_id = $(this).attr('id')
-      console.log(pci_escuela_id);
-      console.log(inscrip_id);
-
-      sendData('#{set_escuela_pci_inscripcionsecciones_path}', {id: inscrip_id, pci_escuela_id: pci_escuela_id});
-
-    });
-
-

@@ -76,13 +76,13 @@
       data: data,
       beforeSend: function(xhr) {
         xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
-        $('#cargando a').html(`Cargando... `)
-        $('#cargando').modal({keyboard: false, show: true, backdrop: 'static'})
+        $('#cargando a').html(`Cargando... `);
+        $('#cargando').show();
       },
       success: function (data) {
-
-        $('#'+children).empty();
-        $('#'+children).append($("<option></option>").attr("value",'').text('--- Seleccione ---'));
+        let selectorAux = $('#'+children);
+        selectorAux.empty();
+        selectorAux.append($("<option></option>").attr("value",'').text('--- Seleccione ---'));
 
         for (let e of data){
           $('#'+children)
@@ -92,7 +92,7 @@
         }
       },
       complete: function(){
-        $('#cargando').modal('hide');
+        $('#cargando').hide();
       }
     });
   };
@@ -109,11 +109,8 @@
 
     $('#selectMunicipio').on('change', function(e){
       let estado = $('#selectEstado').val();
-
       sendData(`#{getParroquias_usuarios_path}`, 'selectParroquia', {term: $(this).val(), estado: estado})
 
     })
     
   });
-
-

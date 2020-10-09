@@ -22,7 +22,7 @@ Rails.application.routes.draw do
     end
 
     resources :escuelaperiodos, only: :show
-    resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas
+    resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas, :bitacoras
 
     resources :horarios do
       member do
