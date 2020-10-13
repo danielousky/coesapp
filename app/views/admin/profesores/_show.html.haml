@@ -7,7 +7,7 @@
 - url = ''
 = render partial: '/layouts/modal_layout', locals: {url: nil, id_modal: "horarioActualProfe", title: "Horario de #{@profesor.usuario.nombres} para el semestre actual (#{current_periodo.id})", content: content}
 
-- if current_admin.ninja?
+- if current_admin and current_admin.ninja?
   = link_to "#{delete_rol_usuario_path(@usuario)}?profesor=true", class: 'btn btn-sm btn-danger float-right tooltip-btn', 'data_toggle': :tolltip, title: "Eliminar Como Profesor", data: { confirm: 'Esta acción eliminará irreversiblemente todas las asociaciones del profesor. ¿Está Seguro?'} do
     = glyph 'trash'
 
