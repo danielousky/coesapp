@@ -61,7 +61,11 @@
               %table
                 %tr
                   - asignatura.secciones.del_periodo(current_periodo).each do |s| 
-                    %td= s.numero
+                    %td
+                      - if (current_admin and current_admin.autorizado? 'Secciones', 'show') 
+                        = link_to s.numero, seccion_path(s.id)
+                      - else
+                        = s.numero
 
                   - if (current_admin and current_admin.autorizado? 'Secciones', 'create')
                     %td= btn_plus_seccion_modal asignatura

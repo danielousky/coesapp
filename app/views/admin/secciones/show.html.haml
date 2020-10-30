@@ -1,3 +1,4 @@
+
 .border.p-3
 	- if params[:back] and params[:back].eql? 'inscripcion' and params[:ci]
 		- @back = seleccionar_inscripcionseccion_path(params[:ci])
@@ -9,7 +10,7 @@
 	= render '/admin/secciones/tabla_descripcion'
 	= render '/admin/secciones/opciones_descarga'
 	= render '/admin/secciones/modal_form' if current_admin and (current_admin.autorizado? 'Secciones', 'update')
-	- if current_admin and current_admin.maestros?
+	- if current_admin
 		%nav
 			.nav.nav-tabs
 				= link_to 'Datalle Sección', "#seccion", "data-toggle": :tab, class: "nav-item nav-link active show"
