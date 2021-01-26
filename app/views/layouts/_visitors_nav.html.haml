@@ -1,11 +1,11 @@
 .fixed-top 
   %nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-    %a.navbar-brand{:href => root_path} COES-FHE
+    %a.navbar-brand{href: root_path} COES-FHE
     %button.navbar-toggler{"aria-controls" => "navbarMain", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarMain", "data-toggle" => "collapse", :type => "button"}
       %span.navbar-toggler-icon
     #navbarMain.collapse.navbar-collapse
       %ul.navbar-nav.mr-auto
         %li.nav-item
-          %a.nav-link{:href => "mailto:controlestfheucv@gmail.com"} Contáctanos
+          %a.nav-link{href: "mailto:controlestfheucv@gmail.com"} Contáctanos
 
       = render 'layouts/inicio_sesion_form'
