@@ -142,7 +142,7 @@
 
 - content = render partial: 'admin/inscripcionsecciones/form_cambio_seccion', locals: {secciones: Seccion.where(id: nil)}
 - url = cambiar_seccion_inscripcionsecciones_path
-= render partial: '/layouts/modal_layout', locals: {url: url, id_modal: 'cambiarSeccion', title: 'Cambiar Sección', content: content}
+= render partial: '/layouts/modal_layout', locals: {url: url, id_modal: 'cambiarSeccion', title: 'Cambiar Sección', content: content, width: nil}
 
 
 :javascript

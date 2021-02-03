@@ -1,0 +1,68 @@
+-# Este botón puede eliminarse si decidimos desplegar la modal al inicio
+= link_to 'javascript:void(0)', onclick: "$('##{id_modal}').modal();", class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
+  = glyph 'education'
+  = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{current_periodo.id}"
+
+.modal.fade{'aria-hidden': true, role: :dialog, id: id_modal}
+  .modal-dialog.modal-lg
+    .modal-content
+      .alert.alert-info
+        %button.close{"aria-label": "Cerrar", "data-dismiss": :modal, type: :button}
+          %span{"aria-hidden": true} ×
+        .text-center{id: "#{id_modal}Title"}
+          %h4= title
+          %h5= "Escuela de #{@escuela.descripcion_filtro}"
+          %h5= "Período Académico #{current_periodo.id}"
+
+      .alert.alert-warning
+        %h4.text-center= msgDanger.html_safe
+      .modal-body.border.p-2
+        = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal') do
+
+          %table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table
+            %thead
+              %tr
+                %th{style: 'width: 80%'} Asigantura
+                %th{style: 'width: 10%'} Sección
+                %th{style: 'width: 10%'} Ratificar
+            %tbody
+              - inscripciones.each_with_index do |inscripcion, i| 
+                %tr{id: "tr#{}"}
+                  %td= inscripcion.asignatura.descripcion
+                  %td.text-center= inscripcion.seccion.numero
+                  %td.text-center= check_box_tag "inscripcion[#{i}]", inscripcion.id, nil, class: 'checkboxInscripcion', titulo: "#{inscripcion.asignatura.descripcion} (#{inscripcion.seccion.numero})"
+          
+          .modal-footer
+            %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
+            = submit_tag title_btn, class: 'btn btn-outline-success btn-sm', id: 'submitBtn', 'data-disable-with': 'Enviando'
+
+:javascript
+
+  
+  $('#submitBtn').on('click', function(event){
+    let selected = '\n';
+    $("input.checkboxInscripcion[type=checkbox]:checked").each(function(){
+      selected += '\n';
+      selected += $(this).attr('titulo');
+    });
+
+    event.preventDefault();
+
+
+    
+    msg = `Escuela de #{@escuela.descripcion_filtro}`+selected;
+    msg += "Recuerde que es definitiva su " 
+    if (window.confirm() == false) {
+      console.log('No Enviado');
+    }else{
+      console.log('Enviado');
+    }
+    
+    // $(`##{id_modal}`).modal('hide');
+    // let modalConfirm = $('#confirm')
+    // let selected = $(`##{id_modal} input[checkbox]`).first.value
+    // console.log(selected)
+    // modalConfirm.text('¡selected!')
+    // modalConfirm.modal();
+  })
+

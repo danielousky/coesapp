@@ -1,0 +1,34 @@
+.modal.fade{'aria-hidden': true, role: :dialog, id: id_modal}
+  .modal-dialog.modal-lg
+    .modal-content
+      .alert.alert-info
+        %button.close{"aria-label": "Cerrar", "data-dismiss": :modal, type: :button}
+          %span{"aria-hidden": true} ×
+        .text-center{id: "#{id_modal}Title"}
+          %h4= title
+          %h5= "Escuela de #{@escuela.descripcion_filtro}"
+          %h5= "Período Académico #{current_periodo.id}"
+
+      .alert.alert-warning
+        %h4.text-center= msgDanger.html_safe
+      .modal-body.border.p-2
+        = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal') do
+
+          %table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table
+            %thead
+              %tr
+                %th{style: 'width: 80%'} Asigantura
+                %th{style: 'width: 10%'} Sección
+                %th{style: 'width: 10%'} Ratificar
+            %tbody
+              - inscripciones.each do |inscripcion| 
+                %tr
+                  %td= inscripcion.asignatura.descripcion
+                  %td.text-center= inscripcion.seccion.numero
+                  %td.text-center= check_box_tag nil, nil
+          
+          .modal-footer
+            %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
+            - unless url.nil?
+              = submit_tag 'Guardar', class: 'btn btn-outline-success btn-sm'
+

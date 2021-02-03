@@ -40,6 +40,10 @@ class Inscripcionseccion < ApplicationRecord
 	validates_uniqueness_of :estudiante_id, scope: [:seccion_id], message: 'El estudiante ya está inscrito en la sección', field_name: false
 
 	# SCOPES:
+	scope :preinscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO)}
+	scope :inscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)}
+	scope :ratificados, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::RATIFICADO)}
+
 	# scope :confirmados, -> {where "confirmar_inscripcion = ?", 1}
 	# scope :del_periodo_actual, -> {joins(:seccion).where "periodo_id = ?", ParametroGeneral.periodo_actual_id}
 	# SON EQUIVALENTES LAS 2 SIGUIENTES SCOPE PERO FUNCIONAN DIFERENTES EN CONDICIONES PARTICULARES: 

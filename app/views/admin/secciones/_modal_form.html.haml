@@ -1,4 +1,4 @@
 - content = render partial: 'admin/secciones/form'
 - title = 'Nueva Sección'
 - title += " para #{@asignatura.descripcion}" if @asignatura
-= render partial: '/layouts/modal_layout', locals: {url: secciones_path, id_modal: 'newSeccion', title: title, content: content}
+= render partial: '/layouts/modal_layout', locals: {url: secciones_path, id_modal: 'newSeccion', title: title, content: content, width: nil}

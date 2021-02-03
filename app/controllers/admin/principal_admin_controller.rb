@@ -3,7 +3,6 @@ module Admin
 		before_action :filtro_logueado
 		before_action :filtro_administrador
 
-
 		def cambiar_estudiante_escuela
 			@estudiante = Estudiante.find params[:id]
 			anterior_escuela = @estudiante.escuela.descripcion

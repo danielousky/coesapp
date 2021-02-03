@@ -40,9 +40,9 @@
 - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
   - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Estado de Inscripción:', group: Grado.estado_inscripciones, field_name: 'estado_inscripcion', grade: grado}
   - url = cambiar_inscripcion_grado_path
-  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarEstadoInscripcion#{grado.id_flat}", title: 'Cambiar Inscripción', content: content}
+  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarEstadoInscripcion#{grado.id_flat}", title: 'Cambiar Inscripción', content: content, width: nil}
   - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Tipo Inscripción:', group: Grado.tipos_ingreso, field_name: 'tipo_ingreso', grade: grado}
-  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarTipoIngreso#{grado.id_flat}", title: 'Cambiar Tipo Ingreso', content: content}
+  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarTipoIngreso#{grado.id_flat}", title: 'Cambiar Tipo Ingreso', content: content, width: nil}
   - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Período de Inicio:', group: 'periodos', field_name: '', grade: grado}
-  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarPeriodoInscripcion#{grado.id_flat}", title: 'Cambiar Periodo', content: content}
+  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarPeriodoInscripcion#{grado.id_flat}", title: 'Cambiar Periodo', content: content, width: nil}
 

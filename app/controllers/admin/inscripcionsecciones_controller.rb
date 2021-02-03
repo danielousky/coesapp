@@ -1,7 +1,7 @@
 module Admin
 	class InscripcionseccionesController < ApplicationController
 		before_action :filtro_logueado
-		before_action :filtro_administrador#, only: [:destroy]
+		before_action :filtro_administrador, except: [:ratificar_inscripcion, :autoinscribirse]#, only: [:destroy]
 		# before_action :filtro_admin_mas_altos!, except: [:destroy]
 		# before_action :filtro_ninja!, only: [:destroy]
 
@@ -15,6 +15,15 @@ module Admin
 		# 	inscripcion = Inscripcionseccion.find params[:inscripcionseccion_id]
 		# 	inscripcion.pci_escuela_id = params[:escuela_pci_id]
 		# end
+
+		def ratificar_inscripcion
+			1/0
+		end
+
+		def autoinscribirse
+			1/0
+			
+		end
 
 		def cambiar_seccion
 			seccion_anterior = @inscripcionseccion.seccion
