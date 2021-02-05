@@ -2,6 +2,7 @@
 	%thead
 		%tr
 			%th Cédula
+			%th Email
 			%th Apellidos
 			%th Nombres
 			%th Escuelas
@@ -17,6 +18,7 @@
 			- est = Estudiante.find ins.estudiante_id
 			%tr
 				%td= link_to ins.estudiante_id, usuario_path(est.id)
+				%td= ins.usuario.email
 				%td= ins.apellidos
 				%td= ins.nombres
 				%td= est.escuelas.ids.to_sentence

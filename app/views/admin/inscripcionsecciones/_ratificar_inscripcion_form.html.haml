@@ -18,7 +18,8 @@
         %h4.text-center= msgDanger.html_safe
       .modal-body.border.p-2
         = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal') do
-
+          = hidden_field_tag 'estudiante_id', @estudiante.id
+          = hidden_field_tag 'periodo_id', inscripciones.first.periodo.id
           %table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table
             %thead
               %tr
@@ -30,39 +31,33 @@
                 %tr{id: "tr#{}"}
                   %td= inscripcion.asignatura.descripcion
                   %td.text-center= inscripcion.seccion.numero
-                  %td.text-center= check_box_tag "inscripcion[#{i}]", inscripcion.id, nil, class: 'checkboxInscripcion', titulo: "#{inscripcion.asignatura.descripcion} (#{inscripcion.seccion.numero})"
+                  %td.text-center= check_box_tag "inscripciones[#{i}]", inscripcion.id, nil, class: 'checkboxInscripcion', titulo: "- #{inscripcion.asignatura.descripcion} (#{inscripcion.seccion.numero})"
           
           .modal-footer
             %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
             = submit_tag title_btn, class: 'btn btn-outline-success btn-sm', id: 'submitBtn', 'data-disable-with': 'Enviando'
 
 :javascript
-
   
   $('#submitBtn').on('click', function(event){
     let selected = '\n';
-    $("input.checkboxInscripcion[type=checkbox]:checked").each(function(){
-      selected += '\n';
-      selected += $(this).attr('titulo');
-    });
-
-    event.preventDefault();
-
-
-    
-    msg = `Escuela de #{@escuela.descripcion_filtro}`+selected;
-    msg += "Recuerde que es definitiva su " 
-    if (window.confirm() == false) {
-      console.log('No Enviado');
+    let checkeds = $("input.checkboxInscripcion[type=checkbox]:checked");
+    let msg;
+    if (checkeds.length > 0) {
+      checkeds.each(function(){
+        selected += '\n';
+        selected += $(this).attr('titulo');
+      });    
+      msg = `Asignaturas a ratificar en el período académico #{current_periodo.id} de la Escuela de #{@escuela.descripcion_filtro}:`;
+      msg += selected;
+      msg += '\n';
     }else{
-      console.log('Enviado');
+      msg = `No seleccionó ninguna asignatura. Se procederá a eliminar el total de asignaturas inscritas en el #{current_periodo.id}.`
     }
-    
-    // $(`##{id_modal}`).modal('hide');
-    // let modalConfirm = $('#confirm')
-    // let selected = $(`##{id_modal} input[checkbox]`).first.value
-    // console.log(selected)
-    // modalConfirm.text('¡selected!')
-    // modalConfirm.modal();
+    msg += '\n';
+    msg += "Recuerde que su elección es definitiva y no podrá ser cambiada. ¿Está seguro?" 
+    if (window.confirm(msg) == false) {
+      event.preventDefault();
+    }
   })
 

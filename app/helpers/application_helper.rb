@@ -168,7 +168,7 @@ module ApplicationHelper
 	end
 
 	def btn_edit_primary href, title_tooltip, value
-		btn_toggle 'btn-outline-primary', 'edit', href, title_tooltip, value
+		btn_toggle 'btn-primary', 'edit', href, title_tooltip, value
 	end
 
 	def btn_success icon, href, title_tooltip, value

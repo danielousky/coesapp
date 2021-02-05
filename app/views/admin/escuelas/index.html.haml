@@ -21,7 +21,18 @@
         %td.align-middle= link_to escuela.id, escuela_path(escuela) 
         %td.align-middle= escuela.descripcion
         %td.align-middle.text-right= @ins.secciones_creadas.count#escuela.secciones.del_periodo(current_periodo.id).count
-        %td.align-middle.text-right= @ins.estudiantes_inscritos.count
+        %td.align-middle.text-right
+          - if escupe = Escuelaperiodo.where(escuela_id: escuela.id, periodo_id: current_periodo.id).first
+            - pre = @ins.preinscritos.estudiantes_inscritos.count
+            - if current_periodo.id.eql? '2019-02A' and escuela.id.eql? 'IDIO'
+              = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), pre, escuelaperiodo_path(escupe.id), class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total preinscritos', 'data-placement': :right )          
+              = "/"
+              - rat = @ins.ratificados.estudiantes_inscritos.count 
+              = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), rat, "#{escuelaperiodo_path(escupe.id)}?rat=true", class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total ratificados', 'data-placement': :right )
+
+            - else
+              - val = @ins.estudiantes_inscritos.count 
+              = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), val, escuelaperiodo_path(escupe.id), class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total inscritos', 'data-placement': :right )
         %td.align-middle
           - if (current_admin and current_admin.autorizado? 'Escuelas', 'destroy')
             - if !(escuela.inscripciones.any?)

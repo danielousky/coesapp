@@ -1,7 +1,6 @@
 class TipoEstadoInscripcion < ApplicationRecord
 
-	RATIFICADO = 'RAT'
-	PREINSCRITOS = 'PRE'
+	PREINSCRITO = 'PRE'
 	INSCRITO = 'INS'
 	REINCORPODADO = 'REINC'
 	RETIRADA = 'RET'

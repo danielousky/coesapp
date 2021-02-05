@@ -17,7 +17,28 @@ module Admin
 		# end
 
 		def ratificar_inscripcion
-			1/0
+			total_ratificadas = 0
+			total_eliminadas = 0
+			# descripcion_eliminadas = []
+			@estudiante = Estudiante.find params[:estudiante_id]
+			@estudiante.inscripciones.del_periodo(params[:periodo_id]).each do |insc|
+				if params[:inscripciones].values.include? "#{insc.id}"
+					total_ratificadas += 1 if insc.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)
+				else
+					# descripcion_eliminadas << insc.seccion.descripcion
+					total_eliminadas += 1 if insc.destroy
+				end
+			end
+			begin
+				msg_email = ' Correo enviado con la información resumen.'if EstudianteMailer.ratificacionEIM201902A(@estudiante).deliver_now
+			rescue Exception => e
+				msg_email = "No se pudo enviar el email: #{e}"
+			end
+			flash[:info] = "Se ratificaron un total de #{total_ratificadas} asignaturas. Se eliminaron #{total_eliminadas} en total."
+
+			flash[:info] += msg_email 
+			
+			redirect_back fallback_location: '/principal_estudiante'
 		end
 
 		def autoinscribirse

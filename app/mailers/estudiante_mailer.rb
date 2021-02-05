@@ -1,9 +1,22 @@
-# encoding: utf-8
 
 class EstudianteMailer < ActionMailer::Base
 
   # default :from => "fundeim@ucv.ve"      
-  default from: "COES-FHE <soporte.coes.fhe@gmail.com>", authentication: 'plain'
+  default from: "COES-FHE <fundeimucv@gmail.com>"#, authentication: 'plain'
+
+
+  def error
+    mail(to: 'macaa-18@hotmail.com', subject: "Sobre el mensaje anterior", cc: 'moros.daniel@gmail.com')
+  end
+
+  def ratificacionEIM201902A(estudiante)
+    @nombre = estudiante.usuario.nombres
+    @genero = estudiante.usuario.genero
+    usuario = estudiante.usuario
+    @ratifiacadas = estudiante.inscripciones.del_periodo('2019-02A').ratificados if estudiante
+    mail(to: usuario.email, subject: "Ratificación Proceso de Inscripción Idiomas Modernos 2019-02A")
+  end
+
   def bienvenida(usuario)
     @nombre = usuario.nombre_completo     
     @clave = usuario.contrasena

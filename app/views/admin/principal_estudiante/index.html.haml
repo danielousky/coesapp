@@ -19,8 +19,10 @@
 			- @periodos = Periodo.where(id: periodo_ids).order(inicia: :desc)
 			
 			- if escuela.inscripcion_abierta
-				- if escuela.id.eql? 'IDIO' and current_periodo.id.eql? '2019-02A'
-					- inscripciones_del_periodo = @inscripciones.del_periodo(current_periodo.id)#.inscritos
+				- periodo_id = escuela.periodos.order(:inicia).last.id 
+				- if escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
+					-# inscripciones_del_periodo = @inscripciones.del_periodo(current_periodo.id)#.inscritos
+					- inscripciones_del_periodo = @inscripciones.del_periodo(periodo_id).preinscritos
 					- if inscripciones_del_periodo.any?
 						- titulo_modal = "Proceso de Ratificación de Inscripción"
 						- titulo_btn = "Ratificar Inscripción"

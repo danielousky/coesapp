@@ -1,0 +1,15 @@
+="Estimad#{@genero} #{@nombre}"
+
+
+- if @ratifiacadas.any?
+	A continución el resumen de las asignaturas ratificadas:
+	- @ratifiacadas.each do |insc| 
+		%b= insc.seccion.descripcion
+
+Gracias por su colaboración
+COORDINACIÓN DE FUNDEIM
+UCV - La casa que vence la sombra.
+
+Ante cualquier duda o inconveniente responder a:
+
+fundeimucv@gmail.com

@@ -18,7 +18,7 @@
         %td= periodo.tipo.titleize
         - current_admin.escuelas.all.each do |e| 
           %td.tdFiltrables{class: "fil#{e.id}"}
-            - val = e.inscripcionsecciones.del_periodo(periodo).estudiantes_inscritos.count
+            - inscripciones = e.inscripcionsecciones.del_periodo(periodo)
             =# link_to_if val > 0, val, "#{inscritos_escuela_periodo_descargar_path(periodo.id)}?escuela_id=#{e.id}", class: 'link', target: "_blank"
             - if false#val > 0
               - e.planes.each do |plan| 
@@ -28,9 +28,19 @@
                     = glyph 'download'
                     = plan.id.upcase
 
-            - if val > 0
+            - if inscripciones.count > 0
               - if escupe = Escuelaperiodo.where(escuela_id: e.id, periodo_id: periodo.id).first
-                = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), raw("#{glyph('download')} #{val}"), escuelaperiodo_path(escupe.id), class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total de Inscripciones', 'data-placement': :right )
+                - if periodo.id.eql? '2019-02A' and e.id.eql? 'IDIO'
+                  - pre = inscripciones.preinscritos.estudiantes_inscritos.count
+                  = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), pre, escuelaperiodo_path(escupe.id), class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total de Inscripciones', 'data-placement': :right )
+                
+                  = "/"
+                  - ins = inscripciones.inscritos.estudiantes_inscritos.count
+                  = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), ins, "#{escuelaperiodo_path(escupe.id)}?rat=true", class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total Ratificados', 'data-placement': :right )
+
+                - else
+                  - ins = inscripciones.estudiantes_inscritos.count
+                  = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), ins, escuelaperiodo_path(escupe.id), class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total de Inscripciones', 'data-placement': :right )
 
         - if current_admin and ((current_admin.autorizado? 'Periodos', 'update') or (current_admin.autorizado? 'Periodos', 'destroy'))
           %td

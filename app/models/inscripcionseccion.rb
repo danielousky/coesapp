@@ -36,13 +36,17 @@ class Inscripcionseccion < ApplicationRecord
 	before_validation :set_estados
 	after_save :actualizar_estado_grado
 
+	before_destroy :set_bitacora
+
 	# VALIDACIONES:
 	validates_uniqueness_of :estudiante_id, scope: [:seccion_id], message: 'El estudiante ya está inscrito en la sección', field_name: false
 
 	# SCOPES:
 	scope :preinscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO)}
 	scope :inscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)}
-	scope :ratificados, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::RATIFICADO)}
+	scope :ratificados, -> {inscritos}
+	# scope :no_ratificados, -> {where("inscripcionsecciones.tipo_estado_inscripcion_id <> 'RAT'")}
+	scope :no_ratificados, -> {where("inscripcionsecciones.tipo_estado_inscripcion_id IS NULL OR inscripcionsecciones.tipo_estado_inscripcion_id <> '#{TipoEstadoInscripcion::RATIFICADO}'")}
 
 	# scope :confirmados, -> {where "confirmar_inscripcion = ?", 1}
 	# scope :del_periodo_actual, -> {joins(:seccion).where "periodo_id = ?", ParametroGeneral.periodo_actual_id}
@@ -567,6 +571,17 @@ class Inscripcionseccion < ApplicationRecord
 
 	def set_default
 		self.tipo_calificacion_id ||= FINAL
+	end
+
+	def set_bitacora
+		Bitacora.create!(
+			descripcion: seccion.descripcion_escuela, 
+			tipo: Bitacora::ELIMINACION,
+			usuario_id: self.estudiante_id,
+			id_objeto: self.id,
+			tipo_objeto: self.class.name,
+			ip_origen: nil
+		)
 	end
 
 
