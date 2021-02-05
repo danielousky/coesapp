@@ -4,11 +4,6 @@ class EstudianteMailer < ActionMailer::Base
   # default :from => "fundeim@ucv.ve"      
   default from: "COES-FHE <fundeimucv@gmail.com>"#, authentication: 'plain'
 
-
-  def error
-    mail(to: 'macaa-18@hotmail.com', subject: "Sobre el mensaje anterior", cc: 'moros.daniel@gmail.com')
-  end
-
   def ratificacionEIM201902A(estudiante)
     @nombre = estudiante.usuario.nombres
     @genero = estudiante.usuario.genero
