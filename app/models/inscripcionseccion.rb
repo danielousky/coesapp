@@ -44,9 +44,9 @@ class Inscripcionseccion < ApplicationRecord
 	# SCOPES:
 	scope :preinscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO)}
 	scope :inscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)}
-	scope :ratificados, -> {inscritos}
+	# scope :ratificados, -> {inscritos}
 	# scope :no_ratificados, -> {where("inscripcionsecciones.tipo_estado_inscripcion_id <> 'RAT'")}
-	scope :no_ratificados, -> {where("inscripcionsecciones.tipo_estado_inscripcion_id IS NULL OR inscripcionsecciones.tipo_estado_inscripcion_id <> '#{TipoEstadoInscripcion::RATIFICADO}'")}
+	# scope :no_ratificados, -> {where("inscripcionsecciones.tipo_estado_inscripcion_id IS NULL OR inscripcionsecciones.tipo_estado_inscripcion_id <> '#{TipoEstadoInscripcion::RATIFICADO}'")}
 
 	# scope :confirmados, -> {where "confirmar_inscripcion = ?", 1}
 	# scope :del_periodo_actual, -> {joins(:seccion).where "periodo_id = ?", ParametroGeneral.periodo_actual_id}
