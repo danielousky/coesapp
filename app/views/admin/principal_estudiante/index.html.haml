@@ -18,34 +18,36 @@
 			- periodo_ids = @inscripciones.joins(:seccion).group("secciones.periodo_id").count.keys
 			- @periodos = Periodo.where(id: periodo_ids).order(inicia: :desc)
 			
-			- if escuela.inscripcion_abierta
-				- periodo_id = escuela.periodos.order(:inicia).last.id 
-				- if escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
-					-# inscripciones_del_periodo = @inscripciones.del_periodo(current_periodo.id)#.inscritos
-					- inscripciones_del_periodo = @inscripciones.del_periodo(periodo_id).preinscritos
-					- if inscripciones_del_periodo.any?
-						- titulo_modal = "Proceso de Ratificación de Inscripción"
-						- titulo_btn = "Ratificar Inscripción"
-						- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea ratificar"
-						- url = '/inscripcionsecciones/ratificar_inscripcion'
-						- idModal = "ratificarInscripcion#{escuela.id}"
-						= render partial: 'admin/inscripcionsecciones/ratificar_inscripcion_form', locals: {inscripciones: inscripciones_del_periodo, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
+			- if false
+				- if escuela.inscripcion_abierta
+					- periodo_id = escuela.periodos.order(:inicia).last.id 
+					- if escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
+						-# inscripciones_del_periodo = @inscripciones.del_periodo(current_periodo.id)#.inscritos
+						- inscripciones_del_periodo = @inscripciones.del_periodo(periodo_id).preinscritos
+						- if inscripciones_del_periodo.any?
+							- titulo_modal = "Proceso de Ratificación de Inscripción"
+							- titulo_btn = "Ratificar Inscripción"
+							- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea ratificar"
+							- url = '/inscripcionsecciones/confirmar_inscripcion'
+							- idModal = "ratificarInscripcion#{escuela.id}"
+							= render partial: 'admin/inscripcionsecciones/confirmar_inscripcion_form', locals: {inscripciones: inscripciones_del_periodo, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
 
-				- if false #else
-					- titulo_modal = "Proceso de Preinscripción Autogestionada"
-					- titulo_btn = "Preinscribirse"
-					- inscripciones = @inscripciones.del_periodo(current_periodo.id)
-					- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea preinscribir"
-					- url = '/admin/inscripcionsecciones/autopreinscricion'
-					- idModal = "preinscripcion#{escuela.id}"
-					= render partial: 'admin/inscripcionsecciones/ratificar_inscripcion_form', locals: {inscripciones: inscripciones, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
+					- else
+						- inscripciones_del_periodo = @inscripciones.del_periodo(periodo_id).preinscritos
+						- titulo_modal = "Proceso de Preinscripción Autogestionada"
+						- titulo_btn = "Preinscribirse"
+						- inscripciones = @inscripciones.del_periodo(current_periodo.id)
+						- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea preinscribir"
+						- url = '/admin/inscripcionsecciones/autopreinscricion'
+						- idModal = "preinscripcion#{escuela.id}"
+						= render partial: 'admin/inscripcionsecciones/confirmar_inscripcion_form', locals: {inscripciones: inscripciones, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
 
 
-					= link_to 'javascript:void(0)', onclick: "$('##{idModal}').modal();", class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
-						= glyph 'education'
-						= "#{titulo_btn} en #{@escuela.descripcion_filtro} el periodo #{current_periodo.id}"
+						= link_to 'javascript:void(0)', onclick: "$('##{idModal}').modal();", class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
+							= glyph 'education'
+							= "#{titulo_btn} en #{@escuela.descripcion_filtro} el periodo #{current_periodo.id}"
 
-				=# render partial: '/layouts/modal_layout', locals: {url: '/admin/inscripcionsecciones/autoinscribirse', id_modal: "inscripcion#{escuela.id}", title: title, content: content, width: 'modal-lg'}
+					=# render partial: '/layouts/modal_layout', locals: {url: '/admin/inscripcionsecciones/autoinscribirse', id_modal: "inscripcion#{escuela.id}", title: title, content: content, width: 'modal-lg'}
 
 			-if @estudiante.citahoraria
 				.border.p-md-3

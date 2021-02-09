@@ -1,0 +1,10 @@
+- if false #Temporal para ocultar numeros de la preinscripcion 
+
+  - pre = ins.preinscritos.estudiantes_inscritos.count
+  = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), pre, escuelaperiodo_path(escupe.id), class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total preinscritos', 'data-placement': :right )          
+  = "/"
+  - rat = ins.inscritos.estudiantes_inscritos.count 
+  = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), rat, "#{escuelaperiodo_path(escupe.id)}?rat=true", class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total inscritos', 'data-placement': :right )
+- else 
+  - total = ins.estudiantes_inscritos.count
+  = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), total, "#{escuelaperiodo_path(escupe.id)}", class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total inscritos', 'data-placement': :right )
