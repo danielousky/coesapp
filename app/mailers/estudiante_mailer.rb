@@ -2,7 +2,7 @@
 class EstudianteMailer < ActionMailer::Base
 
   # default :from => "fundeim@ucv.ve"      
-  default from: "COES-FHE <fundeimucv@gmail.com>"#, authentication: 'plain'
+  default from: "COES-FHE <controlestfheucv@gmail.com>"#, authentication: 'plain'
 
   def ratificacionEIM201902A(estudiante)
     @nombre = estudiante.usuario.nombres

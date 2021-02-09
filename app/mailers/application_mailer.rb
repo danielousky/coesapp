@@ -1,5 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "COES-FHE <soporte.coes.fhe@gmail.com>"
+  default from: "COES-FHE <controlestfheucv@gmail.com>"
 
   def olvido_clave(usuario)
     @nombre = usuario.nombre_completo
