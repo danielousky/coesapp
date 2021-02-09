@@ -2,17 +2,22 @@ module Admin
   class SeccionesController < ApplicationController
     # Privilegios
     before_action :filtro_logueado
-    before_action :filtro_administrador, except: [:show]
-    before_action :filtro_admin_profe, only: :show
+    before_action :filtro_administrador, except: [:show, :calificar]
+    before_action :filtro_admin_profe, only: [:show, :calificar]
+    before_action :filtro_autorizado, except: [:show, :calificar]#, except: [:show, :get_tab_objects, :get_secciones, :index2, :new, :edit, :seleccionar_profesor]
+
+
+    #if es profesor y profesor de session 
 
     # before_action :filtro_admin_altos!, only: [:cambiar_capacidad, :agregar_profesor_secundario, :seleccionar_profesor, :cambiar_profe_seccion, :desasignar_profesor_secundario]
     # before_action :filtro_admin_mas_altos!, only: [:create, :new, :create, :update]
 
     #before_action :filtro_ninja!, only: [:destroy, :index]
 
-    before_action :filtro_autorizado#, except: [:show, :get_tab_objects, :get_secciones, :index2, :new, :edit, :seleccionar_profesor]
 
     before_action :set_seccion, except: [:index, :index2, :get_secciones, :get_tab_objects, :new, :create, :habilitar_calificar, :get_profesores]
+
+    before_action :profesor_no_es_el_titular?, only: [:show, :calificar]
 
     # GET /secciones
     # GET /secciones.json
@@ -555,6 +560,13 @@ module Admin
       end
 
       # Use callbacks to share common setup or constraints between actions.
+      def profesor_no_es_el_titular?
+        if (session[:administrador_id].nil?) and (@seccion.profesor_id.nil? or session[:profesor_id].nil? or @seccion.profesor_id != session[:profesor_id] or (@seccion.profesores.any? and !@seccion.profesores.ids.include? session[:profesor_id]))
+          flash[:error] = 'Intenta realizar una acción sobre una sección no asignada a usted. Por favor, solicite apoyo al personal administrativo.'
+          redirect_back fallback_location: root_path
+        end
+      end
+
       def set_seccion
         @seccion = Seccion.find(params[:id])
       end
