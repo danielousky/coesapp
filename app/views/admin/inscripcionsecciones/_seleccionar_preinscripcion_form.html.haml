@@ -29,7 +29,7 @@
             %tbody
               - asignaturas_ofertadas.each_with_index do |asig, i| 
                 - disabled = aprobadas_id.include? asig.id
-                - asigAprobada = disabled ? 'table-secondary text-muted' : ''
+                - asigAprobada = disabled ? 'table-dark' : ''
                 %tr{class: asigAprobada}
                   %td= asig.descripcion_id
                   %td.text-center= asig.anno
