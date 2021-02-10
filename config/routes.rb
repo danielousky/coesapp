@@ -132,7 +132,7 @@ Rails.application.routes.draw do
     resources :inscripcionsecciones do
       collection do
         post 'confirmar_inscripcion'
-        post 'autoinscribirse'
+        post 'preinscribirse'
         get 'buscar_estudiante'
         get :seleccionar
         post :inscribir

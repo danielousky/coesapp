@@ -13,25 +13,28 @@
           %h4= title
           %h5= "Escuela de #{@escuela.descripcion_filtro}"
           %h5= "Período Académico #{current_periodo.id}"
-
       .alert.alert-warning
         %h4.text-center= msgDanger.html_safe
       .modal-body.border.p-2
         = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal') do
           = hidden_field_tag 'estudiante_id', @estudiante.id
-          = hidden_field_tag 'periodo_id', inscripciones.first.periodo.id
+          =# hidden_field_tag 'periodo_id', inscripciones.first.periodo.id
           %table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table
             %thead
               %tr
-                %th{style: 'width: 80%'} Asigantura
-                %th{style: 'width: 10%'} Sección
-                %th{style: 'width: 10%'} Ratificar
+                %th{style: 'width: 70%'} Asigantura
+                %th{style: 'width: 10%'} Año
+                %th{style: 'width: 10%'} Créditos
+                %th{style: 'width: 10%'} Seleccionar
             %tbody
-              - inscripciones.each_with_index do |inscripcion, i| 
-                %tr
-                  %td= inscripcion.asignatura.descripcion
-                  %td.text-center= inscripcion.seccion.numero
-                  %td.text-center= check_box_tag "inscripciones[#{i}]", inscripcion.id, nil, class: 'checkboxInscripcion', titulo: "- #{inscripcion.asignatura.descripcion} (#{inscripcion.seccion.numero})"
+              - asignaturas_ofertadas.each_with_index do |asig, i| 
+                - disabled = aprobadas_id.include? asig.id
+                - asigAprobada = disabled ? 'table-secondary text-muted' : ''
+                %tr{class: asigAprobada}
+                  %td= asig.descripcion_id
+                  %td.text-center= asig.anno
+                  %td.text-center= asig.creditos
+                  %td.text-center= check_box_tag "seleccion[#{i}]", asig.id, nil, class: 'checkboxInscripcion', titulo: "- #{asig.descripcion} - #{asig.creditos}"
           
           .modal-footer
             %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
@@ -39,6 +42,16 @@
 
 :javascript
   
+  $('input.checkboxInscripcion').on('click', function(){
+    let ele = $(this);
+    let trParent = ele.closest('tr');
+    if (ele.prop('checked'))
+      trParent.addClass('table-info')
+    else{
+      trParent.removeClass('table-info')
+    }
+  })
+
   $('#submitBtn').on('click', function(event){
     let selected = '\n';
     let checkeds = $("input.checkboxInscripcion[type=checkbox]:checked");
@@ -48,11 +61,9 @@
         selected += '\n';
         selected += $(this).attr('titulo');
       });    
-      msg = `Asignaturas a ratificar en el período académico #{current_periodo.id} de la Escuela de #{@escuela.descripcion_filtro}:`;
+      msg = `Asignaturas a preinscribir en el período académico #{current_periodo.id} de la Escuela de #{@escuela.descripcion_filtro}:`;
       msg += selected;
       msg += '\n';
-    }else{
-      msg = `No seleccionó ninguna asignatura. Se procederá a eliminar el total de asignaturas inscritas en el #{current_periodo.id}.`
     }
     msg += '\n';
     msg += "Recuerde que su elección es definitiva y no podrá ser cambiada. ¿Está seguro?" 

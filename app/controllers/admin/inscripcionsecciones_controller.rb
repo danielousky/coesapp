@@ -41,7 +41,7 @@ module Admin
 			redirect_back fallback_location: '/principal_estudiante'
 		end
 
-		def autoinscribirse
+		def preinscribirse
 			1/0
 			
 		end
@@ -190,7 +190,7 @@ module Admin
 					@ids_asignaturas = @inscripciones.collect{|i| i.seccion.asignatura_id} 
 					@ids_aprobadas = inscripciones.aprobadas.collect{|i| i.seccion.asignatura_id}
 
-					p "  Resultado: #{session[:asignatura]}   ".center(200, "?")
+					# p "  Resultado: #{session[:asignatura]}   ".center(200, "?")
 
             		@incritar_o_aprobadas = ((@ids_aprobadas and (@ids_aprobadas.include? session[:asignatura])) or (@ids_asignaturas and (@ids_asignaturas.include? session[:asignatura])))
 				end
