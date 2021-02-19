@@ -7,6 +7,8 @@
 			- active = (i.eql? 0) ? 'active' : ''
 			= link_to "#{escuela.descripcion.titleize}", "#pane_#{escuela.id}", "data-toggle": :tab, class: "nav-item nav-link #{active}"
 		= link_to "Horario (#{current_periodo.id})", "#actualPeriodo", "data-toggle": :tab, class: 'nav-item nav-link'
+- @reportepago = @estudiante.inscripcionescuelaperiodos.first.reportepago if @estudiante.inscripcionescuelaperiodos.first
+= image_tag main_app.url_for(@reportepago.respaldo) if @reportepago and @reportepago.respaldo and @reportepago.respaldo.attached?
 .tab-content
 	- @estudiante.escuelas.each_with_index do |escuela,i| 
 		- active = (i.eql? 0) ? 'active show' : ''
@@ -15,32 +17,36 @@
 		.tab-pane.border.border-top-0.p-3{id: "pane_#{escuela.id}", class: active}
 			- # VARIABLES:
 			- @inscripciones = @estudiante.inscripcionsecciones.joins(:escuela).where("escuelas.id = :e or pci_escuela_id = :e", e: @escuela.id)
+			
 			- periodo_ids = @inscripciones.joins(:seccion).group("secciones.periodo_id").count.keys
 			- @periodos = Periodo.where(id: periodo_ids).order(inicia: :desc)
 			
-			- if escuela.inscripcion_abierta
-				- periodo_id = escuela.periodos.order(:inicia).last.id 
-				- if escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
-					-# inscripciones_del_periodo = @inscripciones.del_periodo(current_periodo.id)#.inscritos
-					- inscripciones_del_periodo = @inscripciones.del_periodo(periodo_id).preinscritos
-					- if inscripciones_del_periodo.any?
-						- titulo_modal = "Proceso de Ratificación de Inscripción"
-						- titulo_btn = "Ratificar Inscripción"
-						- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea ratificar"
-						- url = '/inscripcionsecciones/confirmar_inscripcion'
-						- idModal = "ratificarInscripcion#{escuela.id}"
-						= render partial: 'admin/inscripcionsecciones/confirmar_inscripcion_form', locals: {inscripciones: inscripciones_del_periodo, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
+			- if escuela.periodo_inscripcion
+				- periodo_id = escuela.periodo_inscripcion_id
+				- escupe = escuela.escuelaperiodos.where(periodo_id: periodo_id).first
+				- @inscripcionperiodos = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: escupe.id)
+				- unless @inscripcionperiodos.any?
+					- if escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
+						-# inscripciones_del_periodo = @inscripciones.del_periodo(current_periodo.id)#.inscritos
+						- inscripciones_del_periodo = @inscripciones.del_periodo(periodo_id).preinscritos
+						- if inscripciones_del_periodo.any?
+							- titulo_modal = "Proceso de Ratificación de Inscripción"
+							- titulo_btn = "Ratificar Inscripción"
+							- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea ratificar"
+							- url = '/inscripcionsecciones/confirmar_inscripcion'
+							- idModal = "ratificarInscripcion#{escuela.id}"
+							= render partial: 'admin/inscripcionsecciones/confirmar_inscripcion_form', locals: {inscripciones: inscripciones_del_periodo, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
 
-				- else
-					- asignaturas_ofertadas = escuela.asignaturas.activas(periodo_id).order(anno: :desc )
-					- aprobadas_id = @inscripciones.joins(:seccion).group('secciones.asignatura_id').count.keys
-					-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
-					- titulo_modal = "Proceso de Preinscripción"
-					- titulo_btn = "Preinscribirse"
-					- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea preinscribir"
-					- url = '/admin/inscripcionsecciones/preinscribirse'
-					- idModal = "preinscripcion#{escuela.id}"
-					= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn, aprobadas_id: aprobadas_id}
+					- else
+						- asignaturas_ofertadas = escuela.asignaturas.activas(periodo_id).order(anno: :desc )
+						- aprobadas_id = @inscripciones.joins(:seccion).group('secciones.asignatura_id').count.keys
+						-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
+						- titulo_modal = "Proceso de Preinscripción #{periodo_id}"
+						- titulo_btn = "Preinscribirse"
+						- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea preinscribir"
+						- url = '/inscripcionsecciones/preinscribirse'
+						- idModal = "preinscripcion#{escuela.id}"
+						= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn, aprobadas_id: aprobadas_id}
 
 			-if @estudiante.citahoraria
 				.border.p-md-3

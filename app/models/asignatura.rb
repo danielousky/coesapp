@@ -49,7 +49,6 @@ class Asignatura < ApplicationRecord
 	before_save :set_to_upcase, :if => :new_record?
 
 	# FUNCIONES:
-
 	def proyecto?
 		self.tipoasignatura_id.eql? Tipoasignatura::PROYECTO
 	end

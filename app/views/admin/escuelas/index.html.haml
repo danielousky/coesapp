@@ -7,8 +7,8 @@
     %tr.text-center
       %th Id
       %th Descripción
-      %th.tooltip-btn{'data_toggle': :tooltip, title: 'Total Secciones Periodo actual'} Sec
-      %th.tooltip-btn{'data_toggle': :tooltip, title: 'Total Inscritos Periodo actual'} Inscritos
+      %th.tooltip-btn{'data_toggle': :tooltip, title: "Total Secciones Periodo #{current_periodo.id}"} Sec
+      %th.tooltip-btn{'data_toggle': :tooltip, title: "Total Inscritos Periodo #{current_periodo.id}"} Inscritos
       %th{width: '10%'} Opciones
       - if current_admin.maestros?
         %th Inscripción
@@ -16,14 +16,15 @@
         %th Cambio Secciones
   %tbody
     - @escuelas.each do |escuela|
-      - @ins = escuela.inscripcionsecciones.del_periodo(current_periodo.id)
+      - ins_per = escuela.inscripcionescuelaperiodos.del_periodo(current_periodo.id)
+      - ins = escuela.inscripcionsecciones.del_periodo(current_periodo.id)
       %tr
         %td.align-middle= link_to escuela.id, escuela_path(escuela) 
         %td.align-middle= escuela.descripcion
-        %td.align-middle.text-right= @ins.secciones_creadas.count#escuela.secciones.del_periodo(current_periodo.id).count
+        %td.align-middle.text-right= ins.secciones_creadas.count#escuela.secciones.del_periodo(current_periodo.id).count
         %td.align-middle.text-right
           - if escupe = Escuelaperiodo.where(escuela_id: escuela.id, periodo_id: current_periodo.id).first
-            = render partial: '/admin/escuelaperiodos/pre_vs_ins', locals: {ins: @ins, escupe: escupe}
+            = render partial: '/admin/escuelaperiodos/pre_vs_ins', locals: {ins: ins_per, escupe: escupe}
         %td.align-middle
           - if (current_admin and current_admin.autorizado? 'Escuelas', 'destroy')
             - if !(escuela.inscripciones.any?)
@@ -38,7 +39,8 @@
             = glyph 'search'
 
           - if current_admin.maestros?
-            %td= agregar_onoffswitch 'Habilitar Inscripción', "inscrip#{escuela.id}", set_inscripcion_abierta_escuela_path(escuela.id), escuela.inscripcion_abierta
+            %td
+              = select_tag :periodo_inscripcion_id, options_from_collection_for_select(escuela.periodos.order(inicia: :desc), :id, :id, escuela.periodo_inscripcion_id), class: 'form-control', include_blank: '---INSCRIPCIÓN CERRADA ---', style: "width: 120px;height: 25px;font-size: 9px;font-weight: bold;", onchange: "switches('#{set_periodo_inscripcion_escuela_path(escuela.id)}?periodo_inscripcion_id='+this.value)"
 
             %td= agregar_onoffswitch 'Habilitar Retiro y Eliminación Asignaturas', "retiro#{escuela.id}", set_habilitar_retiro_asignaturas_escuela_path(escuela.id), escuela.retiro_asignaturas_habilitado?
 

@@ -16,9 +16,9 @@
       .alert.alert-warning
         %h4.text-center= msgDanger.html_safe
       .modal-body.border.p-2
-        = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal') do
+        = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
           = hidden_field_tag 'estudiante_id', @estudiante.id
-          =# hidden_field_tag 'periodo_id', inscripciones.first.periodo.id
+          = hidden_field_tag 'escuela_id', @escuela.id
           %table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table
             %thead
               %tr
@@ -29,13 +29,27 @@
             %tbody
               - asignaturas_ofertadas.each_with_index do |asig, i| 
                 - disabled = aprobadas_id.include? asig.id
-                - asigAprobada = disabled ? 'table-dark' : ''
+                - asigAprobada = disabled ? 'table-dark text-muted border border-' : ''
                 %tr{class: asigAprobada}
                   %td= asig.descripcion_id
                   %td.text-center= asig.anno
                   %td.text-center= asig.creditos
-                  %td.text-center= check_box_tag "seleccion[#{i}]", asig.id, nil, class: 'checkboxInscripcion', titulo: "- #{asig.descripcion} - #{asig.creditos}"
-          
+                  %td.text-center= check_box_tag "seleccion[#{i}]", asig.id, nil, class: 'checkboxInscripcion', titulo: "- #{asig.descripcion} - #{asig.creditos}", disabled: disabled, onlyread: !disabled
+          %hr
+          %h4.alert.alert-warning.text-center Datos de Pago
+          #datosDePago
+            .form-group
+              = text_field_tag 'reportepago[numero]', nil, class: 'form-control', placeholder: 'Número Transacción', required: true
+            .form-group
+              .form-control
+                = radio_button_tag 'reportepago[tipo_transaccion]', 'transferencia', false, required: true
+                Transferencia
+                = radio_button_tag 'reportepago[tipo_transaccion]', 'deposito', false, required: true, class: 'ml-3'
+                Depósito
+            .form-group
+              = date_field_tag 'reportepago[fecha_transaccion]', nil, class: 'form-control', placeholder: 'Fecha', required: true
+            .form-group
+              = file_field_tag 'reportepago[respaldo]', class: 'form-control', required: true
           .modal-footer
             %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
             = submit_tag title_btn, class: 'btn btn-outline-success btn-sm', id: 'submitBtn', 'data-disable-with': 'Enviando'

@@ -1,0 +1,22 @@
+%p#notice= notice
+
+%p
+  %b Inscripcionescuelaperiodo:
+  = @reportepago.inscripcionescuelaperiodo
+%p
+  %b Numero:
+  = @reportepago.numero
+%p
+  %b Tipo transaccion:
+  = @reportepago.tipo_transaccion
+%p
+  %b Fecha:
+  = @reportepago.fecha_transaccion
+%p
+  %b Respaldo:
+  =# image_tag(url_for(@reportepago.respaldo))
+  = image_tag main_app.url_for(@reportepago.respaldo) if @reportepago.respaldo and @reportepago.respaldo.attached?
+
+= link_to 'Edit', edit_reportepago_path(@reportepago)
+\|
+= link_to 'Back', reportepagos_path

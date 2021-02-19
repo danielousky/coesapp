@@ -4,6 +4,7 @@ module Admin
 		before_action :filtro_estudiante
 
 		def index
+
 			@usuario = Usuario.find session[:estudiante_id]
 
 			@nickname = @usuario.nickname.capitalize

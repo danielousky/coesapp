@@ -19,7 +19,10 @@ class Estudiante < ApplicationRecord
 	
 	has_many :inscripcionsecciones
 	accepts_nested_attributes_for :inscripcionsecciones
-	
+
+	has_many :inscripcionescuelaperiodos
+	accepts_nested_attributes_for :inscripcionescuelaperiodos
+
 	has_many :secciones, through: :inscripcionsecciones, source: :seccion
 
 	has_many :combinaciones, dependent: :delete_all

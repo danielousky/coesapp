@@ -1,0 +1,27 @@
+%h1 Listing reportepagos
+
+%table
+  %thead
+    %tr
+      %th Inscripcionescuelaperiodo
+      %th Numero
+      %th Tipo transaccion
+      %th Fecha
+      %th
+      %th
+      %th
+
+  %tbody
+    - @reportepagos.each do |reportepago|
+      %tr
+        %td= reportepago.inscripcionescuelaperiodo
+        %td= reportepago.numero
+        %td= reportepago.tipo_transaccion
+        %td= reportepago.fecha_transaccion
+        %td= link_to 'Show', reportepago
+        %td= link_to 'Edit', edit_reportepago_path(reportepago)
+        %td= link_to 'Destroy', reportepago, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Reportepago', new_reportepago_path

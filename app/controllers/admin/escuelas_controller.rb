@@ -4,11 +4,10 @@ module Admin
     before_action :filtro_logueado
     # before_action :filtro_ninja!, only: [:destroy]
     before_action :filtro_administrador
-    before_action :filtro_super_admin!, only: [:set_inscripcion_abierta, :set_habilitar_retiro_asignaturas, :set_habilitar_cambio_seccion]
+    before_action :filtro_super_admin!, only: [:set_periodo_inscripcion, :set_habilitar_retiro_asignaturas, :set_habilitar_cambio_seccion]
 
     before_action :filtro_autorizado#, except: [:new, :edit, :periodos, :set_inscripcion_abierta, :set_habilitar_retiro_asignaturas, :set_habilitar_cambio_seccion]
-
-    before_action :set_escuela, only: [:show, :edit, :update, :destroy, :periodos, :set_inscripcion_abierta, :clonar_programacion, :limpiar_programacion, :set_habilitar_retiro_asignaturas, :set_habilitar_cambio_seccion]
+    before_action :set_escuela, except: [:new, :index, :create]
 
     # GET /escuelas
     # GET /escuelas.json
@@ -195,16 +194,32 @@ module Admin
       end
     end
 
-    def set_inscripcion_abierta
-      @escuela.inscripcion_abierta = !@escuela.inscripcion_abierta
-      if @escuela.save
-        aux = @escuela.inscripcion_abierta ? 'Inscripción Abierta' : 'Inscripción Cerrada'
-        render json: {data: aux, status: :success}
-      else
-        render json: {data: "Error al intentar cambiar la noticia : #{@escuela.errors.full_messages.to_sentence}", status: :success}
+    def set_periodo_inscripcion
+      begin
+        params[:periodo_inscripcion_id] = nil if params[:periodo_inscripcion_id].eql? ""
+        @escuela.periodo_inscripcion_id = params[:periodo_inscripcion_id]
+        if @escuela.save
+          aux = @escuela.periodo_inscripcion_id.nil? ? 'Inscripción Cerrada' : "Inscripción abierta para el período #{@escuela.periodo_inscripcion_id}."
+          render json: {data: aux, status: :success}
+        else
+          render json: {data: "Error al intentar establecer periodo de inscripción: #{@escuela.errors.full_messages.to_sentence}", status: :error}
+        end
+      rescue Exception => e
+        render json: {data: "Error inesperado: #{e}", status: :error}
       end
-      
+
     end
+
+    # def set_inscripcion_abierta
+    #   @escuela.inscripcion_abierta = !@escuela.inscripcion_abierta
+    #   if @escuela.save
+    #     aux = @escuela.inscripcion_abierta ? 'Inscripción Abierta' : 'Inscripción Cerrada'
+    #     render json: {data: aux, status: :success}
+    #   else
+    #     render json: {data: "Error al intentar cambiar la noticia : #{@escuela.errors.full_messages.to_sentence}", status: :success}
+    #   end
+      
+    # end
 
     def set_habilitar_retiro_asignaturas
       @escuela.habilitar_retiro_asignaturas = !@escuela.habilitar_retiro_asignaturas
@@ -212,7 +227,7 @@ module Admin
         aux = @escuela.retiro_asignaturas_habilitado? ? 'Retiro y Eliminación de Asignaturas Habilitado' : 'Retiro y Eliminación de Asignaturas Deshabilitado'
         render json: {data: aux, status: :success}
       else
-        render json: {data: "Error al intentar cambiar la noticia : #{@escuela.errors.full_messages.to_sentence}", status: :success}
+        render json: {data: "Error al intentar cambio: #{@escuela.errors.full_messages.to_sentence}", status: :success}
       end
       
     end
@@ -223,7 +238,7 @@ module Admin
         aux = @escuela.cambio_seccion_habilitado? ? 'Habilitado Cambios de Secciones' : 'Deshabilitado Cambios de Secciones'
         render json: {data: aux, status: :success}
       else
-        render json: {data: "Error al intentar cambiar la noticia : #{@escuela.errors.full_messages.to_sentence}", status: :success}
+        render json: {data: "Error al intentar cambio: #{@escuela.errors.full_messages.to_sentence}", status: :success}
       end 
     end
 

@@ -9,6 +9,8 @@ class Inscripcionseccion < ApplicationRecord
 	# ASOCIACIONES: 
 	belongs_to :seccion
 	belongs_to :estudiante, primary_key: :usuario_id
+	belongs_to :inscripcionescuelaperiodo
+	# belongs_to :estudiante, primary_key: :usuario_id, through: :inscripcionescuelaperiodo
 
 	has_one :asignatura, through: :seccion
 	has_one :periodo, through: :seccion
@@ -34,7 +36,7 @@ class Inscripcionseccion < ApplicationRecord
 	# TRIGGERS:
 	after_initialize :set_default, :if => :new_record?
 	before_validation :set_estados
-	after_save :actualizar_estado_grado
+	after_save :actualizar_estados
 
 	before_destroy :set_bitacora
 
@@ -42,8 +44,9 @@ class Inscripcionseccion < ApplicationRecord
 	validates_uniqueness_of :estudiante_id, scope: [:seccion_id], message: 'El estudiante ya está inscrito en la sección', field_name: false
 
 	# SCOPES:
-	scope :preinscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO)}
-	scope :inscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)}
+	scope :preinscritos, -> {joins(:inscripcionescuelaperiodo).where('inscripcionescuelaperiodos.tipo_estado_inscripcion_id = ?', TipoEstadoInscripcion::PREINSCRITO)}
+	scope :inscritos, -> {joins(:inscripcionescuelaperiodo).where('inscripcionescuelaperiodos.tipo_estado_inscripcion_id = ?', TipoEstadoInscripcion::INSCRITO)}
+
 	# scope :ratificados, -> {inscritos}
 	# scope :no_ratificados, -> {where("inscripcionsecciones.tipo_estado_inscripcion_id <> 'RAT'")}
 	# scope :no_ratificados, -> {where("inscripcionsecciones.tipo_estado_inscripcion_id IS NULL OR inscripcionsecciones.tipo_estado_inscripcion_id <> '#{TipoEstadoInscripcion::RATIFICADO}'")}
@@ -128,6 +131,14 @@ class Inscripcionseccion < ApplicationRecord
 	scope :como_pcis, -> {where pci: true}
 
 	# scope :pcis_pendientes_por_asociar, -> {joins(:escuela).where("pci_escuela_id IS NULL and (escuela.id ON ( SELECT escuelas.id FROM escuelas INNER JOIN grados ON escuelas.id = grados.escuela_id WHERE grados.estudiante_id = ? ) )", self.estudiante_id)}
+
+	after_destroy :destroy_inscripcionescuelaperiodo
+
+  	
+	def destroy_inscripcionescuelaperiodo
+		self.inscripcionescuelaperiodo.destroy if (inscripcionescuelaperiodo and !inscripcionescuelaperiodo.inscripcionsecciones.any?)
+	end
+
 
 	# Funciones de Estilo
 	def tr_class_style_qualify
@@ -500,6 +511,19 @@ class Inscripcionseccion < ApplicationRecord
 	end
 
 	protected
+
+	def agregar_inscripcionescuelaperiodo
+		# Career.create(student_id: self.student_id, language_id: self.language.id) if self.career.nil?
+		escupe = Escuelaperiodo.where(periodo_id: self.periodo.id, escuela_id: escuela_id).first
+
+		Inscripcionescuelaperiodo.create(estudiante_id: self.estudiante_id, escuelaperiodo_id: escupe.id, tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO) if self.inscripcionescuelaperiodo.nil? and escupe
+	end
+
+	def actualizar_estados
+		actualizar_estado_grado
+		# agregar_inscripcionescuelaperiodo
+	end
+
 
 	def set_escuela_default
 		self.escuela_id = estudiante.escuelas.first.id if (escuela_id.nil? and estudiante and estudiante.escuelas.count == 1)

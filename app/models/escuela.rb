@@ -1,6 +1,8 @@
 class Escuela < ApplicationRecord
 
 	# ASOCIACIONES
+	belongs_to :periodo_inscripcion, foreign_key: 'periodo_inscripcion_id', class_name: 'Periodo', optional: true
+
 	has_many :grados
 	has_many :estudiantes, through: :grados
 
@@ -8,7 +10,6 @@ class Escuela < ApplicationRecord
 	accepts_nested_attributes_for :departamentos
 	
 	# has_many :inscripciones_pci, class_name: 'Inscripcionseccion', foreign_key: 'pci_escuela_id'
-
 	has_many :asignaturas, through: :departamentos
 	
 	has_many :profesores, through: :departamentos
@@ -22,11 +23,11 @@ class Escuela < ApplicationRecord
 	has_many :escuelaperiodos
 	accepts_nested_attributes_for :escuelaperiodos
 	
+	has_many :inscripcionescuelaperiodos, through: :escuelaperiodos
 	has_many :periodos, through: :escuelaperiodos
 
 	has_many :planes
 	accepts_nested_attributes_for :planes
-
 
 	has_many :administradores
 	accepts_nested_attributes_for :administradores
@@ -60,9 +61,9 @@ class Escuela < ApplicationRecord
 		end
 	end
 
-	def inscripcion_abierta?
-		inscripcion_abierta.eql? true
-	end
+	# def inscripcion_abierta?
+	# 	(escuelaperiodos.last.permitir_inscripcion.eql? true) ? true : false
+	# end
 
 	def retiro_asignaturas_habilitado?
 		self.habilitar_retiro_asignaturas
@@ -73,7 +74,7 @@ class Escuela < ApplicationRecord
 	end
 
 	def inscripcion_cerrada?
-		!inscripcion_abierta?
+		periodo_inscripcion.nil? ? true : false
 	end
 
 	def periodo_anterior periodo_id

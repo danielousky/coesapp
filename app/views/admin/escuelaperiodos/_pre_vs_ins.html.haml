@@ -1,5 +1,6 @@
-- pre = ins.preinscritos.estudiantes_inscritos.count
-= link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), pre, escuelaperiodo_path(escupe.id), class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total preinscritos', 'data-placement': :right )          
+- pre = ins.preinscritos.count
+
+= link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), pre, escuelaperiodo_path(escupe.id), class: 'tooltip-btn', 'data-toggle': :tooltip, title: "Total preinscritos #{current_periodo.id}", 'data-placement': :right )          
 = "/"
-- rat = ins.inscritos.estudiantes_inscritos.count 
-= link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), rat, "#{escuelaperiodo_path(escupe.id)}?rat=true", class: 'tooltip-btn', 'data-toggle': :tooltip, title: 'Total inscritos', 'data-placement': :right )
+- rat = ins.inscritos.count 
+= link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), rat, "#{escuelaperiodo_path(escupe.id)}?rat=true", class: 'tooltip-btn', 'data-toggle': :tooltip, title: "Total inscritos #{current_periodo.id}", 'data-placement': :right )

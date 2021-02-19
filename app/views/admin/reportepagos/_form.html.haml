@@ -1,0 +1,31 @@
+= form_for @reportepago, multipart: true do |f|
+  - if @reportepago.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@reportepago.errors.count, "error")} prohibited this reportepago from being saved:"
+      %ul
+        - @reportepago.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :inscripcionescuelaperiodo
+    = f.text_field :inscripcionescuelaperiodo_id
+  .field
+    = f.label :numero
+    = f.text_field :numero
+  .field
+    = f.label :tipo_transaccion
+    = f.radio_button :tipo_transaccion, 'transferencia', required: true
+    Transferencia
+    = f.radio_button :tipo_transaccion, 'deposito', required: true
+    Depósito
+
+  .field
+    = f.label :fecha_transaccion
+    = f.date_select :fecha_transaccion
+  .field
+    = f.label :respaldo
+    = f.file_field 'respaldo', {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/jpeg,image/jpg,image/png,application/pdf"}
+    .text-muted= "Solo se perimiten archivos de los tipo: jpg, jpeg, png y pdf"
+
+  .actions
+    = f.submit 'Save'

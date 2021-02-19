@@ -1,7 +1,7 @@
 module Admin
 	class InscripcionseccionesController < ApplicationController
 		before_action :filtro_logueado
-		before_action :filtro_administrador, except: [:confirmar_inscripcion, :autoinscribirse]#, only: [:destroy]
+		before_action :filtro_administrador, except: [:confirmar_inscripcion, :preinscribirse]#, only: [:destroy]
 		# before_action :filtro_admin_mas_altos!, except: [:destroy]
 		# before_action :filtro_ninja!, only: [:destroy]
 
@@ -42,8 +42,81 @@ module Admin
 		end
 
 		def preinscribirse
-			1/0
-			
+			begin
+				flash[:danger] = ""
+				unless @grado = Grado.find([params[:estudiante_id], params[:escuela_id]])
+					flash[:danger] += 'El estudiante no se encuentra registrado en la escuela solicitada'
+
+				else
+					estudiante = @grado.estudiante
+					escuela = @grado.escuela
+					if escuela.inscripcion_cerrada?
+						flash[:danger] += "Inscripción cerrada para #{escuela.descripcion}"
+
+					else
+						periodo_id = escuela.periodo_inscripcion.id
+						if estudiante.inscripcionescuelaperiodos.del_periodo(periodo_id).any?
+							flash[:danger] += "Estudiante ya inscrito en el periodo #{periodo_id}. Favor diríjase a los administradores para brindárle el apoyo apropiado."
+						else
+							escupe = escuela.escuelaperiodos.where(periodo_id: periodo_id).first
+							ins_periodo = Inscripcionescuelaperiodo.new
+							ins_periodo.escuelaperiodo_id = escupe.id
+							ins_periodo.tipo_estado_inscripcion_id = TipoEstadoInscripcion::PREINSCRITO
+							ins_periodo.estudiante_id = estudiante.id
+
+							if ins_periodo.save
+								total_inscritas = 0
+								flash[:warning] = ""
+								params[:seleccion].each_pair do |k, asig_id|
+									asignatura = Asignatura.find(asig_id)
+									# seccion = asignatura.secciones.del_periodo(periodo_id).first
+									unless seccion = asignatura.secciones.del_periodo(periodo_id).con_cupos.first
+										flash[:warning] += "Sin cupos disponibles para la asignatura: #{asignatura.descripcion} en el período #{periodo_id}"
+									else
+
+
+										inscripcion = Inscripcionseccion.new()
+										inscripcion.seccion_id = seccion.id
+										inscripcion.estudiante_id = estudiante.id
+										inscripcion.inscripcionescuelaperiodo_id = ins_periodo.id
+										inscripcion.escuela_id = escuela.id
+
+										if inscripcion.save
+											total_inscritas += 1
+										else
+											flash[:danger] += "Error al intentar inscribir en la sección: #{inscripcion.errors.full_messages.to_sentence}"
+										end
+									end
+
+								end
+
+								flash[:info] = "Proceso de inscripción completado con éxito. Total preinscritas: #{total_inscritas}. "
+
+								reporte = Reportepago.new()
+								reporte.numero = params[:reportepago][:numero]
+								reporte.tipo_transaccion = params[:reportepago][:tipo_transaccion]
+								reporte.fecha_transaccion = params[:reportepago][:fecha_transaccion]
+								reporte.respaldo = params[:reportepago][:respaldo]
+								reporte.inscripcionescuelaperiodo_id = ins_periodo.id
+
+								if reporte.save
+									flash[:success] = " Reporte de pago generado con éxito."
+								else
+									flash[:danger] += "Error al intentar guardar el reporte de pago: #{ins_periodo.errors.full_messages.to_sentence}"
+								end
+							else
+								flash[:danger] += "Error al intentar registar la inscripción: #{ins_periodo.errors.full_messages.to_sentence}"
+							end
+						end
+					end
+				end
+
+			rescue Exception => e
+				flash[:danger] = e
+			end
+			flash[:danger] = nil if flash[:danger].eql? ''
+			flash[:warning] = nil if flash[:danger].eql? ''
+			redirect_back fallback_location: '/principal_estudiante'
 		end
 
 		def cambiar_seccion

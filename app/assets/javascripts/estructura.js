@@ -170,8 +170,11 @@ function switches(url) {
 		$('#cargando').modal({keyboard: false, show: true, backdrop: 'static'})
 	},
 	complete: function(json){
-		toastr.success('Cambio realizado con éxito')
-		console.log(json)
+		if (json["responseJSON"].status == 'success'){
+			toastr.success(json["responseJSON"].data);
+		}else{
+			toastr.error(json["responseJSON"].data)
+		}
 		$('#cargando').modal('hide')
 	}
 	});
