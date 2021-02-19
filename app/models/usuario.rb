@@ -1,6 +1,6 @@
 class Usuario < ApplicationRecord
 	#CONSTANTES:
-
+	has_one_attached :foto_perfil
 	ESTADOS_CIVILES = ['Soltero/a.', 'Casado/a.', 'Concubinato', 'Divorciado/a.', 'Viudo/a.']
 	NACIONALIDAD = ['Venezolano/a', 'Venezolano/a. Nacionalizado/a', 'Extrangero/a']
 
