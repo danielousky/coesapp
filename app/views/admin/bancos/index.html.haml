@@ -1,0 +1,24 @@
+
+= link_to 'Nuevo Banco', new_banco_path, class: 'btn btn-sm btn-primary mb-3'
+
+%table.table
+  %thead
+    %tr
+      %th ID
+      %th Nombre
+      %th
+      %th
+      %th
+
+  %tbody
+    - @bancos.each do |banco|
+      %tr
+        %td= banco.id
+        %td= banco.nombre
+        %td= link_to 'Show', banco
+        %td= link_to 'Edit', edit_banco_path(banco)
+        %td= link_to 'Destroy', banco, method: :delete, data: { confirm: '¿Está seguro?' }, class: 'text-danger'
+
+%br
+
+= link_to 'Nuevo Banco', new_banco_path, class: 'btn btn-sm btn-primary'

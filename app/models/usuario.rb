@@ -1,6 +1,7 @@
 class Usuario < ApplicationRecord
 	#CONSTANTES:
 	has_one_attached :foto_perfil
+	has_one_attached :cedula_identidad
 	ESTADOS_CIVILES = ['Soltero/a.', 'Casado/a.', 'Concubinato', 'Divorciado/a.', 'Viudo/a.']
 	NACIONALIDAD = ['Venezolano/a', 'Venezolano/a. Nacionalizado/a', 'Extrangero/a']
 
@@ -46,6 +47,11 @@ class Usuario < ApplicationRecord
 	# }
 
 	# FUNCIONES:
+
+	def datos_incompletos?
+		((self.attributes.values.reject{|e| !e.blank?}.any?) or (self.ci.eql? self.password) or (self.foto_perfil.nil? or (self.foto_perfil and !self.foto_perfil.attached?))) ? true : false
+	end
+
 	def autorizado? *args 
 
 		if administrador and administrador.ninjas_or_jefe_control_estudio?
@@ -126,6 +132,18 @@ class Usuario < ApplicationRecord
 		gen = "a" if self.mujer?
 		gen = "o" if self.hombre?
 		return gen
+	end
+
+	def primer_nombre
+		nombres.split(" ").first
+	end
+
+	def primer_apellido
+		apellidos.split(" ").first
+	end
+
+	def primer_nombre_apellido
+		"#{primer_nombre} #{primer_apellido}"
 	end
 
 	def descripcion_contacto

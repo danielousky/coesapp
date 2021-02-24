@@ -1,6 +1,15 @@
 // import the CSS framework
 // Do not use *= require in Sass or your other stylesheets will not be able to access the Bootstrap mixins and variables.
 @import "bootstrap";
+.fixed-after-nav{
+  position:fixed;
+  top: 50px; 
+  left: 10px; 
+  width: 100%;
+  z-index:9999; 
+  border-radius:0px;
+}
+
 
 .table-area {
   height: 500px;overflow-y: scroll;

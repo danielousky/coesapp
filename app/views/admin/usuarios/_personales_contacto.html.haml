@@ -3,6 +3,11 @@
 		= btn_edit_primary edit_usuario_path(@usuario), "Actualizar datos personales y de contacto", 'Actualizar'
 
 %br
+%br
+.float-right
+	= image_tag main_app.url_for(@usuario.cedula_identidad), width: '100px', class: 'm-3 p-1 border' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
+	= image_tag main_app.url_for(@usuario.foto_perfil), width: '100px', class: 'border p-1' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
+
 
 %b.mt-5 Datos Personales: 
 

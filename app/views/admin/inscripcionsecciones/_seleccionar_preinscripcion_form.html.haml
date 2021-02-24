@@ -28,28 +28,26 @@
                 %th{style: 'width: 10%'} Seleccionar
             %tbody
               - asignaturas_ofertadas.each_with_index do |asig, i| 
-                - disabled = aprobadas_id.include? asig.id
-                - asigAprobada = disabled ? 'table-dark text-muted border border-' : ''
+                - if aprobadas.include? asig.id
+                  - disabled = true
+                  - indice = aprobadas.index asig.id
+                  - if (indice != nil and indice > 0)
+                    - inscrip = Inscripcionseccion.find aprobadas[indice-1]
+                    - descrip_califi = inscrip.calificacion_en_letras
+                - else
+                  - descrip_califi = nil
+                  - disabled = false
+
+                - asigAprobada = disabled ? 'text-muted border border-success' : ''
                 %tr{class: asigAprobada}
-                  %td= asig.descripcion_id
+                  %td
+                    = asig.descripcion_id
+                    = descrip_califi if disabled
                   %td.text-center= asig.anno
                   %td.text-center= asig.creditos
-                  %td.text-center= check_box_tag "seleccion[#{i}]", asig.id, nil, class: 'checkboxInscripcion', titulo: "- #{asig.descripcion} - #{asig.creditos}", disabled: disabled, onlyread: !disabled
-          %hr
-          %h4.alert.alert-warning.text-center Datos de Pago
-          #datosDePago
-            .form-group
-              = text_field_tag 'reportepago[numero]', nil, class: 'form-control', placeholder: 'Número Transacción', required: true
-            .form-group
-              .form-control
-                = radio_button_tag 'reportepago[tipo_transaccion]', 'transferencia', false, required: true
-                Transferencia
-                = radio_button_tag 'reportepago[tipo_transaccion]', 'deposito', false, required: true, class: 'ml-3'
-                Depósito
-            .form-group
-              = date_field_tag 'reportepago[fecha_transaccion]', nil, class: 'form-control', placeholder: 'Fecha', required: true
-            .form-group
-              = file_field_tag 'reportepago[respaldo]', class: 'form-control', required: true
+                  %td.text-center
+                    -unless disabled
+                      = check_box_tag "seleccion[#{i}]", asig.id, nil, class: 'checkboxInscripcion', titulo: "- #{asig.descripcion} - #{asig.creditos}"
           .modal-footer
             %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
             = submit_tag title_btn, class: 'btn btn-outline-success btn-sm', id: 'submitBtn', 'data-disable-with': 'Enviando'

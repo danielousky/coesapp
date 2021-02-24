@@ -1,8 +1,5 @@
 %h6.titulo Datos Personales:
-.form-group.row
-  = f.label :foto_perfil, class: 'col-form-label col-md-3 text-right', value: 'Foto de Perfil:'
-  .col-md-9
-    = f.file_field :foto_perfil, class: 'form-control', required: true
+= render partial: '/admin/usuarios/form_imagenes', locals: {f: f}
 
 .form-group.row
   = f.label :ci, class: 'col-form-label col-md-3 text-right', value: 'Cédula de Identidad:'

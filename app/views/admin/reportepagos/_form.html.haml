@@ -1,31 +1,55 @@
 = form_for @reportepago, multipart: true do |f|
   - if @reportepago.errors.any?
-    #error_explanation
+    .alert.alert-danger
       %h2= "#{pluralize(@reportepago.errors.count, "error")} prohibited this reportepago from being saved:"
       %ul
         - @reportepago.errors.full_messages.each do |message|
           %li= message
+  .border.p-3.mb-3
+    - if @reportepago.inscripcionescuelaperiodo_id
+      = f.hidden_field :inscripcionescuelaperiodo_id
+    - else
+      .form-group.row
+        .col-md-2{style: 'text-align: right;'}= f.label :inscripcionescuelaperiodo_id, nil, value: 'Inscripción'
+        .col-md-10= f.number_field :inscripcionescuelaperiodo_id, class: 'form-control', placeholder: 'Inscripcion', required: true
 
-  .field
-    = f.label :inscripcionescuelaperiodo
-    = f.text_field :inscripcionescuelaperiodo_id
-  .field
-    = f.label :numero
-    = f.text_field :numero
-  .field
-    = f.label :tipo_transaccion
-    = f.radio_button :tipo_transaccion, 'transferencia', required: true
-    Transferencia
-    = f.radio_button :tipo_transaccion, 'deposito', required: true
-    Depósito
+    .form-group.row
+      .col-md-2{style: 'text-align: right;'}= f.label :numero, nil, value: 'Número de Transacción'
+      .col-md-10= f.text_field :numero, class: 'form-control upcaseOlyNumber', placeholder: 'Número Transacción', required: true
+    .form-group.row
+      .col-md-2{style: 'text-align: right;'}= f.label :banco_origen, nil, value: 'Banco Origen'
+      .col-md-10
+        = f.select(:banco_origen_id, Banco.all.collect{|o| [ o.nombre, o.id] }, { include_blank: 'Seleccione Banco Origen...'}, {class: "form-control", required: true})
+    .form-group.row
+      .col-md-2{style: 'text-align: right;'}= f.label :tipo_transaccion, nil, value: 'Tipo de Transacción'
+      .col-md-10
+        .form-control
+          = f.radio_button :tipo_transaccion, :transferencia, required: true
+          Transferencia
+          = f.radio_button :tipo_transaccion, :deposito, required: true
+          Depósito
+    .form-group.row
+      .col-md-2{style: 'text-align: right;'}= f.label :fecha_transaccion, nil, value: 'Fecha de Transacción'
 
-  .field
-    = f.label :fecha_transaccion
-    = f.date_select :fecha_transaccion
-  .field
-    = f.label :respaldo
-    = f.file_field 'respaldo', {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/jpeg,image/jpg,image/png,application/pdf"}
-    .text-muted= "Solo se perimiten archivos de los tipo: jpg, jpeg, png y pdf"
+      .col-md-10= f.date_field :fecha_transaccion, required: true, placeholder: 'Fecha', class: 'form-control', required: true
+    .form-group.row
+      .col-md-2{style: 'text-align: right;'}= f.label :respaldo, nil, value: 'Imagen de respaldo'
 
-  .actions
-    = f.submit 'Save'
+      .col-md-10
+        = f.file_field 'respaldo', {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/jpeg,image/jpg,image/png,application/pdf"}
+        .text-muted= "Solo se perimiten archivos de los tipo: jpg, jpeg, png y pdf"
+
+    .form-group.row
+      .col-md-2{style: 'text-align: right;'}= btn_atras principal_estudiante_index_path
+      .col-md-10
+        = button_tag 'reportepago[commit]', type: :submit, class: 'btn btn-sm btn-success' do
+          = glyph 'chevron-right'
+          Guargar Reporte
+
+:javascript
+
+  $('.upcaseOlyNumber').on('input',function(evt){ 
+    var node = $(this);
+    node.val(node.val().replace(/[^0-9]/g,'') );
+    node.val(node.val().toUpperCase());
+    });  

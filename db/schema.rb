@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_18_220422) do
+ActiveRecord::Schema.define(version: 2021_02_24_050511) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
@@ -72,6 +72,13 @@ ActiveRecord::Schema.define(version: 2021_02_18_220422) do
     t.index ["restringida_id", "usuario_id"], name: "index_autorizadas_on_restringida_id_and_usuario_id", unique: true
     t.index ["restringida_id"], name: "index_autorizadas_on_restringida_id"
     t.index ["usuario_id"], name: "index_autorizadas_on_usuario_id"
+  end
+
+  create_table "bancos", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "nombre"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id"], name: "index_bancos_on_id"
   end
 
   create_table "bitacoras", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -367,6 +374,8 @@ ActiveRecord::Schema.define(version: 2021_02_18_220422) do
     t.date "fecha_transaccion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "banco_origen_id"
+    t.index ["banco_origen_id"], name: "fk_rails_d6018c63f7"
     t.index ["inscripcionescuelaperiodo_id"], name: "index_reportepagos_on_inscripcionescuelaperiodo_id"
   end
 
@@ -516,6 +525,7 @@ ActiveRecord::Schema.define(version: 2021_02_18_220422) do
   add_foreign_key "profesores", "usuarios", primary_key: "ci", name: "profesores_ibfk_2", on_update: :cascade, on_delete: :cascade
   add_foreign_key "programaciones", "asignaturas", on_update: :cascade, on_delete: :cascade
   add_foreign_key "programaciones", "periodos", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "reportepagos", "bancos", column: "banco_origen_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "reportepagos", "inscripcionescuelaperiodos", on_update: :cascade, on_delete: :cascade
   add_foreign_key "seccion_profesores_secundarios", "profesores", primary_key: "usuario_id", name: "seccion_profesores_secundarios_ibfk_1", on_update: :cascade, on_delete: :cascade
   add_foreign_key "seccion_profesores_secundarios", "secciones", name: "seccion_profesores_secundarios_ibfk_2", on_update: :cascade, on_delete: :cascade

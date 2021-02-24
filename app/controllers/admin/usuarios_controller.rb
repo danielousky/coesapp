@@ -379,10 +379,10 @@ module Admin
           @estado = @usuario.estudiante.direccion.estado
           if @estado
             @municipios = Direccion.municipios(@estado) 
-            @municipio = estudiante.direccion.municipio
+            @municipio = @usuario.estudiante.direccion.municipio
             if @municipio
               @parroquias = Direccion.parroquias(@estado, @municipio)
-              @parroquia = estudiante.direccion.ciudad
+              @parroquia = @usuario.estudiante.direccion.ciudad
             end
           end
         else
@@ -429,7 +429,7 @@ module Admin
 
       # Never trust parameters from the scary internet, only allow the white list through.
       def usuario_params
-        params.require(:usuario).permit(:ci, :nombres, :apellidos, :email, :telefono_habitacion, :telefono_movil, :password, :sexo, :password_confirmation, :nacionalidad, :estado_civil, :fecha_nacimiento, :pais_nacimiento, :ciudad_nacimiento, :foto_perfil)
+        params.require(:usuario).permit(:ci, :nombres, :apellidos, :email, :telefono_habitacion, :telefono_movil, :password, :sexo, :password_confirmation, :nacionalidad, :estado_civil, :fecha_nacimiento, :pais_nacimiento, :ciudad_nacimiento, :foto_perfil, :cedula_identidad)
       end
 
       def administrador_params

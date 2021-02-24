@@ -92,18 +92,18 @@ module Admin
 
 								flash[:info] = "Proceso de inscripción completado con éxito. Total preinscritas: #{total_inscritas}. "
 
-								reporte = Reportepago.new()
-								reporte.numero = params[:reportepago][:numero]
-								reporte.tipo_transaccion = params[:reportepago][:tipo_transaccion]
-								reporte.fecha_transaccion = params[:reportepago][:fecha_transaccion]
-								reporte.respaldo = params[:reportepago][:respaldo]
-								reporte.inscripcionescuelaperiodo_id = ins_periodo.id
+								# reporte = Reportepago.new()
+								# reporte.numero = params[:reportepago][:numero]
+								# reporte.tipo_transaccion = params[:reportepago][:tipo_transaccion]
+								# reporte.fecha_transaccion = params[:reportepago][:fecha_transaccion]
+								# reporte.respaldo = params[:reportepago][:respaldo]
+								# reporte.inscripcionescuelaperiodo_id = ins_periodo.id
 
-								if reporte.save
-									flash[:success] = " Reporte de pago generado con éxito."
-								else
-									flash[:danger] += "Error al intentar guardar el reporte de pago: #{ins_periodo.errors.full_messages.to_sentence}"
-								end
+								# if reporte.save
+								# 	flash[:success] = " Reporte de pago generado con éxito."
+								# else
+								# 	flash[:danger] += "Error al intentar guardar el reporte de pago: #{ins_periodo.errors.full_messages.to_sentence}"
+								# end
 							else
 								flash[:danger] += "Error al intentar registar la inscripción: #{ins_periodo.errors.full_messages.to_sentence}"
 							end

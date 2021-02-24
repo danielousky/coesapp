@@ -1,0 +1,26 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    :css
+      h4 { color: #f00; }
+      ul { list-style: none; }
+      body {background: #f2f2f2, padding-top: 40px;}
+  %body{style: "font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;"}
+
+    %div{style: "background-color: #f2f2f2; padding: 10px; margin: 5px;"}
+      %div{style: "color: #d6e3fc; text-align: center;background-image:'https://coes.nyc3.digitaloceanspaces.com/importantes/banner_principal_bg.png';background-size: contain;background-repeat: no-repeat;font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;padding-top: 1px; padding-bottom: 1px;background-color: #42a2b9;"} 
+        %p= "<b>Universidad Central de Venezuela</b>".html_safe
+        %p= "<b>Facultad de Humanidades y Educación</b>".html_safe
+        %p= "<b>Sistema de Control de Estudios</b>".html_safe
+        %h3{style: "color: #343a40 !important;"} COES-FHE 
+
+      %div{style: "margin:10px;font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;text-align: justify;"}
+        = yield
+
+      %div{style: 'background-color: #42a2b9'}
+        %div{style: "color: #d6e3fc;text-align: center;"}
+          %h4{style: "margin: 0px;font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;"} UCV La casa que vence la sombra
+          %h4{style: "margin: 0px;font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;"} COES-FHE - UCV 
+
+      %h4{style: "font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;"}= "IMPORTANTE: No dude en contactarnos  por controlestfheucv@gmail.com si requiere de algún tipo de apoyo."

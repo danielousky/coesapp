@@ -1,5 +1,7 @@
 module Admin
   class ReportepagosController < ApplicationController
+    before_action :filtro_logueado
+    before_action :filtro_estudiante
     before_action :set_reportepago, only: [:show, :edit, :update, :destroy]
 
     # GET /reportepagos
@@ -15,11 +17,14 @@ module Admin
 
     # GET /reportepagos/new
     def new
+      @titulo = "Reporte Pago"
       @reportepago = Reportepago.new
+      @reportepago.inscripcionescuelaperiodo_id = params[:inscripcionescuelaperiodo_id]
     end
 
     # GET /reportepagos/1/edit
     def edit
+      @titulo = "Editando Reporte de Pago"
     end
 
     # POST /reportepagos
@@ -29,7 +34,8 @@ module Admin
 
       respond_to do |format|
         if @reportepago.save
-          format.html { redirect_to @reportepago, notice: 'Reportepago was successfully created.' }
+          flash[:success] = 'Reporte de Pago guardado con éxito'
+          format.html { redirect_to principal_estudiante_index_path}
           format.json { render :show, status: :created, location: @reportepago }
         else
           format.html { render :new }
@@ -43,7 +49,7 @@ module Admin
     def update
       respond_to do |format|
         if @reportepago.update(reportepago_params)
-          format.html { redirect_to @reportepago, notice: 'Reportepago was successfully updated.' }
+          format.html { redirect_to principal_estudiante_index_path, success: 'Reporte de Pago guardado con éxito' }
           format.json { render :show, status: :ok, location: @reportepago }
         else
           format.html { render :edit }
@@ -70,7 +76,7 @@ module Admin
 
       # Never trust parameters from the scary internet, only allow the white list through.
       def reportepago_params
-        params.require(:reportepago).permit(:inscripcionescuelaperiodo_id, :numero, :tipo_transaccion, :fecha_transaccion, :respaldo)
+        params.require(:reportepago).permit(:inscripcionescuelaperiodo_id, :numero, :tipo_transaccion, :fecha_transaccion, :respaldo, :banco_origen_id)
       end
   end
 end

@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Nombre:
+  = @banco.nombre
+
+= link_to 'Editar', edit_banco_path(@banco), class: 'btn btn-sm btn-primary mr-3'
+
+= btn_atras bancos_path

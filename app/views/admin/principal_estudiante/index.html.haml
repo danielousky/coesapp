@@ -26,11 +26,11 @@
 				- escupe = escuela.escuelaperiodos.where(periodo_id: periodo_id).first
 				- @inscripcionperiodos = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: escupe.id)
 				- unless @inscripcionperiodos.any?
-					- if escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
+					- if false #escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
 						-# inscripciones_del_periodo = @inscripciones.del_periodo(current_periodo.id)#.inscritos
 						- inscripciones_del_periodo = @inscripciones.del_periodo(periodo_id).preinscritos
 						- if inscripciones_del_periodo.any?
-							- titulo_modal = "Proceso de Ratificación de Inscripción"
+							- titulo_modal = "Proceso de Confirmación de Inscripción"
 							- titulo_btn = "Ratificar Inscripción"
 							- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea ratificar"
 							- url = '/inscripcionsecciones/confirmar_inscripcion'
@@ -39,14 +39,28 @@
 
 					- else
 						- asignaturas_ofertadas = escuela.asignaturas.activas(periodo_id).order(anno: :desc )
-						- aprobadas_id = @inscripciones.joins(:seccion).group('secciones.asignatura_id').count.keys
+						-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
+						- aprobadas = @inscripciones.aprobadas.joins(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
 						-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
 						- titulo_modal = "Proceso de Preinscripción #{periodo_id}"
 						- titulo_btn = "Preinscribirse"
 						- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea preinscribir"
 						- url = '/inscripcionsecciones/preinscribirse'
 						- idModal = "preinscripcion#{escuela.id}"
-						= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn, aprobadas_id: aprobadas_id}
+						= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn, aprobadas: aprobadas}
+				- else
+					- if @inscripcionperiodos.first.reportepago.nil?
+						.alert.alert-warning
+							%h6
+								%b Atención: 
+								Aún no reporta el pago de su inscripción. Recuerde que es un paso indispensable para completar su preinscripción. Haga clic 
+								= link_to 'aqui', new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodos.first)
+								para reportar el pago
+						= link_to new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodos.first), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
+							= glyph 'chevron-right'
+							= "Reportar pago de inscripción el periodo #{current_periodo.id}"
+
+
 
 			-if @estudiante.citahoraria
 				.border.p-md-3

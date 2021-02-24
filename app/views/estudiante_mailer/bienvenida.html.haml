@@ -1,0 +1,19 @@
+
+= "Estimad#{@genero}: <b>#{@nombre}</b>, la Facultad de Humanidades y Educación le da la bienvenida al sistema de Control de Estudios COES-FHE.".html_safe
+	
+%p= "Lo primero que debe hacer es cancelar el arancel de preinscripción:"
+
+= "Realice una transferencia únicamente desde los Bancos: <b> #{Banco.all.map { |e| e.nombre }.to_sentence(last_word_connector: ' o ')}</b> por el monto de <b>Bs. 1.500.000. </b> en la cuenta corriente N°<b> 0102-0491-7100 0938-5674 </b> del <b> Banco de Venezuela</b> a nombre de <b>Ingresos Propios de la Facultad de Humanidades y Educación RIF, G-20000062-7</b>. ".html_safe
+- link_coes = link_to 'COESFHE.COM', Rails.root#'https://coesfhe.com/'
+= "Después, ingrese #{link_coes} con su número de cédula en ambos campos del inicio de la sesión y siga las instrucciones:".html_safe
+%ol
+	%li= "Genere su reporte de pago en su usuario de #{link_coes} y suba una foto del comprobante de pago.".html_safe
+	%li	Actualice todos los datos solicitados.
+	%li	Suba una foto tipo carnet, de frente y con fondo blanco únicamente.
+	%li	Suba una foto perfectamente legible de su cédula de identidad.
+
+Usted debe completar este procedimiento desde este momento hasta el (fecha y hora). 
+
+Después de ese momento, el personal de COESFHE validará su trámite y se comunicará con usted por correo electrónico únicamente.
+
+Saludos cordiales.

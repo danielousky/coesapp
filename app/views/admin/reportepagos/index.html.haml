@@ -5,6 +5,7 @@
     %tr
       %th Inscripcionescuelaperiodo
       %th Numero
+      %th Banco
       %th Tipo transaccion
       %th Fecha
       %th
@@ -14,8 +15,9 @@
   %tbody
     - @reportepagos.each do |reportepago|
       %tr
-        %td= reportepago.inscripcionescuelaperiodo
+        %td= link_to reportepago.inscripcionescuelaperiodo, "usuarios/#{reportepago.inscripcionescuelaperiodo.estudiante_id}"
         %td= reportepago.numero
+        %td= reportepago.banco.nombre
         %td= reportepago.tipo_transaccion
         %td= reportepago.fecha_transaccion
         %td= link_to 'Show', reportepago

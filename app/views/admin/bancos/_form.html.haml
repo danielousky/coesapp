@@ -1,0 +1,22 @@
+= form_for @banco do |f|
+  - if @banco.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@banco.errors.count, "error")} prohibited this banco from being saved:"
+      %ul
+        - @banco.errors.full_messages.each do |message|
+          %li= message
+  .field
+    = f.label :id
+    = f.text_field :id, class: 'onlynumbers'
+  .field
+    = f.label :nombre
+    = f.text_field :nombre
+  .actions
+    = f.submit 'Guardar', class: 'btn btn-sm btn-success'
+
+:javascript
+
+  $('.onlynumbers').on('input',function(evt){ 
+    var node = $(this);
+    node.val(node.val().replace(/[^0-9]/g,'') );
+    }); 
