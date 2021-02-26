@@ -5,7 +5,7 @@
 %br
 %br
 .float-right
-	= image_tag main_app.url_for(@usuario.cedula_identidad), width: '100px', class: 'm-3 p-1 border' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
+	= image_tag main_app.url_for(@usuario.imagen_ci), width: '100px', class: 'm-3 p-1 border' if (@usuario and @usuario.imagen_ci and @usuario.imagen_ci.attached?)
 	= image_tag main_app.url_for(@usuario.foto_perfil), width: '100px', class: 'border p-1' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
 
 

@@ -6,16 +6,17 @@
         - @reportepago.errors.full_messages.each do |message|
           %li= message
   .border.p-3.mb-3
-    - if @reportepago.inscripcionescuelaperiodo_id
-      = f.hidden_field :inscripcionescuelaperiodo_id
-    - else
-      .form-group.row
-        .col-md-2{style: 'text-align: right;'}= f.label :inscripcionescuelaperiodo_id, nil, value: 'Inscripción'
-        .col-md-10= f.number_field :inscripcionescuelaperiodo_id, class: 'form-control', placeholder: 'Inscripcion', required: true
+
+    = hidden_field_tag :inscripcionescuelaperiodo_id, @inscripcionescuelaperiodo_id if @inscripcionescuelaperiodo_id
+    = hidden_field_tag :grado_id, @grado_id if @grado_id
 
     .form-group.row
       .col-md-2{style: 'text-align: right;'}= f.label :numero, nil, value: 'Número de Transacción'
       .col-md-10= f.text_field :numero, class: 'form-control upcaseOlyNumber', placeholder: 'Número Transacción', required: true
+    .form-group.row
+      .col-md-2{style: 'text-align: right;'}= f.label :monto, nil, value: 'Monto'
+      .col-md-10= f.number_field :monto, class: 'form-control', placeholder: 'Monto', required: true
+
     .form-group.row
       .col-md-2{style: 'text-align: right;'}= f.label :banco_origen, nil, value: 'Banco Origen'
       .col-md-10

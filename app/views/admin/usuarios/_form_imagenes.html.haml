@@ -1,22 +1,37 @@
 - if @usuario and @usuario.eql? current_usuario
-  .form-group.row
-    = f.label :foto_perfil, class: 'col-form-label col-md-3 text-right', value: 'Foto de Perfil:'
-    .col-md-9
-      = f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*"}
-  .form-group.row
-    .col-md-3
-    .col-md-9
-      .text-muted= "Seleccione una fotografía actualizada y con fondo blanco o gris"
-  - if  @usuario.estudiante
+  - warning = !(@usuario.foto_perfil and @usuario.foto_perfil.attached?) ? 'alert-warning' : ''
+  %div{class: warning}
     .form-group.row
-      = f.label :cedula_identidad, class: 'col-form-label col-md-3 text-right', value: 'Imagen de la Cédula de Identidad:'
+      = f.label :foto_perfil, class: 'col-form-label col-md-3 text-right', value: 'Foto de Perfil:'
       .col-md-9
-        = f.file_field :cedula_identidad, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*"}
+        - if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?) 
+          - value_url = main_app.url_for(@usuario.foto_perfil)
+          = image_tag value_url, width: '100px', class: 'border p-1'
+          = f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*", value: value_url}
+        - else
+          = f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*"}
     .form-group.row
       .col-md-3
       .col-md-9
-        .text-muted= "Seleccione una fotografía nítida y legible de su Cédula de Identidad"
+        %b.text-muted= "Suba una foto tipo carnet, de frente y con fondo blanco únicamente."
+  - if  @usuario.estudiante
+    - warning = !(@usuario.foto_perfil and @usuario.foto_perfil.attached?) ? 'alert-warning' : ''
+    %div{class: warning}
+      .form-group.row
+        = f.label :imagen_ci, class: 'col-form-label col-md-3 text-right', value: 'Imagen de la Cédula de Identidad:'
+        .col-md-9
+          - if (@usuario and @usuario.imagen_ci and @usuario.imagen_ci.attached?) 
+            - value_url = main_app.url_for(@usuario.imagen_ci)
+            = image_tag value_url, width: '100px', class: 'border p-1'
+            = f.file_field :imagen_ci, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*", value: value_url}
+          - else
+            = f.file_field :imagen_ci, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*"}
+
+      .form-group.row
+        .col-md-3
+        .col-md-9
+          %b.text-muted= "Suba una foto perfectamente legible de su cédula de identidad."
 - else
   .float-right
-    = image_tag main_app.url_for(@usuario.cedula_identidad), width: '100px', class: 'm-3 p-1 border' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
+    = image_tag main_app.url_for(@usuario.imagen_ci), width: '100px', class: 'm-3 p-1 border' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
     = image_tag main_app.url_for(@usuario.foto_perfil), width: '100px', class: 'border p-1' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)

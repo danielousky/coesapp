@@ -1,16 +1,22 @@
 .border.p-1
-  %h6.titulo.text-center Información de la inscripción
+  %h6.titulo.text-center Información de Ingreso a la Escuela
   %table.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3
     %tbody
+      - if grado.reportepago
+        %tr
+          %th Reporte Pago: 
+          %td= grado.reportepago.descripcion
+          %td
+
       %tr
-        %th Periodo de la Inscripción: 
+        %th Periodo de Ingreso: 
         %td= grado.iniciado_periodo_id
         - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
           %td
             = link_to 'javascript:void(0)', onclick: "$('#cambiarPeriodoInscripcion#{grado.id_flat}').modal()" do
               = glyph 'pencil'
       %tr
-        %th Estado de la Inscripción: 
+        %th Estado del Ingreso: 
         %td
           .badge.badge-info= grado.estado_inscripcion.upcase
         - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
@@ -45,4 +51,11 @@
   = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarTipoIngreso#{grado.id_flat}", title: 'Cambiar Tipo Ingreso', content: content, width: nil}
   - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Período de Inicio:', group: 'periodos', field_name: '', grade: grado}
   = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarPeriodoInscripcion#{grado.id_flat}", title: 'Cambiar Periodo', content: content, width: nil}
+  - if grado.reportepago
+    = # Agregar model para el detalle de pago: Puede der un partial del show 
+    - if false
+      - content = render file: "/admin/reportepagos/show?id=#{grado.reportepago.id}"
+      = render partial: '/layouts/modal_layout_with_form', locals: {url: url, id_modal: "cambiarPeriodoInscripcion#{grado.id_flat}", title: 'Ver detalle de pago Escuela', content: content, width: nil}
+
+
 

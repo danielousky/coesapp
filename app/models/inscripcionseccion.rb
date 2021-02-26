@@ -10,7 +10,6 @@ class Inscripcionseccion < ApplicationRecord
 	belongs_to :seccion
 	belongs_to :estudiante, primary_key: :usuario_id
 	belongs_to :inscripcionescuelaperiodo
-	# belongs_to :estudiante, primary_key: :usuario_id, through: :inscripcionescuelaperiodo
 
 	has_one :asignatura, through: :seccion
 	has_one :periodo, through: :seccion

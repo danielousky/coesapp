@@ -7,13 +7,23 @@
 			- active = (i.eql? 0) ? 'active' : ''
 			= link_to "#{escuela.descripcion.titleize}", "#pane_#{escuela.id}", "data-toggle": :tab, class: "nav-item nav-link #{active}"
 		= link_to "Horario (#{current_periodo.id})", "#actualPeriodo", "data-toggle": :tab, class: 'nav-item nav-link'
--# @reportepago = @estudiante.inscripcionescuelaperiodos.first.reportepago if @estudiante.inscripcionescuelaperiodos.first
-=# image_tag main_app.url_for(@reportepago.respaldo) if @reportepago and @reportepago.respaldo and @reportepago.respaldo.attached?
+
 .tab-content
 	- @estudiante.escuelas.each_with_index do |escuela,i| 
 		- active = (i.eql? 0) ? 'active show' : ''
-
+		- grado = @estudiante.grados.where(escuela_id: escuela.id).first
 		- @escuela = escuela
+
+		- if current_usuario.eql? @estudiante.usuario and grado and grado.reportepago.nil? and grado.preinscrito? and !grado.inscripciones.any? 
+			- @grado_id = grado.id
+			- @reportepago = Reportepago.new
+			- content = render partial: "/admin/reportepagos/form"
+			= render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "reportarPagoGrado#{grado.id_flat}", content: content, title: 'Reportar Pago a la Facultad de Ingreso a Escuela', width: "modal-lg"}
+			= link_to 'javascript:void(0)', onclick: "$('#reportarPagoGrado#{grado.id_flat}').modal()", class: 'm-3 btn btn-success' do
+				= glyph 'plus'
+				Repotar Pago Ingreso Escuela
+
+
 		.tab-pane.border.border-top-0.p-3{id: "pane_#{escuela.id}", class: active}
 			- # VARIABLES:
 			- @inscripciones = @estudiante.inscripcionsecciones.joins(:escuela).where("escuelas.id = :e or pci_escuela_id = :e", e: @escuela.id)
@@ -24,8 +34,8 @@
 			- if escuela.periodo_inscripcion
 				- periodo_id = escuela.periodo_inscripcion_id
 				- escupe = escuela.escuelaperiodos.where(periodo_id: periodo_id).first
-				- @inscripcionperiodos = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: escupe.id)
-				- unless @inscripcionperiodos.any?
+				- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: escupe.id).first
+				- unless @inscripcionperiodo
 					- if false #escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
 						-# inscripciones_del_periodo = @inscripciones.del_periodo(current_periodo.id)#.inscritos
 						- inscripciones_del_periodo = @inscripciones.del_periodo(periodo_id).preinscritos
@@ -49,14 +59,14 @@
 						- idModal = "preinscripcion#{escuela.id}"
 						= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn, aprobadas: aprobadas}
 				- else
-					- if @inscripcionperiodos.first.reportepago.nil?
+					- if @inscripcionperiodo.reportepago.nil?
 						.alert.alert-warning
 							%h6
 								%b Atención: 
 								Aún no reporta el pago de su inscripción. Recuerde que es un paso indispensable para completar su preinscripción. Haga clic 
-								= link_to 'aqui', new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodos.first)
+								= link_to 'aqui', new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodo.id)
 								para reportar el pago
-						= link_to new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodos.first), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
+						= link_to new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodo.id), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
 							= glyph 'chevron-right'
 							= "Reportar pago de inscripción el periodo #{current_periodo.id}"
 

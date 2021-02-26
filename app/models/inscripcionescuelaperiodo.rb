@@ -1,6 +1,6 @@
 class Inscripcionescuelaperiodo < ApplicationRecord
 
-	has_many :inscripcionsecciones
+	has_many :inscripcionsecciones, dependent: :destroy
 	accepts_nested_attributes_for :inscripcionsecciones
 
 	belongs_to :estudiante, primary_key: 'usuario_id'
@@ -12,7 +12,7 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 
 	validates_uniqueness_of :estudiante_id, scope: [:escuelaperiodo_id], message: 'El estudiante ya posee una inscripción en el período actual', field_name: false
 
-	has_one :reportepago
+	belongs_to :reportepago, optional: true
 	
 	scope :del_periodo, -> (periodo_id) {joins(:periodo).where('periodos.id = ?', periodo_id)}
 	scope :de_la_escuela, -> (escuela_id) {joins(:escuela).where('escuelas.id = ?', escuela_id)}

@@ -10,6 +10,5 @@ class AddVariosToGrado < ActiveRecord::Migration[5.2]
 	add_foreign_key :grados, :periodos, on_delete: :nullify,  on_update: :cascade, column: "iniciado_periodo_id"
 	add_foreign_key :grados, :periodos, on_delete: :nullify,  on_update: :cascade, column: "culminacion_periodo_id"
 
-
   end
 end

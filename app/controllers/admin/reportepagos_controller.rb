@@ -19,7 +19,8 @@ module Admin
     def new
       @titulo = "Reporte Pago"
       @reportepago = Reportepago.new
-      @reportepago.inscripcionescuelaperiodo_id = params[:inscripcionescuelaperiodo_id]
+      @inscripcionescuelaperiodo_id = params[:inscripcionescuelaperiodo_id]
+      @grado_id = params[:grado_id]
     end
 
     # GET /reportepagos/1/edit
@@ -30,11 +31,29 @@ module Admin
     # POST /reportepagos
     # POST /reportepagos.json
     def create
+
       @reportepago = Reportepago.new(reportepago_params)
 
       respond_to do |format|
         if @reportepago.save
-          flash[:success] = 'Reporte de Pago guardado con éxito'
+          if params[:grado_id] or params[:inscripcionescuelaperiodo_id]
+            if params[:grado_id]
+              obj = Grado.find params[:grado_id].split
+            elsif params[:inscripcionescuelaperiodo_id]
+              obj = Inscripcionescuelaperiodo.find params[:inscripcionescuelaperiodo_id]
+            end
+            if obj
+              obj.reportepago_id = @reportepago.id
+              if obj.save
+                flash[:success] = 'Reporte de Pago guardado con éxito'
+              else
+                flash[:danger] = "Error al intentar asociar el reporte de pago al #{obj.class.name}. Se eliminó el reporte. #{obj.errors.full_messages.to_sentence if (obj and obj.errors)}"
+              end
+            else
+              reportepago.destroy
+              flash[:danger] = "No se encontró el #{obj.class.name}."
+            end
+          end
           format.html { redirect_to principal_estudiante_index_path}
           format.json { render :show, status: :created, location: @reportepago }
         else
@@ -76,7 +95,7 @@ module Admin
 
       # Never trust parameters from the scary internet, only allow the white list through.
       def reportepago_params
-        params.require(:reportepago).permit(:inscripcionescuelaperiodo_id, :numero, :tipo_transaccion, :fecha_transaccion, :respaldo, :banco_origen_id)
+        params.require(:reportepago).permit(:numero, :monto, :tipo_transaccion, :fecha_transaccion, :respaldo, :banco_origen_id)
       end
   end
 end

@@ -5,6 +5,7 @@ class CreateInscripcionescuelaperiodos < ActiveRecord::Migration[5.2]
       t.references :estudiante, type: :string, null: false
       t.references :escuelaperiodo, null: false
       t.references :tipo_estado_inscripcion, type: :string
+      t.references :reportepago, foreign_key: {on_delete: :nullify, on_update: :cascade}
       t.index [:estudiante_id, :escuelaperiodo_id], unique: true, name: 'index_inscripciones_on_estudiante_id_and_escuelaperiodo_id'
       t.timestamps
  
