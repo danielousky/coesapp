@@ -10,7 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_30_195237) do
+ActiveRecord::Schema.define(version: 2021_02_24_192753) do
+
+  create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.bigint "byte_size", null: false
+    t.string "checksum", null: false
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
 
   create_table "administradores", primary_key: "usuario_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "rol", null: false
@@ -51,6 +72,13 @@ ActiveRecord::Schema.define(version: 2020_09_30_195237) do
     t.index ["restringida_id", "usuario_id"], name: "index_autorizadas_on_restringida_id_and_usuario_id", unique: true
     t.index ["restringida_id"], name: "index_autorizadas_on_restringida_id"
     t.index ["usuario_id"], name: "index_autorizadas_on_usuario_id"
+  end
+
+  create_table "bancos", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "nombre"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id"], name: "index_bancos_on_id"
   end
 
   create_table "bitacoras", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -174,7 +202,9 @@ ActiveRecord::Schema.define(version: 2020_09_30_195237) do
     t.datetime "updated_at", null: false
     t.boolean "habilitar_retiro_asignaturas", default: true
     t.boolean "habilitar_cambio_seccion", default: true
+    t.string "periodo_inscripcion_id"
     t.index ["id"], name: "index_escuelas_on_id"
+    t.index ["periodo_inscripcion_id"], name: "fk_rails_5f0f1fec52"
   end
 
   create_table "estudiantes", primary_key: "usuario_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -204,6 +234,7 @@ ActiveRecord::Schema.define(version: 2020_09_30_195237) do
     t.integer "estado_inscripcion", default: 0, null: false
     t.string "plan_id"
     t.string "iniciado_periodo_id"
+    t.bigint "reportepago_id"
     t.index ["culminacion_periodo_id"], name: "fk_rails_fef4486ce7"
     t.index ["escuela_id", "estudiante_id"], name: "index_grados_on_escuela_id_and_estudiante_id", unique: true
     t.index ["escuela_id"], name: "index_grados_on_escuela_id"
@@ -211,6 +242,7 @@ ActiveRecord::Schema.define(version: 2020_09_30_195237) do
     t.index ["estudiante_id"], name: "index_grados_on_estudiante_id"
     t.index ["iniciado_periodo_id"], name: "fk_rails_ee0083ce7b"
     t.index ["plan_id"], name: "index_grados_on_plan_id"
+    t.index ["reportepago_id"], name: "index_grados_on_reportepago_id"
   end
 
   create_table "historialplanes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -236,6 +268,20 @@ ActiveRecord::Schema.define(version: 2020_09_30_195237) do
     t.index ["seccion_id"], name: "index_horarios_on_seccion_id"
   end
 
+  create_table "inscripcionescuelaperiodos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "estudiante_id", null: false
+    t.bigint "escuelaperiodo_id", null: false
+    t.string "tipo_estado_inscripcion_id"
+    t.bigint "reportepago_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["escuelaperiodo_id"], name: "index_inscripcionescuelaperiodos_on_escuelaperiodo_id"
+    t.index ["estudiante_id", "escuelaperiodo_id"], name: "index_inscripciones_on_estudiante_id_and_escuelaperiodo_id", unique: true
+    t.index ["estudiante_id"], name: "index_inscripcionescuelaperiodos_on_estudiante_id"
+    t.index ["reportepago_id"], name: "index_inscripcionescuelaperiodos_on_reportepago_id"
+    t.index ["tipo_estado_inscripcion_id"], name: "index_inscripcionescuelaperiodos_on_tipo_estado_inscripcion_id"
+  end
+
   create_table "inscripcionsecciones", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "seccion_id"
     t.string "estudiante_id"
@@ -254,9 +300,11 @@ ActiveRecord::Schema.define(version: 2020_09_30_195237) do
     t.string "pci_escuela_id"
     t.string "escuela_id"
     t.boolean "pci", default: false
+    t.bigint "inscripcionescuelaperiodo_id"
     t.index ["escuela_id"], name: "index_inscripcionsecciones_on_escuela_id"
     t.index ["estudiante_id", "seccion_id"], name: "index_inscripcionsecciones_on_estudiante_id_and_seccion_id", unique: true
     t.index ["estudiante_id"], name: "index_inscripcionsecciones_on_estudiante_id"
+    t.index ["inscripcionescuelaperiodo_id"], name: "index_inscripcionsecciones_on_inscripcionescuelaperiodo_id"
     t.index ["pci_escuela_id"], name: "fk_rails_24a264013f"
     t.index ["seccion_id", "estudiante_id"], name: "index_inscripcionsecciones_on_seccion_id_and_estudiante_id", unique: true
     t.index ["seccion_id"], name: "index_inscripcionsecciones_on_seccion_id"
@@ -321,6 +369,17 @@ ActiveRecord::Schema.define(version: 2020_09_30_195237) do
     t.index ["asignatura_id"], name: "index_programaciones_on_asignatura_id"
     t.index ["periodo_id", "asignatura_id"], name: "index_programaciones_on_periodo_id_and_asignatura_id", unique: true
     t.index ["periodo_id"], name: "index_programaciones_on_periodo_id"
+  end
+
+  create_table "reportepagos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "numero"
+    t.decimal "monto", precision: 10
+    t.integer "tipo_transaccion"
+    t.date "fecha_transaccion"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "banco_origen_id"
+    t.index ["banco_origen_id"], name: "fk_rails_d6018c63f7"
   end
 
   create_table "restringidas", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -417,6 +476,7 @@ ActiveRecord::Schema.define(version: 2020_09_30_195237) do
     t.index ["ci"], name: "index_usuarios_on_ci"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "administradores", "departamentos", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administradores", "escuelas", on_update: :cascade, on_delete: :nullify
   add_foreign_key "administradores", "perfiles"
@@ -438,19 +498,26 @@ ActiveRecord::Schema.define(version: 2020_09_30_195237) do
   add_foreign_key "direcciones", "estudiantes", primary_key: "usuario_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "escuelaperiodos", "escuelas", on_update: :cascade, on_delete: :cascade
   add_foreign_key "escuelaperiodos", "periodos", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "escuelas", "periodos", column: "periodo_inscripcion_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "estudiantes", "citahorarias", name: "estudiantes_ibfk_1", on_update: :cascade, on_delete: :nullify
   add_foreign_key "estudiantes", "usuarios", primary_key: "ci", name: "estudiantes_ibfk_3", on_update: :cascade, on_delete: :cascade
   add_foreign_key "grados", "escuelas", on_update: :cascade, on_delete: :cascade
   add_foreign_key "grados", "estudiantes", primary_key: "usuario_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "grados", "periodos", column: "culminacion_periodo_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "grados", "periodos", column: "iniciado_periodo_id", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "grados", "reportepagos", on_update: :cascade, on_delete: :nullify
   add_foreign_key "historialplanes", "escuelas"
   add_foreign_key "historialplanes", "estudiantes", primary_key: "usuario_id", name: "historialplanes_ibfk_3", on_update: :cascade, on_delete: :cascade
   add_foreign_key "historialplanes", "periodos", name: "historialplanes_ibfk_2", on_update: :cascade, on_delete: :cascade
   add_foreign_key "historialplanes", "planes", name: "historialplanes_ibfk_1", on_update: :cascade, on_delete: :cascade
   add_foreign_key "horarios", "secciones", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inscripcionescuelaperiodos", "escuelaperiodos", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inscripcionescuelaperiodos", "estudiantes", primary_key: "usuario_id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inscripcionescuelaperiodos", "reportepagos", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "inscripcionescuelaperiodos", "tipo_estado_inscripciones", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inscripcionsecciones", "escuelas", column: "pci_escuela_id", name: "inscripcionsecciones_ibfk_1", on_update: :cascade, on_delete: :nullify
   add_foreign_key "inscripcionsecciones", "estudiantes", primary_key: "usuario_id", name: "inscripcionsecciones_ibfk_4", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inscripcionsecciones", "inscripcionescuelaperiodos", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inscripcionsecciones", "secciones", name: "inscripcionsecciones_ibfk_6", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inscripcionsecciones", "tipo_calificaciones", name: "inscripcionsecciones_ibfk_2", on_update: :cascade, on_delete: :nullify
   add_foreign_key "inscripcionsecciones", "tipo_estado_calificaciones", name: "inscripcionsecciones_ibfk_5", on_update: :cascade, on_delete: :nullify
@@ -463,6 +530,7 @@ ActiveRecord::Schema.define(version: 2020_09_30_195237) do
   add_foreign_key "profesores", "usuarios", primary_key: "ci", name: "profesores_ibfk_2", on_update: :cascade, on_delete: :cascade
   add_foreign_key "programaciones", "asignaturas", on_update: :cascade, on_delete: :cascade
   add_foreign_key "programaciones", "periodos", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "reportepagos", "bancos", column: "banco_origen_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "seccion_profesores_secundarios", "profesores", primary_key: "usuario_id", name: "seccion_profesores_secundarios_ibfk_1", on_update: :cascade, on_delete: :cascade
   add_foreign_key "seccion_profesores_secundarios", "secciones", name: "seccion_profesores_secundarios_ibfk_2", on_update: :cascade, on_delete: :cascade
   add_foreign_key "secciones", "asignaturas", name: "secciones_ibfk_2", on_update: :cascade, on_delete: :cascade
