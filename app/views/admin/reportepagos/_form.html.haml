@@ -37,8 +37,8 @@
       .col-md-2{style: 'text-align: right;'}= f.label :respaldo, nil, value: 'Imagen de respaldo'
 
       .col-md-10
-        = f.file_field 'respaldo', {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/jpeg,image/jpg,image/png,application/pdf"}
-        .text-muted= "Solo se perimiten archivos de los tipo: jpg, jpeg, png y pdf"
+        = f.file_field 'respaldo', {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*"}
+        .text-muted= "<b>Atención:</b> Solo se perimiten imágenes. Sí su soporte se encuentra en formato PDF, por favor haga una captura de la pantalla y luego suba la imagen correspondiente.".html_safe
 
     .form-group.row
       .col-md-2{style: 'text-align: right;'}= btn_atras principal_estudiante_index_path

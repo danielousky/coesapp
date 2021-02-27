@@ -6,6 +6,8 @@ module Admin
     before_action :filtro_super_admin!, only: [:set_administrador]
     before_action :filtro_ninjas_or_jefe_control_estudio!, only: [:destroy, :delete_rol]
 
+    before_action :resize_image, only: [:create, :update]
+
 
     # before_action :filtro_autorizado#, only: [:create, :update, :destroy, :set_estudiante, :set_administrador, :set_profesor, :resetear_contrasena, :cambiar_ci]
 
@@ -254,8 +256,10 @@ module Admin
 
     # POST /usuarios
     # POST /usuarios.json
+    require 'mini_magick'
     def create
       @usuario = Usuario.new(usuario_params)
+
       respond_to do |format|
         if @usuario.save
           flash[:success] = 'Usuario creado con éxito.'
@@ -353,6 +357,7 @@ module Admin
       elsif current_usuario.profesor
         url_back = principal_profesor_index_path
       end
+
       if @usuario.update(usuario_params)
         # @usuario.estudiante.direccion.create(direccion_params)
         info_bitacora_crud Bitacora::ACTUALIZACION, @usuario
@@ -429,6 +434,25 @@ module Admin
 
     private
       # Use callbacks to share common setup or constraints between actions.
+
+      def resize_image
+
+        aux = params[:usuario][:foto_perfil]
+
+        if aux #and aux.byte_size > 1.megabyte
+          mini_image = MiniMagick::Image.new(params[:usuario][:foto_perfil].tempfile.path)
+          mini_image.resize '400x400'
+        end
+
+        aux = params[:usuario][:imagen_ci]
+
+        if aux #and aux.byte_size > 1.megabyte
+          mini_image = MiniMagick::Image.new(params[:usuario][:imagen_ci].tempfile.path)
+          mini_image.resize '1200x1200'
+        end
+
+      end
+
       def set_usuario
         @usuario = Usuario.find(params[:id])
       end

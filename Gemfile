@@ -19,6 +19,10 @@ gem 'toastr-rails'
 # gem 'pdf-writer', :git => 'https://github.com/metaskills/pdf-writer.git'
 # gem 'iconv'
 
+
+gem 'mini_magick'
+
+
 gem 'prawn'
 gem 'prawn-table'
 

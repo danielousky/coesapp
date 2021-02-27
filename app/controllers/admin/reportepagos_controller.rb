@@ -3,6 +3,7 @@ module Admin
     before_action :filtro_logueado
     before_action :filtro_estudiante
     before_action :set_reportepago, only: [:show, :edit, :update, :destroy]
+    before_action :resize_image, only: [:create, :update]
 
     # GET /reportepagos
     # GET /reportepagos.json
@@ -88,6 +89,17 @@ module Admin
     end
 
     private
+
+      def resize_image
+
+        aux = params[:usuario][:imagen_ci]
+
+        if aux #and aux.byte_size > 1.megabyte
+          mini_image = MiniMagick::Image.new(params[:usuario][:imagen_ci].tempfile.path)
+          mini_image.resize '400x400'
+        end
+
+      end
       # Use callbacks to share common setup or constraints between actions.
       def set_reportepago
         @reportepago = Reportepago.find(params[:id])

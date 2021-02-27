@@ -27,7 +27,7 @@ class Usuario < ApplicationRecord
 	# TRIGGERS:
 	after_initialize :set_default_sexo, if: :new_record?
 	# before_save :set_default, if: :new_record?
-	# before_save :upcase_nombres
+	before_save :resize_image
 	before_validation :set_default, on: :create
 	# VALIDACIONES:
 	validates :ci, presence: true, uniqueness: true
@@ -47,6 +47,10 @@ class Usuario < ApplicationRecord
 	# }
 
 	# FUNCIONES:
+
+	require 'mini_magick'
+	def resize_image
+	end
 
 	def datos_incompletos?
 		((self.attributes.values.reject{|e| !e.blank?}.any?) or (self.ci.eql? self.password) or (self.foto_perfil.nil? or (self.foto_perfil and !self.foto_perfil.attached?))) ? true : false
