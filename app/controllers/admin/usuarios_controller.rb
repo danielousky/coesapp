@@ -441,14 +441,14 @@ module Admin
 
         if aux #and aux.byte_size > 1.megabyte
           mini_image = MiniMagick::Image.new(params[:usuario][:foto_perfil].tempfile.path)
-          mini_image.resize '400x400'
+          mini_image.resize '200x400^'
         end
 
         aux = params[:usuario][:imagen_ci]
 
         if aux #and aux.byte_size > 1.megabyte
           mini_image = MiniMagick::Image.new(params[:usuario][:imagen_ci].tempfile.path)
-          mini_image.resize '1200x1200'
+          mini_image.resize '400x400^'
         end
 
       end
