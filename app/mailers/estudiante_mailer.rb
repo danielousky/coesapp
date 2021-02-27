@@ -18,6 +18,8 @@ class EstudianteMailer < ActionMailer::Base
   end
 
   def bienvenida(usuario)
+    @monto = "Bs. 1.500.000."
+    
 
     @nombre = usuario.primer_nombre_apellido
     @genero = usuario.genero
