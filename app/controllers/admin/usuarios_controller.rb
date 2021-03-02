@@ -1,12 +1,13 @@
 module Admin
   class UsuariosController < ApplicationController
+    require 'mini_magick'
     before_action :filtro_logueado
-    before_action :filtro_administrador, except: [:edit, :update, :countries, :getMunicipios, :getParroquias]
-    before_action :filtro_admin_mas_altos!, except: [:busquedas, :index, :show, :edit, :update, :countries, :getMunicipios, :getParroquias]
+    before_action :filtro_administrador, except: [:edit, :update, :countries, :getMunicipios, :getParroquias, :update_images]
+    before_action :filtro_admin_mas_altos!, except: [:busquedas, :index, :show, :edit, :update, :countries, :getMunicipios, :getParroquias, :update_images]
     before_action :filtro_super_admin!, only: [:set_administrador]
     before_action :filtro_ninjas_or_jefe_control_estudio!, only: [:destroy, :delete_rol]
 
-    before_action :resize_image, only: [:create, :update]
+    before_action :resize_image, only: [:update_images]
 
 
     # before_action :filtro_autorizado#, only: [:create, :update, :destroy, :set_estudiante, :set_administrador, :set_profesor, :resetear_contrasena, :cambiar_ci]
@@ -17,6 +18,26 @@ module Admin
 
     # GET /usuarios
     # GET /usuarios.json
+
+    def update_images
+
+      respond_to do |format|
+        if @usuario.update(usuario_params)
+          if params[:usuario][:foto_perfil]
+            url = main_app.url_for(@usuario.foto_perfil)
+            filename = @usuario.foto_perfil_blob.filename
+          else
+            url = main_app.url_for(@usuario.imagen_ci)
+            filename = @usuario.imagen_ci_blob.filename
+          end
+          info_bitacora "Agregadas imágenes de respaldo del usuario #{@usuario.descripcion}", Bitacora::CREACION, @usuario
+          format.json { render json: {usuario: @usuario, url: url, filename: filename},  status: :ok}
+        else
+          format.json { render json: @usuario.errors, status: :unprocessable_entity }
+        end
+      end
+    end
+
 
     def getMunicipios
       render json: Direccion.municipios(params[:term]), status: :ok
@@ -256,7 +277,6 @@ module Admin
 
     # POST /usuarios
     # POST /usuarios.json
-    require 'mini_magick'
     def create
       @usuario = Usuario.new(usuario_params)
 

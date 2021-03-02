@@ -1,32 +1,26 @@
+.border.p-3
+  = form_tag(update_images_usuario_path, class: 'form-horizontal') do
+    = render partial: '/admin/usuarios/form_imagenes'
 
-.border.p-3.titulo
-  Form de fotos
-  = file_field_tag 'files[]', id: :file_upload, 'data-url': getMunicipios_usuarios_path#, multiple: true
+  = form_for @usuario, html: { class: 'form-horizontal' } do |f|
 
-= form_for @usuario, html: { class: 'form-horizontal' } do |f|
+    - if current_estudiante and @usuario.estudiante and (current_usuario.ci.eql? @usuario.ci) and (@usuario.ci.eql? @usuario.password)
+      = render partial: '/admin/estudiantes/form_new_estudiante', locals: {f: f}
+    - else
+      = render partial: '/admin/usuarios/form_datos_personales', locals: {f: f}
+      - if params[:estudiante]
+        = hidden_field_tag 'estudiante_set', true
+        = render '/admin/grados/form'
+      - if params[:profesor]
+        = render 'form_datos_profe'
+      - elsif params[:administrador]
+        = render 'form_datos_admin'
 
-  - if current_estudiante and @usuario.estudiante and (current_usuario.ci.eql? @usuario.ci) and (@usuario.ci.eql? @usuario.password)
-    = render partial: '/admin/estudiantes/form_new_estudiante', locals: {f: f}
-  - else
-    = render partial: '/admin/usuarios/form_datos_personales', locals: {f: f}
-    - if params[:estudiante]
-      = hidden_field_tag 'estudiante_set', true
-      = render '/admin/grados/form'
-    - if params[:profesor]
-      = render 'form_datos_profe'
-    - elsif params[:administrador]
-      = render 'form_datos_admin'
-
-  .form-group.row
-    .col-md-offset-2.col-md-10
-      = f.submit nil, class: 'btn btn-primary'
+    .form-group.row
+      .col-md-offset-2.col-md-10
+        = f.submit nil, class: 'btn btn-primary'
 
 :javascript
-
-  $('#file_upload').fileupload();
-
-  
-
 
   $('.upcase').on('input',function(evt){ 
     var node = $(this);

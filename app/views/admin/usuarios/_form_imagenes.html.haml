@@ -1,35 +1,38 @@
-#progress
-  .bar{style: "width: 0%;height: 18px;background: green;"}
-
+%h6.titulo Imágenes de Soportes:
 - if @usuario and @usuario.eql? current_usuario
   - warning = !(@usuario.foto_perfil and @usuario.foto_perfil.attached?) ? 'alert-warning' : ''
   %div{class: warning}
     .form-group.row
-      = f.label :foto_perfil, class: 'col-form-label col-md-3 text-right', value: 'Foto de Perfil:'
+      = label_tag nil, :foto_perfil, class: 'col-form-label col-md-3 text-right', value: 'Foto de Perfil:'
       .col-md-9
         - if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?) 
-          - value_url = main_app.url_for(@usuario.foto_perfil)
-          = image_tag value_url, width: '100px', class: 'border p-1'
+          - value_url = @usuario.foto_perfil_blob.filename  if @usuario.foto_perfil_blob#
+          = image_tag main_app.url_for(@usuario.foto_perfil), width: '100px', class: 'border p-1', id: 'imgFotoPerfil'
           =# f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*", value: value_url}
-          = f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file fileUpload', required: true, accept: "image/*", id: 'fileUpload'}
         - else
-          = f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*", id: 'fileUpload'}
+          = value_url = nil
+        = file_field_tag '[usuario]foto_perfil', {class: 'btn btn-sm btn-secondary form-control form-control-file fileUpload', required: true, accept: "image/*", value: value_url, progressBarId: 'progressFotoPerfil', preview: 'imgFotoPerfil'}
+        .progress#progressFotoPerfil
+          .progress-bar.progress-bar-striped.progress-bar-animated{role: 'progressbar', 'aria-valuenow': 0, 'aria-valuemin': 0, 'aria-valuemax': 100, style: 'width:0%'}
+
     .form-group.row
       .col-md-3
       .col-md-9
         %b.text-muted= "Suba una foto tipo carnet, de frente y con fondo blanco únicamente."
   - if  @usuario.estudiante
-    - warning = !(@usuario.foto_perfil and @usuario.foto_perfil.attached?) ? 'alert-warning' : ''
+    - warning = !(@usuario.imagen_ci and @usuario.imagen_ci.attached?) ? 'alert-warning' : ''
     %div{class: warning}
       .form-group.row
-        = f.label :imagen_ci, class: 'col-form-label col-md-3 text-right', value: 'Imagen de la Cédula de Identidad:'
+        = label_tag nil, :imagen_ci, class: 'col-form-label col-md-3 text-right', value: 'Imagen de la Cédula de Identidad:'
         .col-md-9
           - if (@usuario and @usuario.imagen_ci and @usuario.imagen_ci.attached?) 
-            - value_url = main_app.url_for(@usuario.imagen_ci)
-            = image_tag value_url, width: '100px', class: 'border p-1'
-            = f.file_field :imagen_ci, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*", value: value_url}
+            - value_url = @usuario.imagen_ci_blob.filename if @usuario.imagen_ci_blob#main_app.url_for(@usuario.foto_perfil)
+            = image_tag main_app.url_for(@usuario.imagen_ci), width: '100px', class: 'border p-1', id: 'imgCi'
           - else
-            = f.file_field :imagen_ci, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*"}
+            - value_url = nil
+          = file_field_tag '[usuario]imagen_ci', {class: 'btn btn-sm btn-secondary form-control form-control-file fileUpload', required: true, accept: "image/*", value: value_url, progressBarId: 'progressImageCi', preview: 'imgCi'}
+          .progress#progressImageCi
+            .progress-bar.progress-bar-striped.progress-bar-animated{role: 'progressbar', 'aria-valuenow': 0, 'aria-valuemin': 0, 'aria-valuemax': 100, style: 'width:0%'}
 
       .form-group.row
         .col-md-3
@@ -39,4 +42,43 @@
   .float-right
     = image_tag main_app.url_for(@usuario.imagen_ci), width: '100px', class: 'm-3 p-1 border' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
     = image_tag main_app.url_for(@usuario.foto_perfil), width: '100px', class: 'border p-1' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
+
+:javascript
+
+  $('.fileUpload').fileupload({
+    progress: function(e, data) {
+      var progress = parseInt(data.loaded / data.total * 100, 10);
+      var idProgress = $(this).attr('progressBarId')
+      $('#'+idProgress+' .progress-bar').css(
+        'width',
+        progress + '%'
+      );
+      $('#'+idProgress+' .progress-bar').attr(
+        'aria-valuenow',
+        progress
+      );
+
+
+    },
+    dataType: 'json',
+    done: function(e, data) {
+      var idProgress = $(this).attr('progressBarId')
+      var imgPreview = $(this).attr('preview')
+      console.log('COMPLETADO!');
+      console.log(data);
+      console.log(e);
+      console.log('FIN!');
+
+      $('#'+idProgress+' .progress-bar').css('width','0%');
+      $('#'+imgPreview+'').attr('src', data.result.url);
+      $(this).hide();
+
+
+    },
+    fail: function(e, data){
+      console.log(data);
+      alert(data._response.errorThrown);
+    ;}
+
+  });
 

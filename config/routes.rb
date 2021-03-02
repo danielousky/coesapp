@@ -191,6 +191,7 @@ Rails.application.routes.draw do
       end
       member do
         get 'delete_rol'
+        post 'update_images'
         post 'set_estudiante'
         post 'set_administrador'
         post 'set_profesor'
