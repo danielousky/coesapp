@@ -21,6 +21,12 @@
  *= require select2
  *= require select2-bootstrap
  *= require toastr
+ 
+ *= require jquery.fileupload
+ *= require jquery.fileupload-ui
+ *= require jquery.fileupload-noscript
+ *= require jquery.fileupload-ui-noscript
+
  *= require_tree .
  *= require_self
 

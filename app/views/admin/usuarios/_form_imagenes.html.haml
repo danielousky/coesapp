@@ -1,3 +1,6 @@
+#progress
+  .bar{style: "width: 0%;height: 18px;background: green;"}
+
 - if @usuario and @usuario.eql? current_usuario
   - warning = !(@usuario.foto_perfil and @usuario.foto_perfil.attached?) ? 'alert-warning' : ''
   %div{class: warning}
@@ -7,9 +10,10 @@
         - if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?) 
           - value_url = main_app.url_for(@usuario.foto_perfil)
           = image_tag value_url, width: '100px', class: 'border p-1'
-          = f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*", value: value_url}
+          =# f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*", value: value_url}
+          = f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file fileUpload', required: true, accept: "image/*", id: 'fileUpload'}
         - else
-          = f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*"}
+          = f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*", id: 'fileUpload'}
     .form-group.row
       .col-md-3
       .col-md-9
@@ -35,3 +39,4 @@
   .float-right
     = image_tag main_app.url_for(@usuario.imagen_ci), width: '100px', class: 'm-3 p-1 border' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
     = image_tag main_app.url_for(@usuario.foto_perfil), width: '100px', class: 'border p-1' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
+

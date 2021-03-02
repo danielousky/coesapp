@@ -21,6 +21,7 @@ gem 'toastr-rails'
 
 
 gem 'mini_magick'
+gem "jquery-fileupload-rails"
 
 
 gem 'prawn'
