@@ -9,7 +9,7 @@ class Grado < ApplicationRecord
 	belongs_to :escuela
 	belongs_to :estudiante
 	belongs_to :plan, optional: true
-	belongs_to :reportepago, optional: true
+	belongs_to :reportepago, optional: true, dependent: :destroy
 
 	has_many :historialplanes, foreign_key: [:escuela_id, :estudiante_id]
 	

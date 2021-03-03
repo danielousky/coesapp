@@ -1,61 +1,37 @@
 %h6.titulo Imágenes de Soportes:
-- if @usuario and @usuario.eql? current_usuario
-  - warning = !(@usuario.foto_perfil and @usuario.foto_perfil.attached?) ? 'alert-warning' : ''
-  %div{class: warning}
-    .form-group.row
-      = label_tag nil, :foto_perfil, class: 'col-form-label col-md-3 text-right', value: 'Foto de Perfil:'
-      .col-md-9
-        - if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?) 
-          - value_url = @usuario.foto_perfil_blob.filename  if @usuario.foto_perfil_blob#
-          = image_tag main_app.url_for(@usuario.foto_perfil), width: '100px', class: 'border p-1', id: 'imgFotoPerfil'
-          =# f.file_field :foto_perfil, {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*", value: value_url}
-        - else
-          = value_url = nil
-        = file_field_tag '[usuario]foto_perfil', {class: 'btn btn-sm btn-secondary form-control form-control-file fileUpload', required: true, accept: "image/*", value: value_url, progressBarId: 'progressFotoPerfil', preview: 'imgFotoPerfil'}
-        .progress#progressFotoPerfil
-          .progress-bar.progress-bar-striped.progress-bar-animated{role: 'progressbar', 'aria-valuenow': 0, 'aria-valuemin': 0, 'aria-valuemax': 100, style: 'width:0%'}
 
-    .form-group.row
-      .col-md-3
-      .col-md-9
-        %b.text-muted= "Suba una foto tipo carnet, de frente y con fondo blanco únicamente."
+.alert.alert-warning
+  %b IMPORTANTE: 
+  = "Debido a los inconvenientes de conectividad en el país, recomendamos encarecidamente subir archivos de baja resolución (menores a 1 MegaByte), de ser posible capturas de pantalla. Si al intentar subir el archivo adjunto el sistema genera un error o tarda más de 3 minutos en responder, puede intentar nuevamente el proceso con un archivo más liviano o enviarlo al correo electrónico #{link_to 'algaramirlay@gmail.com'} directamente al personal administrativo para brindarle el apoyo respectivo.".html_safe
+
+= form_tag(update_images_usuario_path, class: 'form-horizontal') do
+  = render partial: 'layouts/imagen_estructura', locals: {objeto: @usuario.foto_perfil, titulo: 'Foto de Perfil:' , mensaje: "Suba una foto tipo carnet, de frente y con fondo blanco únicamente."}
   - if  @usuario.estudiante
-    - warning = !(@usuario.imagen_ci and @usuario.imagen_ci.attached?) ? 'alert-warning' : ''
-    %div{class: warning}
-      .form-group.row
-        = label_tag nil, :imagen_ci, class: 'col-form-label col-md-3 text-right', value: 'Imagen de la Cédula de Identidad:'
-        .col-md-9
-          - if (@usuario and @usuario.imagen_ci and @usuario.imagen_ci.attached?) 
-            - value_url = @usuario.imagen_ci_blob.filename if @usuario.imagen_ci_blob#main_app.url_for(@usuario.foto_perfil)
-            = image_tag main_app.url_for(@usuario.imagen_ci), width: '100px', class: 'border p-1', id: 'imgCi'
-          - else
-            - value_url = nil
-          = file_field_tag '[usuario]imagen_ci', {class: 'btn btn-sm btn-secondary form-control form-control-file fileUpload', required: true, accept: "image/*", value: value_url, progressBarId: 'progressImageCi', preview: 'imgCi'}
-          .progress#progressImageCi
-            .progress-bar.progress-bar-striped.progress-bar-animated{role: 'progressbar', 'aria-valuenow': 0, 'aria-valuemin': 0, 'aria-valuemax': 100, style: 'width:0%'}
-
-      .form-group.row
-        .col-md-3
-        .col-md-9
-          %b.text-muted= "Suba una foto perfectamente legible de su cédula de identidad."
-- else
-  .float-right
-    = image_tag main_app.url_for(@usuario.imagen_ci), width: '100px', class: 'm-3 p-1 border' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
-    = image_tag main_app.url_for(@usuario.foto_perfil), width: '100px', class: 'border p-1' if (@usuario and @usuario.foto_perfil and @usuario.foto_perfil.attached?)
+    = render partial: 'layouts/imagen_estructura', locals: {objeto: @usuario.imagen_ci, titulo: 'Imagen CI:' , mensaje: "Suba una foto perfectamente legible de su cédula de identidad."}
 
 :javascript
+  $('.file_Upload').bind('change', function (e) {
+      $('#fileupload').fileupload('add', {
+          files: e.target.files || [{name: this.value}],
+          fileInput: $(this)
+      });
+  });
+
 
   $('.fileUpload').fileupload({
+
     progress: function(e, data) {
       var progress = parseInt(data.loaded / data.total * 100, 10);
       var idProgress = $(this).attr('progressBarId')
+      console.log(data);
+      console.log(progress);
       $('#'+idProgress+' .progress-bar').css(
         'width',
         progress + '%'
       );
       $('#'+idProgress+' .progress-bar').attr(
         'aria-valuenow',
-        progress
+        progress + '%'
       );
 
 
@@ -72,6 +48,12 @@
       $('#'+idProgress+' .progress-bar').css('width','0%');
       $('#'+imgPreview+'').attr('src', data.result.url);
       $(this).hide();
+      $('#'+idProgress).hide();
+      var result = $('#'+$(this).attr('result'));
+      result.text("¡Imagen agregada con éxito!")
+      result.addClass('text-success')
+      result.removeClass('text-muted')
+
 
 
     },

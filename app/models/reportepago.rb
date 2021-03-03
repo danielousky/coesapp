@@ -1,7 +1,7 @@
 class Reportepago < ApplicationRecord
 
-  has_one :inscripcionescuelaperiodo, dependent: :destroy
-  has_one :grado, dependent: :destroy
+  has_one :inscripcionescuelaperiodo
+  has_one :grado 
 
   belongs_to :banco_origen, foreign_key: 'banco_origen_id', class_name: 'Banco'
   

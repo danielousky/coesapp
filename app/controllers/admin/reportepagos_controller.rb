@@ -92,10 +92,10 @@ module Admin
 
       def resize_image
 
-        aux = params[:usuario][:imagen_ci]
+        aux = params[:reportepago][:respaldo]
 
         if aux #and aux.byte_size > 1.megabyte
-          mini_image = MiniMagick::Image.new(params[:usuario][:imagen_ci].tempfile.path)
+          mini_image = MiniMagick::Image.new(params[:reportepago][:respaldo].tempfile.path)
           mini_image.resize '400x400'
         end
 

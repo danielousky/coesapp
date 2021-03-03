@@ -1,9 +1,8 @@
 .border.p-3
-  = form_tag(update_images_usuario_path, class: 'form-horizontal') do
+  - if current_estudiante and @usuario.estudiante and (current_usuario.ci.eql? @usuario.ci) and (@usuario.ci.eql? @usuario.password)
     = render partial: '/admin/usuarios/form_imagenes'
 
   = form_for @usuario, html: { class: 'form-horizontal' } do |f|
-
     - if current_estudiante and @usuario.estudiante and (current_usuario.ci.eql? @usuario.ci) and (@usuario.ci.eql? @usuario.password)
       = render partial: '/admin/estudiantes/form_new_estudiante', locals: {f: f}
     - else

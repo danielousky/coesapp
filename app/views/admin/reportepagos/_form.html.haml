@@ -1,4 +1,4 @@
-= form_for @reportepago, multipart: true do |f|
+= form_for @reportepago, multipart: true, 'data-remote': true do |f|
   - if @reportepago.errors.any?
     .alert.alert-danger
       %h2= "#{pluralize(@reportepago.errors.count, "error")} prohibited this reportepago from being saved:"
@@ -6,51 +6,89 @@
         - @reportepago.errors.full_messages.each do |message|
           %li= message
   .border.p-3.mb-3
+    .datos
+      = hidden_field_tag :inscripcionescuelaperiodo_id, @inscripcionescuelaperiodo_id if @inscripcionescuelaperiodo_id
+      = hidden_field_tag :grado_id, @grado_id if @grado_id
+      .form-group.row
+        .col-md-2{style: 'text-align: right;'}= f.label :numero, nil, value: 'Número de Transacción'
+        .col-md-10= f.text_field :numero, class: 'form-control upcaseOlyNumber', placeholder: 'Número Transacción', required: true
+      .form-group.row
+        .col-md-2{style: 'text-align: right;'}= f.label :monto, nil, value: 'Monto'
+        .col-md-10= f.number_field :monto, class: 'form-control', placeholder: 'Monto', required: true
 
-    = hidden_field_tag :inscripcionescuelaperiodo_id, @inscripcionescuelaperiodo_id if @inscripcionescuelaperiodo_id
-    = hidden_field_tag :grado_id, @grado_id if @grado_id
+      .form-group.row
+        .col-md-2{style: 'text-align: right;'}= f.label :banco_origen, nil, value: 'Banco Origen'
+        .col-md-10
+          = f.select(:banco_origen_id, Banco.all.collect{|o| [ o.nombre, o.id] }, { include_blank: 'Seleccione Banco Origen...'}, {class: "form-control", required: true})
+      .form-group.row
+        .col-md-2{style: 'text-align: right;'}= f.label :tipo_transaccion, nil, value: 'Tipo de Transacción'
+        .col-md-10
+          .form-control
+            = f.radio_button :tipo_transaccion, :transferencia, required: true
+            Transferencia
+            = f.radio_button :tipo_transaccion, :deposito, required: true
+            Depósito
+      .form-group.row
+        .col-md-2{style: 'text-align: right;'}= f.label :fecha_transaccion, nil, value: 'Fecha de Transacción'
 
-    .form-group.row
-      .col-md-2{style: 'text-align: right;'}= f.label :numero, nil, value: 'Número de Transacción'
-      .col-md-10= f.text_field :numero, class: 'form-control upcaseOlyNumber', placeholder: 'Número Transacción', required: true
-    .form-group.row
-      .col-md-2{style: 'text-align: right;'}= f.label :monto, nil, value: 'Monto'
-      .col-md-10= f.number_field :monto, class: 'form-control', placeholder: 'Monto', required: true
+        .col-md-10= f.date_field :fecha_transaccion, required: true, placeholder: 'Fecha', class: 'form-control', required: true
+    %hr
+    .respaldoImagen
+      .alert.alert-warning.text-justify
+        %b IMPORTANTE: 
+        = "Debido a los inconvenientes de conectividad en el país, recomendamos encarecidamente subir archivos de baja resolución (menores a 1 MegaByte), de ser posible capturas de pantalla. Si al intentar subir el archivo adjunto el sistema genera un error o tarda más de 3 minutos en responder, puede intentar nuevamente el proceso con un archivo más liviano o enviarlo al correo electrónico #{link_to 'algaramirlay@gmail.com'} directamente al personal administrativo para brindarle el apoyo respectivo.".html_safe
 
-    .form-group.row
-      .col-md-2{style: 'text-align: right;'}= f.label :banco_origen, nil, value: 'Banco Origen'
-      .col-md-10
-        = f.select(:banco_origen_id, Banco.all.collect{|o| [ o.nombre, o.id] }, { include_blank: 'Seleccione Banco Origen...'}, {class: "form-control", required: true})
-    .form-group.row
-      .col-md-2{style: 'text-align: right;'}= f.label :tipo_transaccion, nil, value: 'Tipo de Transacción'
-      .col-md-10
-        .form-control
-          = f.radio_button :tipo_transaccion, :transferencia, required: true
-          Transferencia
-          = f.radio_button :tipo_transaccion, :deposito, required: true
-          Depósito
-    .form-group.row
-      .col-md-2{style: 'text-align: right;'}= f.label :fecha_transaccion, nil, value: 'Fecha de Transacción'
+      .form-group.row
+        .col-md-2{style: 'text-align: right;'}= f.label :respaldo, nil, value: 'Imagen de respaldo'
 
-      .col-md-10= f.date_field :fecha_transaccion, required: true, placeholder: 'Fecha', class: 'form-control', required: true
-    .form-group.row
-      .col-md-2{style: 'text-align: right;'}= f.label :respaldo, nil, value: 'Imagen de respaldo'
-
-      .col-md-10
-        = f.file_field 'respaldo', {class: 'btn btn-sm btn-secondary form-control form-control-file', required: true, accept: "image/*"}
-        .text-muted= "<b>Atención:</b> Solo se perimiten imágenes. Sí su soporte se encuentra en formato PDF, por favor haga una captura de la pantalla y luego suba la imagen correspondiente.".html_safe
+        .col-md-10
+          = f.file_field 'respaldo', {class: 'btn btn-sm btn-secondary form-control form-control-file', accept: "image/*", size: "1", id: 'fileUpload'}
+          .text-muted= "<b>Atención:</b> Solo se perimiten imágenes. Sí su soporte se encuentra en formato PDF, por favor haga una captura de la pantalla y luego suba la imagen correspondiente.".html_safe
 
     .form-group.row
       .col-md-2{style: 'text-align: right;'}= btn_atras principal_estudiante_index_path
       .col-md-10
-        = button_tag 'reportepago[commit]', type: :submit, class: 'btn btn-sm btn-success' do
+        = button_tag 'reportepago[commit]', type: :submit, class: 'btn btn-sm btn-success', id: 'submitReportePago' do
           = glyph 'chevron-right'
           Guargar Reporte
 
-:javascript
+- if false
+  :javascript
 
-  $('.upcaseOlyNumber').on('input',function(evt){ 
-    var node = $(this);
-    node.val(node.val().replace(/[^0-9]/g,'') );
-    node.val(node.val().toUpperCase());
-    });  
+    $('#submitReportPago').click(function(e){
+            
+        let form = $(this).parents('form')[0] 
+            
+        if (form.checkValidity() == true) {   
+          let = confi = confirm('Una vez que guardes las calificaciones no podrás cambiar su valor, ¿Estás Seguro?')  
+          if (confi === false) {
+            e.preventDefault()
+            e.stopPropagation()
+          } 
+        }   
+      })  
+
+
+
+    $('#file_upload').fileupload({
+        processQueue: [
+            {
+                action: 'loadImage',
+                fileTypes: /^image\/(jpeg|png)$/,
+                maxFileSize: 5000000 // 500kB
+            },
+            {
+                action: 'resizeImage',
+                maxWidth: 400,
+                maxHeight: 400
+            },
+            {action: 'saveImage'}
+        ]
+    });
+
+
+    $('.upcaseOlyNumber').on('input',function(evt){ 
+      var node = $(this);
+      node.val(node.val().replace(/[^0-9]/g,'') );
+      node.val(node.val().toUpperCase());
+      });  

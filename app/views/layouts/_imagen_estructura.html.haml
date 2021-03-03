@@ -1,0 +1,21 @@
+
+- if @usuario and @usuario.eql? current_usuario
+  - nombre = objeto.name
+  - warning = !(objeto and objeto.attached?) ? 'alert-warning' : ''
+  %div{class: warning}
+    .form-group.row
+      = label_tag nil, nombre, class: 'col-form-label col-md-3 text-right', value: titulo
+      .col-md-9
+        - image_value = (objeto and objeto.attached?) ? main_app.url_for(objeto) : "#{nombre}_default.png"
+        = image_tag image_value, width: '100px', class: 'border p-1', id: "img#{nombre}"
+        = file_field_tag "[usuario]#{nombre}", {class: 'btn btn-sm btn-secondary form-control form-control-file fileUpload', required: true, accept: "image/*", progressBarId: "progress#{nombre}", preview: "img#{nombre}", result: "result#{nombre}"}
+        .progress{id: "progress#{nombre}"}
+          .progress-bar.progress-bar-striped.progress-bar-animated{role: 'progressbar', 'aria-valuenow': 0, 'aria-valuemin': 0, 'aria-valuemax': 100, style: 'width:0%'}
+
+    .form-group.row
+      .col-md-3
+      .col-md-9
+        %b.text-muted{id: "result#{nombre}"}= mensaje
+- else
+  .float-right
+    = image_tag main_app.url_for(objeto), width: '100px', class: 'm-3 p-1 border' if (objeto and objeto.attached?)
