@@ -30,12 +30,15 @@
         = glyph 'road'
         Bitácora
 
-    - if !@estudiante and current_admin and (current_admin.autorizado? 'Usuarios', 'set_estudiante')
+    - if current_admin and (current_admin.autorizado? 'Usuarios', 'set_estudiante' or current_admin.autorizado? 'Grados', 'agregar')
+      = render '/admin/usuarios/set_estudiante'
+    
+    - if !@estudiante and current_admin and (current_admin.autorizado? 'Usuarios', 'set_estudiante' or current_admin.autorizado? 'Grados', 'agregar')
+
       = link_to "javascript:void(0)", "data-toggle": :tooltip, class: "text-success nav-item nav-link tooltip-btn", title: "Registrar a #{@nickname} como Estudiante", onclick: "$('#agregarGrado').modal();" do
         = glyph 'plus'
         = glyph 'education'
         Estudiante
-      = render '/admin/usuarios/set_estudiante'
 
     - if !@administrador and current_admin.maestros?
       = link_to "javascript:void(0)", "data-toggle": :tooltip, class: "text-success nav-item nav-link tooltip-btn", title: "Registrar a #{@nickname} como Administrador", onclick: "$('#setAdmin').modal();" do
@@ -70,7 +73,7 @@
               = link_to "#pane_#{escuela.id}", "data-toggle": :tab, class: "nav-item nav-link #{activeTab}", onclick: "setTab('tabEscuela', '#{escuela.id}')" do
                 = "#{escuela.descripcion.titleize}"
             .nav-item.nav-link
-              - if (current_admin and current_admin.autorizado? 'Grados', 'agregar') #@escuelas_disponibles.any?
+              - if current_admin and (current_admin.autorizado? 'Usuarios', 'set_estudiante' or current_admin.autorizado? 'Grados', 'agregar')
                 = simple_icon_toggle_modal "Registrar a #{@nickname} en una Escuela", 'success', 'plus', 'agregarGrado'
         .tab-content
           - if @secciones_pci_pendientes.any?
