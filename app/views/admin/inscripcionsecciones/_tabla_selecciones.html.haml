@@ -1,3 +1,4 @@
+- disabledConfirmar = true
 #seleccion
 	%h6.titulo.mt-3= "Asignaturas seleccionadas:"
 	.p-3
@@ -16,10 +17,11 @@
 						%th
 			%tbody
 				- if @inscripciones and @inscripciones.any?
+					- disabledConfirmar = false
 					- @inscripciones.each do |ins| 
 						= render partial: '/admin/inscripcionsecciones/tr_selecciones', locals: {ins: ins, escuelas: @escuelas}
 					%tr.font-weight-bold#trTotalCreditos{style: 'text-align: right;font-weight: bold;'} 
 						%td{colspan: 7} Total U. Créditos
 						%td.text-right#totalCreditosNumero= @inscripciones.total_creditos 
 
-		%div{style: 'max-width: 400px; margin: 0 auto 10px;'}= submit_tag 'Confirmar', class: 'btn btn-large btn-block btn-success', 'data-confirm' => '¿Confirma que desea completar la inscripción?', disabled: true, id: 'btn-confirmacion'
+		%div{style: 'max-width: 400px; margin: 0 auto 10px;'}= submit_tag 'Confirmar inscripción', class: 'btn btn-large btn-block btn-success', 'data-confirm': "¿Confirma que desea completar el proceso de inscripción en el estudiante: #{@estudiante.usuario.descripcion_apellido} para el Período #{current_periodo.id} y para #{@escuela.descripcion}?", disabled: disabledConfirmar, id: 'btn-confirmacion'

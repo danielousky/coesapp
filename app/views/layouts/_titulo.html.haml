@@ -5,5 +5,6 @@
 	
 	= raw (@titulo ? @titulo : action_name.titleize)
 
-	- if current_admin and current_admin.autorizado? 'inscripcionsecciones', 'inscribir' 
-		= simple_toggle buscar_estudiante_inscripcionsecciones_path, '', 'Inscribir Estudiante', 'success float-left ml-md-1', 'education'
+	- if false #OJO: Se está retirando esta función ya que es indispinsble incluir la escuela a la cual se esá inscribiendo
+		- if current_admin and current_admin.autorizado? 'inscripcionsecciones', 'inscribir' 
+			= simple_toggle buscar_estudiante_inscripcionsecciones_path, '', 'Inscribir Estudiante', 'success float-left ml-md-1', 'education'

@@ -45,9 +45,15 @@ class Seccion < ApplicationRecord
 
 	scope :con_cupos, -> {joins(:inscripcionsecciones).group('secciones.id').having('count(inscripcionsecciones.id) < secciones.capacidad').order('count(inscripcionsecciones.id)')}
 
+	scope :order_by_total_inscripciones, -> {joins(:inscripcionsecciones).order('inscripcionsecciones.id')}
+
 	# scope :order_by_total_inscripciones, -> {joins(:inscripcionsecciones).order('inscripcionsecciones.')}
 
 	# FUNCIONES:
+
+	def escuelaperiodo
+		Escuelaperiodo.where(periodo_id: self.periodo_id, escuela_id: self.escuela.id).first
+	end
 
 	# FUNCION Temporal de actualizacion de Periodos E y S
 	def self.actualizar_periodos

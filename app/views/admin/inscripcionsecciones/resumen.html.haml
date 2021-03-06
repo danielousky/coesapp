@@ -1,5 +1,7 @@
 %br
 .titulo= "Estudiante: #{@estudiante.usuario.descripcion}"
+%h5.pt-2= @label_inscripcionperiodo
+
 %table
 	%tr
 		%td= link_to 'Inscribir otro Estudiante', buscar_estudiante_inscripcionsecciones_path, class: 'btn btn-success'

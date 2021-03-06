@@ -14,7 +14,7 @@
 		- grado = @estudiante.grados.where(escuela_id: escuela.id).first
 		- @escuela = escuela
 
-		- if current_usuario.eql? @estudiante.usuario and grado and grado.reportepago.nil? and grado.preinscrito? and !grado.inscripciones.any? 
+		- if current_usuario.eql? @estudiante.usuario and grado and (!escuela.id.eql? 'POST') and grado.reportepago.nil? and grado.preinscrito? and !grado.inscripciones.any? 
 			- @grado_id = grado.id
 			- @reportepago = Reportepago.new
 			- content = render partial: "/admin/reportepagos/form"
@@ -64,7 +64,7 @@
 							%h6
 								%b Atención: 
 								Aún no reporta el pago de su inscripción. Recuerde que es un paso indispensable para completar su preinscripción. Haga clic 
-								= link_to 'aqui', new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodo.id)
+								= link_to 'aquí', new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodo.id)
 								para reportar el pago
 						= link_to new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodo.id), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
 							= glyph 'chevron-right'

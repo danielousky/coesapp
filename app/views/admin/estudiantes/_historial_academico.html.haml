@@ -1,6 +1,9 @@
 .border.mt-3.p-3
 	%table.mb-3.flex-column
 		%tr
+
+			- if @estudiante #and @estudiante.valido_para_inscribir? current_periodo.id
+				%td= btn_inscribir "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", 'Inscripción del periodo actual', 'Inscribir'
 			- if @inscripciones.any?
 				%td= btn_success 'download-alt', "#{kardex_descargar_path(@estudiante.id)}?escuela_id=#{@escuela.id}", "Descargar Kardex de #{@nickname}", 'Kardex'
 				- if current_estudiante or @inscripciones.del_periodo(current_periodo.id).any?
@@ -41,9 +44,10 @@
 											Reporte de Pago: 
 											= ins_esc_per.reportepago.numero
 									- else
-										.badge.badge-danger
-											= glyph 'remove'
-											Sin Reporte de Pago
+										= link_to new_reportepago_path(inscripcionescuelaperiodo_id: ins_esc_per.id) do
+											.badge.badge-danger
+												= glyph 'remove'
+												Sin Reporte de Pago
 
 					.collapse{id: "collapse#{periodo.id}", "aria-labelledby": "heading#{periodo.id}", "data-parent": "#accordion", "data-toggle": false}
 						.card-body

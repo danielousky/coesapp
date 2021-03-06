@@ -10,7 +10,6 @@
 			- if @foraneas
 				%th Período
 			%th.align-middle Asignatura
-			%th.align-middle Est. Ins
 			%th.align-middle Sección
 			%th.align-middle UC
 			%th.align-middle Profesor Princial
@@ -37,8 +36,6 @@
 					.badge.badge-info= 'Retirada' if retirado #inscripcion.retirado?
 					.badge.badge-info= 'PCI' if false #inscripcion.seccion.asignatura.pci? inscripcion.seccion.periodo_id
 					= raw inscripcion.label_pci
-					
-				%td.align-middle.text-center= inscripcion.tipo_estado_inscripcion_id
 				%td.align-middle.text-center= inscripcion.seccion.numero
 				%td.align-middle.text-right= inscripcion.seccion.asignatura.creditos
 				- if current_admin

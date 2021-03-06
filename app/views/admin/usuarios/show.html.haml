@@ -72,9 +72,6 @@
             .nav-item.nav-link
               - if (current_admin and current_admin.autorizado? 'Grados', 'agregar') #@escuelas_disponibles.any?
                 = simple_icon_toggle_modal "Registrar a #{@nickname} en una Escuela", 'success', 'plus', 'agregarGrado'
-                
-            - if @estudiante #and @estudiante.valido_para_inscribir? current_periodo.id
-              .nav-item= btn_inscribir seleccionar_inscripcionseccion_path(@estudiante), 'Inscripción del periodo actual', 'Inscribir'
         .tab-content
           - if @secciones_pci_pendientes.any?
             .tab-pane.border.p-3.border-top-0{id: "pane_PCI", class: activeTabPCI}            

@@ -10,6 +10,10 @@ module Admin
 
 		before_action :filtro_autorizado#, except: [:buscar_estudiante, :seleccionar, :resumen]
 		before_action :set_inscripcionseccion, only: [:cambiar_seccion]
+		before_action :set_estudiante, only: [:seleccionar, :inscribir, :resumen]
+		before_action :set_escuela, only: [:seleccionar, :inscribir]
+		before_action :get_inscripcionperiodo, only: [:seleccionar, :resumen]
+		before_action :set_label_inscripcionperiodo, only: [:seleccionar, :resumen]
 
 		# def set_pci
 		# 	inscripcion = Inscripcionseccion.find params[:inscripcionseccion_id]
@@ -70,7 +74,7 @@ module Admin
 								params[:seleccion].each_pair do |k, asig_id|
 									asignatura = Asignatura.find(asig_id)
 									# seccion = asignatura.secciones.del_periodo(periodo_id).first
-									unless seccion = asignatura.secciones.del_periodo(periodo_id).con_cupos.first
+									unless seccion = asignatura.secciones.del_periodo(periodo_id).reject{|sec| sec.inscripcionsecciones.count >= sec.capacidad}.first
 										flash[:warning] += "Sin cupos disponibles para la asignatura: #{asignatura.descripcion} en el período #{periodo_id}"
 									else
 
@@ -90,7 +94,12 @@ module Admin
 
 								end
 
-								flash[:info] = "Proceso de inscripción completado con éxito. Total preinscritas: #{total_inscritas}. "
+								if total_inscritas.eql? 0
+									ins_periodo.destroy
+									flash[:danger] = "No se completó ninguna inscripción. Por favor inténtelo nuevamente."
+								else
+									flash[:info] = "Proceso de inscripción completado con éxito. Total preinscritas: #{total_inscritas}. "
+								end
 
 								# reporte = Reportepago.new()
 								# reporte.numero = params[:reportepago][:numero]
@@ -114,8 +123,8 @@ module Admin
 			rescue Exception => e
 				flash[:danger] = e
 			end
-			flash[:danger] = nil if flash[:danger].eql? ''
-			flash[:warning] = nil if flash[:danger].eql? ''
+			flash[:danger] = nil if flash[:danger].blank?
+			flash[:warning] = nil if flash[:danger].blank?
 			redirect_back fallback_location: '/principal_estudiante'
 		end
 
@@ -249,10 +258,13 @@ module Admin
 		end
 
 		def seleccionar
-			unless @estudiante = Estudiante.where(usuario_id: params[:id]).limit(1).first
-				flash[:info] = "El estudiante no encontrado"
-				redirect_to action: 'buscar_estudiante'#, id: params[:id]
-			else 
+			if @estudiante.nil?
+				flash[:danger] = "El estudiante no encontrado."
+				redirect_back fallback_location: "/usuarios/#{parasm[:id]}" #action: 'index'#, id: params[:id]
+			elsif @escuela.nil?
+				flash[:danger] = "Por favor indique una escuela."
+				redirect_back fallback_location: "/usuarios/#{parasm[:id]}"				
+			else
 				session[:inscripcion_estudiante_id] = @estudiante.id
 				@asignatura = Asignatura.find session[:asignatura] if session[:asignatura]
 				
@@ -262,13 +274,10 @@ module Admin
 				if inscripciones
 					@ids_asignaturas = @inscripciones.collect{|i| i.seccion.asignatura_id} 
 					@ids_aprobadas = inscripciones.aprobadas.collect{|i| i.seccion.asignatura_id}
-
-					# p "  Resultado: #{session[:asignatura]}   ".center(200, "?")
-
             		@incritar_o_aprobadas = ((@ids_aprobadas and (@ids_aprobadas.include? session[:asignatura])) or (@ids_asignaturas and (@ids_asignaturas.include? session[:asignatura])))
 				end
 
-				@titulo = "Inscripción para el período #{current_periodo.id} - #{@ids_asignaturas.include? session[:asignatura]} - Paso 2 - Seleccionar Secciones"
+				@titulo = "Inscripción para el período #{current_periodo.id} - Seleccionar Secciones"
 
 				@escuelas = current_admin.escuelas.merge @estudiante.escuelas 
 
@@ -284,64 +293,118 @@ module Admin
 		def inscribir
 			secciones = params[:secciones]
 			guardadas = 0
-			id = params[:id]
+			# id = params[:id]
 			asignaturas_pci_error = []
 			asignaturas_impropias = []
-			begin
-				secciones.each_pair do |sec_id, pci_escuela_id|
-					seccion = Seccion.find sec_id
-					ins = Inscripcionseccion.new
-					ins.seccion_id = seccion.id
-					ins.estudiante_id = id
-					if pci_escuela_id and !(pci_escuela_id.eql? 'on')
 
-						unless seccion.pci?
-							# Error:
-							asignaturas_pci_error << seccion.asignatura_id
-						else
-							escuela = Escuela.find pci_escuela_id
-							ins.pci_escuela_id = escuela.id 
-							ins.escuela_id = escuela.id
-							ins.pci = true 
-						end
-					elsif ins.estudiante.escuelas.include? seccion.escuela
-						ins.escuela_id = seccion.escuela.id
-					else
-						asignaturas_impropias << seccion.asignatura_id
+			if @escuela.nil?
+				flash[:danger] = 'Por favor, indique una escuela a inscribir'
+				redirect_back fallback_location: "/usuarios/#{params[:id]}"
+			else
+				begin
+					flash[:success] = ''
+					flash[:danger] = ''
+					escuelaperiodo = Escuelaperiodo.where(escuela_id: params[:escuela_id], periodo_id: current_periodo.id).first
+					# Acá se puede usar el método find_or_create_by 
+					# @inscripciones_del_periodo = Inscripcionescuelaperiodo.find_or_create_by(escuelaperiodo_id: escuelaperiodo.id, estudiante)
+					# El tema es que debe incluirsele un tipo_estado_inscripcion_id por defecto que aún no está definido.
+
+					inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.del_periodo(current_periodo.id).de_la_escuela(params[:escuela_id]).first
+
+					if inscripcion_del_periodo.nil?
+						inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.new
+						inscripcion_del_periodo.escuela_id =  @escuela.id
+						inscripcion_del_periodo.periodo_id =  current_periodo.id
 					end
-					volumen = seccion.capacidad.to_i - seccion.total_estudiantes.to_i
+					inscripcion_del_periodo.tipo_estado_inscripcion_id = 'INS'
 
-					if volumen <= 0 and !(current_admin and current_admin.maestros?)
-						flash[:error] = "Se superó la capacidad de la sección por favor amplíela o indíquele a su superior para realizar la inscripción"
-					else
-						if ins.save
-							info_bitacora "Inscripción en #{ins.seccion.descripcion} (#{ins.asignatura.id}). Id inscripcion: #{ins.id}" , Bitacora::CREACION, ins.estudiante						
-							guardadas += 1
-						else
-							flash[:error] = "#{ins.errors.full_messages.join' | '}"
+					flash[:success] = "Inscripción en el período #{current_periodo.id} para la escuela #{escuelaperiodo.escuela.descripcion} realizada con éxito." if inscripcion_del_periodo.save
+
+					inscripcionsecciones = @estudiante.inscripciones.where(inscripcionescuelaperiodo_id: nil)
+					if inscripcionsecciones.any?
+						if inscripcionsecciones.update(inscripcionescuelaperiodo_id: inscripcion_del_periodo.id)
+							flash[:danger] += "  | Confirmas #{inscripcionsecciones.count} preinscripciones"
 						end
 					end
-					flash[:info] = "Para mayor información vaya al detalle del estudiante haciendo clic <a href='#{usuario_path(id)}' class='btn btn-primary btn-sm'>aquí</a> "
-				end 
-			rescue Exception => e
-				flash[:error] = "Error Excepcional: #{e}"
+
+					if secciones
+						secciones.each_pair do |sec_id, pci_escuela_id|
+							seccion = Seccion.find sec_id
+
+							ins = Inscripcionseccion.new
+							ins.seccion_id = seccion.id
+							ins.estudiante_id = @estudiante.id
+							ins.inscripcionescuelaperiodo_id = inscripcion_del_periodo.id
+
+							if pci_escuela_id and !(pci_escuela_id.eql? 'on')
+
+								unless seccion.pci?
+									# Error:
+									asignaturas_pci_error << seccion.asignatura_id
+								else
+									escuela = Escuela.find pci_escuela_id
+									ins.pci_escuela_id = escuela.id 
+									ins.escuela_id = escuela.id
+									ins.pci = true 
+								end
+
+							elsif ins.estudiante.escuelas.include? seccion.escuela
+								ins.escuela_id = seccion.escuela.id
+							else
+								asignaturas_impropias << seccion.asignatura_id
+							end
+							volumen = seccion.capacidad.to_i - seccion.total_estudiantes.to_i
+
+							if volumen <= 0 and !(current_admin and current_admin.maestros?)
+								flash[:danger] += "Se superó la capacidad de la sección por favor amplíela o indíquele a su superior para realizar la inscripción"
+							else
+								if ins.save
+									info_bitacora "Inscripción en #{ins.seccion.descripcion} (#{ins.asignatura.id}). Id inscripcion: #{ins.id}" , Bitacora::CREACION, ins
+									guardadas += 1
+								else
+									flash[:danger] += ins.errors.full_messages.to_sentence
+								end
+							end
+							flash[:info] = "Para mayor información vaya al detalle del estudiante haciendo clic <a href='#{usuario_path(@estudiante.id)}' class='btn btn-primary btn-sm'>aquí</a> "
+						end 
+
+						flash[:success] += " |  Estudiante inscrito desde admin en #{guardadas} seccion(es)"
+						flash[:danger] += "La(s) asignatura(s) con código(s): #{asignaturas_pci_error.to_sentence} se intenta(n) inscribir como PCI, sin embargo para este periodo no está(n) ofertada(s) como tal. Por favor, corrija el error e inténtelo de nuevo." if asignaturas_pci_error.any?
+						
+						flash[:danger] += "La(s) asignatura(s) con código(s): #{asignaturas_impropias.to_sentence} se intenta(n) inscribir inapropiadamente. Por favor, corrija el error e inténtelo nuevamente." if asignaturas_impropias.any?
+
+
+					end
+
+
+				rescue Exception => e
+					flash[:danger] += "Error general: #{e}"
+				end
+
+				flash[:success] = nil if flash[:success].blank?
+				flash[:danger] = nil if flash[:danger].blank?
+
 			end
-			flash[:success] = "Estudiante inscrito en #{guardadas} seccion(es)"
-			flash[:danger] = "La(s) asignatura(s) con código(s): #{asignaturas_pci_error.to_sentence} se intenta(n) inscribir como PCI, sin embargo para este periodo no está(n) ofertada(s) como tal. Por favor, corrija el error e inténtelo de nuevo." if asignaturas_pci_error.any?
-			
-			flash[:danger] = "La(s) asignatura(s) con código(s): #{asignaturas_impropias.to_sentence} se intenta(n) inscribir inapropiadamente. Por favor, corrija el error e inténtelo nuevamente." if asignaturas_impropias.any?
 
-			redirect_to action: :resumen, id: id
+			unless flash[:danger].blank?
+				redirect_back fallback_location: "/inscripcionsecciones/resumen?id=#{params[:id]}"
+			else
+				redirect_to action: :resumen, id: params[:id]
+			end
 
 		end
 
 		def resumen
 			session[:inscripcion_estudiante_id] = nil
-			id = params[:id]
-			@estudiante = Estudiante.find id
+			# id = params[:id]
+			# @estudiante = Estudiante.find id
 			@inscripciones = @estudiante.inscripcionsecciones.del_periodo(current_periodo.id)#.sort {|a,b| a.descripcion(current_periodo.id) <=> b.descripcion(current_periodo.id)}
 			# @secciones = @estudiante.inscripcionsecciones.del_periodo current_periodo.id
 			@titulo = "Inscripción para el período #{current_periodo.id} - Paso 3 - Resumen:"
+
+			inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.del_periodo(current_periodo.id).first
+
+			@label_inscripcionperiodo = "Estado de Inscripción: <div class= 'badge badge-info'>#{inscripcionperiodo.tipo_estado_inscripcion.descripcion.titleize}</div>".html_safe if (inscripcionperiodo and inscripcionperiodo.tipo_estado_inscripcion)
 
 		end
 
@@ -425,6 +488,22 @@ module Admin
 	        end
 		end
 		private
+
+
+		def set_escuela
+			@escuela = Escuela.find params[:escuela_id]
+		end
+
+		def get_inscripcionperiodo
+			@inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.del_periodo(current_periodo.id).first if @estudiante
+		end
+
+		def set_label_inscripcionperiodo
+			@label_inscripcionperiodo = "Estado de Inscripción:<div class= 'badge badge-info'>#{@inscripcionperiodo.tipo_estado_inscripcion.descripcion.titleize}</div>".html_safe if (@inscripcionperiodo and @inscripcionperiodo.tipo_estado_inscripcion)
+		end
+		def set_estudiante
+			@estudiante = Estudiante.where(usuario_id: params[:id]).limit(1).first
+		end
 
 		def set_inscripcionseccion
 			@inscripcionseccion = Inscripcionseccion.find(params[:id])

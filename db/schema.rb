@@ -189,7 +189,6 @@ ActiveRecord::Schema.define(version: 2021_02_24_192753) do
     t.string "escuela_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.binary "inscripcion_abierta", limit: 255
     t.index ["escuela_id", "periodo_id"], name: "index_escuelaperiodos_on_escuela_id_and_periodo_id", unique: true
     t.index ["escuela_id"], name: "index_escuelaperiodos_on_escuela_id"
     t.index ["periodo_id", "escuela_id"], name: "index_escuelaperiodos_on_periodo_id_and_escuela_id", unique: true
@@ -200,6 +199,7 @@ ActiveRecord::Schema.define(version: 2021_02_24_192753) do
     t.string "descripcion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "inscripcion_abierta", default: true
     t.boolean "habilitar_retiro_asignaturas", default: true
     t.boolean "habilitar_cambio_seccion", default: true
     t.string "periodo_inscripcion_id"
@@ -305,6 +305,57 @@ ActiveRecord::Schema.define(version: 2021_02_24_192753) do
     t.index ["estudiante_id", "seccion_id"], name: "index_inscripcionsecciones_on_estudiante_id_and_seccion_id", unique: true
     t.index ["estudiante_id"], name: "index_inscripcionsecciones_on_estudiante_id"
     t.index ["inscripcionescuelaperiodo_id"], name: "index_inscripcionsecciones_on_inscripcionescuelaperiodo_id"
+    t.index ["pci_escuela_id"], name: "fk_rails_24a264013f"
+    t.index ["seccion_id", "estudiante_id"], name: "index_inscripcionsecciones_on_seccion_id_and_estudiante_id", unique: true
+    t.index ["seccion_id"], name: "index_inscripcionsecciones_on_seccion_id"
+    t.index ["tipo_calificacion_id"], name: "fk_rails_d92b783c84"
+    t.index ["tipo_estado_calificacion_id"], name: "index_inscripcionsecciones_on_tipo_estado_calificacion_id"
+    t.index ["tipo_estado_inscripcion_id"], name: "index_inscripcionsecciones_on_tipo_estado_inscripcion_id"
+    t.index ["tipoasignatura_id"], name: "index_inscripcionsecciones_on_tipoasignatura_id"
+  end
+
+  create_table "inscripcionsecciones_copy", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "seccion_id"
+    t.string "estudiante_id"
+    t.string "tipo_estado_calificacion_id"
+    t.string "tipo_estado_inscripcion_id"
+    t.string "tipoasignatura_id"
+    t.float "primera_calificacion"
+    t.float "segunda_calificacion"
+    t.float "tercera_calificacion"
+    t.float "calificacion_final"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["estudiante_id", "seccion_id"], name: "index_inscripcionsecciones_on_estudiante_id_and_seccion_id", unique: true
+    t.index ["estudiante_id"], name: "index_inscripcionsecciones_on_estudiante_id"
+    t.index ["seccion_id", "estudiante_id"], name: "index_inscripcionsecciones_on_seccion_id_and_estudiante_id", unique: true
+    t.index ["seccion_id"], name: "index_inscripcionsecciones_on_seccion_id"
+    t.index ["tipo_estado_calificacion_id"], name: "index_inscripcionsecciones_on_tipo_estado_calificacion_id"
+    t.index ["tipo_estado_inscripcion_id"], name: "index_inscripcionsecciones_on_tipo_estado_inscripcion_id"
+    t.index ["tipoasignatura_id"], name: "index_inscripcionsecciones_on_tipoasignatura_id"
+  end
+
+  create_table "inscripcionsecciones_copy1", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "seccion_id"
+    t.string "estudiante_id"
+    t.string "tipo_estado_calificacion_id"
+    t.string "tipo_estado_inscripcion_id"
+    t.string "tipoasignatura_id"
+    t.float "primera_calificacion"
+    t.float "segunda_calificacion"
+    t.float "tercera_calificacion"
+    t.float "calificacion_final"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.float "calificacion_posterior"
+    t.integer "estado", default: 0, null: false
+    t.string "tipo_calificacion_id"
+    t.string "pci_escuela_id"
+    t.string "escuela_id"
+    t.boolean "pci", default: false
+    t.index ["escuela_id"], name: "index_inscripcionsecciones_on_escuela_id"
+    t.index ["estudiante_id", "seccion_id"], name: "index_inscripcionsecciones_on_estudiante_id_and_seccion_id", unique: true
+    t.index ["estudiante_id"], name: "index_inscripcionsecciones_on_estudiante_id"
     t.index ["pci_escuela_id"], name: "fk_rails_24a264013f"
     t.index ["seccion_id", "estudiante_id"], name: "index_inscripcionsecciones_on_seccion_id_and_estudiante_id", unique: true
     t.index ["seccion_id"], name: "index_inscripcionsecciones_on_seccion_id"
@@ -523,6 +574,18 @@ ActiveRecord::Schema.define(version: 2021_02_24_192753) do
   add_foreign_key "inscripcionsecciones", "tipo_estado_calificaciones", name: "inscripcionsecciones_ibfk_5", on_update: :cascade, on_delete: :nullify
   add_foreign_key "inscripcionsecciones", "tipo_estado_inscripciones", name: "inscripcionsecciones_ibfk_7", on_update: :cascade, on_delete: :nullify
   add_foreign_key "inscripcionsecciones", "tipoasignaturas", name: "inscripcionsecciones_ibfk_3", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "inscripcionsecciones_copy", "estudiantes", primary_key: "usuario_id", name: "inscripcionsecciones_copy_ibfk_2", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inscripcionsecciones_copy", "secciones", name: "inscripcionsecciones_copy_ibfk_4", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inscripcionsecciones_copy", "tipo_estado_calificaciones", name: "inscripcionsecciones_copy_ibfk_3", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "inscripcionsecciones_copy", "tipo_estado_inscripciones", name: "inscripcionsecciones_copy_ibfk_5", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "inscripcionsecciones_copy", "tipoasignaturas", name: "inscripcionsecciones_copy_ibfk_1", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "inscripcionsecciones_copy1", "escuelas", column: "pci_escuela_id", name: "inscripcionsecciones_copy1_ibfk_1", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "inscripcionsecciones_copy1", "estudiantes", primary_key: "usuario_id", name: "inscripcionsecciones_copy1_ibfk_4", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inscripcionsecciones_copy1", "secciones", name: "inscripcionsecciones_copy1_ibfk_6", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inscripcionsecciones_copy1", "tipo_calificaciones", name: "inscripcionsecciones_copy1_ibfk_2", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "inscripcionsecciones_copy1", "tipo_estado_calificaciones", name: "inscripcionsecciones_copy1_ibfk_5", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "inscripcionsecciones_copy1", "tipo_estado_inscripciones", name: "inscripcionsecciones_copy1_ibfk_7", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "inscripcionsecciones_copy1", "tipoasignaturas", name: "inscripcionsecciones_copy1_ibfk_3", on_update: :cascade, on_delete: :nullify
   add_foreign_key "perfiles_restringidas", "perfiles", name: "perfiles_restringidas_perfile_id_fk", on_update: :cascade, on_delete: :cascade
   add_foreign_key "perfiles_restringidas", "restringidas", name: "perfiles_restringidas_restringida_id_fk", on_update: :cascade, on_delete: :cascade
   add_foreign_key "planes", "escuelas", on_update: :cascade, on_delete: :cascade

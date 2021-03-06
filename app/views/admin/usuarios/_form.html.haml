@@ -1,5 +1,5 @@
 .border.p-3
-  - if current_estudiante and @usuario.estudiante and (current_usuario.ci.eql? @usuario.ci) and (@usuario.ci.eql? @usuario.password)
+  - if current_estudiante and @usuario.estudiante and (current_usuario.ci.eql? @usuario.ci) and (@usuario.foto_perfil.nil? or @usuario.imagen_ci.nil? or (@usuario.foto_perfil and !@usuario.foto_perfil.attached?) or (@usuario.imagen_ci and !@usuario.imagen_ci.attached?))
     = render partial: '/admin/usuarios/form_imagenes'
 
   = form_for @usuario, html: { class: 'form-horizontal' } do |f|

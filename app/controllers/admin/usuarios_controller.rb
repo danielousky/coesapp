@@ -9,10 +9,7 @@ module Admin
 
     before_action :resize_image, only: [:update_images]
 
-
-    # before_action :filtro_autorizado#, only: [:create, :update, :destroy, :set_estudiante, :set_administrador, :set_profesor, :resetear_contrasena, :cambiar_ci]
-
-    before_action :filtro_autorizado#, except: :update, if: :mismo_usuario?
+    before_action :filtro_autorizado
 
     before_action :set_usuario, except: [:index, :new, :create, :busquedas, :countries, :getMunicipios, :getParroquias, :no_mismo_usuario?]
 
