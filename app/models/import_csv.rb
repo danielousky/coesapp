@@ -212,6 +212,8 @@ class ImportCsv
 		total_retirados = 0
 		total_no_calificados = 0
 
+		estudiantes_sin_grado = []
+
 		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
 			csv.each do |row|
 				begin
@@ -245,24 +247,42 @@ class ImportCsv
 							unless estu
 								estudiantes_inexistentes << row.field(0)
 							else
+								
+
+
+
 								inscrip = s.inscripcionsecciones.where(estudiante_id: row.field(0)).first
 								unless inscrip
 									inscrip = Inscripcionseccion.new
+									escuelaperiodo = Escuelaperiodo.where(periodo_id: periodo_id, escuela_id: a.escuela.id).first
+
+									unless inscrip_escuela_period = estu.inscripcionescuelaperiodos.where(escuelaperiodo_id: escuelaperiodo.id).first
+
+										inscrip_escuela_period = Inscripcionescuelaperiodo.create!(estudiante_id: row.field(0), escuelaperiodo_id: escuelaperiodo.id, tipo_estado_inscripcion_id: 'INS')
+									end
+
+									inscrip.inscripcionescuelaperiodo_id = inscrip_escuela_period.id
 
 									grado = estu.grados.where(escuela_id: escuela_id).first
 
-									inscrip.seccion_id = s.id
-									inscrip.estudiante_id = estu.id
-
-									inscrip.escuela_id = escuela_id
-
-									inscrip.grado = grado
-									inscrip.pci = true unless estu.grados.where(escuela_id: escuela_id).any?
-										
-									if inscrip.save!
-										total_inscritos += 1
+									unless grado
+										estudiantes_sin_grado << estu.id
 									else
-										estudiantes_no_inscritos << row.field(0)
+										inscrip.seccion_id = s.id
+										inscrip.estudiante_id = estu.id
+
+										inscrip.escuela_id = escuela_id
+										# inscrip.grado = grado
+
+
+
+										inscrip.pci = true unless estu.grados.where(escuela_id: escuela_id).any?
+											
+										if inscrip.save!
+											total_inscritos += 1
+										else
+											estudiantes_no_inscritos << row.field(0)
+										end
 									end
 								else
 									total_existentes += 1
@@ -318,10 +338,10 @@ class ImportCsv
 						asignaturas_inexistentes << row.field(1)
 					end
 				rescue Exception => e
-					return "Error excepcional: #{e.to_sentence}. #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados, periodo_id }"
+					return "Error excepcional: #{e.to_sentence}. #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados, periodo_id, estudiantes_sin_grado }"
 				end
 			end
-		return "Proceso de importación completado con éxito. #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados,periodo_id}"
+		return "Proceso de importación completado con éxito. #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados,periodo_id, estudiantes_sin_grado}"
 	end
 
 
@@ -457,7 +477,7 @@ class ImportCsv
 	private
 
 
-	def self.resumen inscritos, existentes, no_inscritos, nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados, periodo_id
+	def self.resumen inscritos, existentes, no_inscritos, nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados, periodo_id, estudiantes_sin_grado
 		
 		aux = ""
 		aux = "</br>
@@ -470,6 +490,7 @@ class ImportCsv
 			<hr></hr>Total Asignaturas Inexistentes: <b>#{asignaturas_inexistentes.uniq.count}</b>
 			</br><i>Detalle últimos 50:</i></br> #{asignaturas_inexistentes.uniq.to_sentence}
 			<hr></hr>Total Estudiantes Inexistentes: <b>#{estudiantes_inexistentes.uniq.count}</b>
+			<hr></hr>Total No registrados en la escuela: <b>#{estudiantes_sin_grado.uniq[0..50].to_sentence}</b>
 			</br><i>Detalle últimos 50:</i></br> #{estudiantes_inexistentes.uniq[0..50].to_sentence}"
 
 		if total_calificados and total_calificados.to_i > 0
