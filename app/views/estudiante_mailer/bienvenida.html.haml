@@ -2,7 +2,7 @@
 
 = "Estimad#{@genero}: <b>#{@nombre}</b>, la Facultad de Humanidades y Educación le da la bienvenida al sistema de Control de Estudios COES-FHE.".html_safe
 	
-%p= "Lo primero que debe hacer es ingresar a #{link_coes} y colocar su número de cédula en ambos campos del inicio de sesión para actualizar sus datos."
+%p= "Lo primero que debe hacer es ingresar a #{link_coes} y colocar su número de cédula en ambos campos del inicio de sesión para actualizar sus datos.".html_safe
 
 =# "Realice una transferencia únicamente desde los Bancos: <b> #{Banco.all.map { |e| e.nombre }.to_sentence(last_word_connector: ' o ')}</b> por el monto de <b>#{@monto}</b> en la cuenta corriente N°<b> 0102-0491-7100 0938-5674 </b> del <b> Banco de Venezuela</b> a nombre de <b>Ingresos Propios de la Facultad de Humanidades y Educación RIF, G-20000062-7</b>. ".html_safe
 =# "Después, ingrese #{link_coes} con su número de cédula en ambos campos del inicio de la sesión y siga las instrucciones:".html_safe
