@@ -6,8 +6,7 @@ class CreateBancos < ActiveRecord::Migration[5.2]
 
       t.timestamps
     end
-	Banco.crear_bancos_iniciales
-	TipoEstadoInscripcion.create!(id: 'PRE', descripcion: 'Preinscrito')
+
   end
 
 
