@@ -272,9 +272,6 @@ class ImportCsv
 										inscrip.estudiante_id = estu.id
 
 										inscrip.escuela_id = escuela_id
-										# inscrip.grado = grado
-
-
 
 										inscrip.pci = true unless estu.grados.where(escuela_id: escuela_id).any?
 											

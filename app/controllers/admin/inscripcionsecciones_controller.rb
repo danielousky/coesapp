@@ -323,7 +323,7 @@ module Admin
 					inscripcionsecciones = @estudiante.inscripciones.where(inscripcionescuelaperiodo_id: nil)
 					if inscripcionsecciones.any?
 						if inscripcionsecciones.update(inscripcionescuelaperiodo_id: inscripcion_del_periodo.id)
-							flash[:danger] += "  | Confirmas #{inscripcionsecciones.count} preinscripciones"
+							flash[:success] += "  | Confirmas #{inscripcionsecciones.count} preinscripciones"
 						end
 					end
 
