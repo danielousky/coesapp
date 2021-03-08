@@ -297,7 +297,7 @@ module Admin
 			begin
 				flash[:success] = ''
 				flash[:danger] = ''
-				escuelaperiodo = Escuelaperiodo.where(escuela_id: params[:escuela_id], periodo_id: current_periodo.id).first
+				escuelaperiodo = Escuelaperiodo.where(escuela_id: @escuela.id, periodo_id: current_periodo.id).first
 				# Acá se puede usar el método find_or_create_by 
 				# @inscripciones_del_periodo = Inscripcionescuelaperiodo.find_or_create_by(escuelaperiodo_id: escuelaperiodo.id, estudiante)
 				# El tema es que debe incluirsele un tipo_estado_inscripcion_id por defecto que aún no está definido.
@@ -307,8 +307,8 @@ module Admin
 
 				if inscripcion_del_periodo.nil?
 					inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.new
-					inscripcion_del_periodo.escuela_id =  @escuela.id
-					inscripcion_del_periodo.periodo_id =  current_periodo.id
+					inscripcion_del_periodo.escuelaperiodo = escuelaperiodo
+
 				else
 					se_preinscribio = true if inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? 'PRE'
 				end
@@ -399,10 +399,10 @@ module Admin
 		def resumen
 			session[:inscripcion_estudiante_id] = nil
 
-			@inscripciones = @inscripcionperiodo.inscripcionsecciones
-			@escuela = @inscripcionperiodo.escuela
 			@periodo = @inscripcionperiodo.periodo
+			@escuela = @inscripcionperiodo.escuela
 			@estudiante = @inscripcionperiodo.estudiante
+			@inscripciones = @inscripcionperiodo.inscripcionsecciones.del_periodo(@periodo.id).de_la_escuela(@escuela.id)
 			# @secciones = @estudiante.inscripcionsecciones.del_periodo current_periodo.id
 			@titulo = "Resumen Inscripción #{@estudiante.usuario.descripcion} en #{@escuela.descripcion} para el período #{@periodo.id}:"
 
