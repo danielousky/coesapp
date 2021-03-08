@@ -40,11 +40,11 @@
 					- else
 						- desc = obj.descripcion
 						- if controller_name.eql? 'inscripcionsecciones' and obj.is_a? Escuela
-							- if obj.inscripcion_cerrada?
+							- if !(current_admin and current_admin.autorizado? 'Inscripcionsecciones', 'inscribir') #obj.inscripcion_cerrada?
 								- @dptosTabs = @catTabs = @asigTabs = nil
 								.text-muted.alert.alert-danger.p-1
 									= desc.upcase
-									%span.badge.badge-secondary.float-right Inscripción Cerrada
+									%span.badge.badge-secondary.float-right Inscripción inhabilitada para usted 
 									= colocar_total_secciones_badge total_secciones
 							- else
 								- grado = @estudiante.grados.where(escuela_id: obj.id).first
