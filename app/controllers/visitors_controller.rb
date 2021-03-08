@@ -89,12 +89,12 @@ class VisitorsController < ApplicationController
 
   def olvido_clave_guardar
 
-    usuario = Usuario.where(ci: params[:ci]).limit(1).first
+    usuario = Usuario.where(ci: params[:ci]).first
     if usuario
 
       begin
         session[:usuario_ci] = usuario.ci
-        ApplicationMailer.olvido_clave(usuario).deliver_now #deliver_later#! #deliver_now # deliver_later
+        flash[:success] = "Se a enviado un correo a <b>#{usuario.email}</b> con la información solicitada." if ApplicationMailer.olvido_clave(usuario).deliver #deliver_later#! #deliver_now # deliver_later
 
         # texto = "Estimado: #{usuario.nickname}, Usted ha solicitado recuperar su clave.
 
@@ -131,7 +131,7 @@ class VisitorsController < ApplicationController
     else
       flash[:error] = "Usuario no registrado"
     end
-    redirect_to root_path
+    redirect_back fallback_location: root_path
   end
 
   def un_rol 
