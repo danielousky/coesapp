@@ -271,9 +271,14 @@ module Admin
     def calificar
       @estudiantes = params[:est]
       error = false
+      @escuelaperiodo = @seccion.escuelaperiodo
       if @estudiantes
         @estudiantes.each_pair do |ci,valores|
           @inscripcionseccion = @seccion.inscripcionsecciones.where(estudiante_id: ci).first
+          if @inscripcionseccion and @inscripcionseccion.inscripcionescuelaperiodo.nil?
+            aux = Inscripcionescuelaperiodo.create(estudiante_id: ci, escuelaperiodo_id: @escuelaperiodo.id, tipo_estado_inscripcion_id: 'INS')
+            @inscripcionseccion.inscripcionescuelaperiodo_id = aux.id
+          end
           @valores = valores
           if @seccion.asignatura.absoluta?
             calificar_absoluta
@@ -318,10 +323,11 @@ module Admin
       end
 
       if current_admin
-        redirect_to index2_secciones_path
+        return_to =  index2_secciones_path
       elsif current_profesor
-        redirect_to principal_profesor_index_path
+        return_to =  principal_profesor_index_path
       end
+      redirect_back fallback_location: return_to
     end
 
     def cambiar_capacidad
