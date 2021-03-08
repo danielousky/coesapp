@@ -51,7 +51,9 @@
 %h6.titulo Datos de Contacto:
 .form-group.row
   = f.label :email, class: 'col-form-label col-md-3 text-right', value: 'Correo Electrónico: '
-  .col-md-9
+  .col-md-9.alert.alert-warning
+    %b ATENCIÓN: 
+    = "Recuerde que el correo electrónico es el medio principal de comunicación entre usted y COESFHE, complételo de manera correcta.".html_safe    
     = f.email_field :email, class: 'text-field form-control'
 .form-group.row
   = f.label :telefono_habitacion, class: 'col-form-label col-md-3 text-right', value: 'Número telefónico de habitación:'

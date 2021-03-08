@@ -208,6 +208,10 @@ module Admin
     # GET /usuarios/1
     # GET /usuarios/1.json
     def show
+      if params[:escuela_id]
+        session[:usuarioTypeTab] = 'estudiante'
+        session[:tabEscuela] = params[:escuela_id] 
+      end
 
       @estudiante = @usuario.estudiante
       @profesor = @usuario.profesor

@@ -4,9 +4,9 @@
 
 %table
 	%tr
-		%td= link_to 'Inscribir otro Estudiante', buscar_estudiante_inscripcionsecciones_path, class: 'btn btn-success'
+		%td= link_to "Inscribir otro Estudiante en #{@escuela.descripcion}", "#{buscar_estudiante_inscripcionsecciones_path}?escuela_id=#{@escuela.id}", class: 'btn btn-success mr-3'
 
-		%td= link_to 'Detalle del Estudiante', usuario_path(@estudiante), class: 'btn btn-outline-primary'
+		%td= link_to 'Detalle del Estudiante', "#{usuario_path(@estudiante)}?escuela_id=#{@escuela.id}", class: 'btn btn-outline-primary'
 
 %br
 = render partial: '/admin/estudiantes/table_contenido_historial', locals: {inscripciones: @inscripciones}

@@ -1,7 +1,7 @@
 module Admin
   class ReportepagosController < ApplicationController
     before_action :filtro_logueado
-    before_action :filtro_estudiante
+    # before_action :filtro_estudiante
     before_action :set_reportepago, only: [:show, :edit, :update, :destroy]
     before_action :resize_image, only: [:create, :update]
 

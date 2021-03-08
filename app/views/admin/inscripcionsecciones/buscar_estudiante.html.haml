@@ -1,6 +1,7 @@
 .border
 	%br
 	= form_tag(seleccionar_inscripcionsecciones_path,{class: 'form-horizontal', method: :get} ) do
+		= hidden_field_tag :escuela_id, @escuela.id
 		.form-group
 			%label.control-label.col-md-2 Estudiante:
 			.col-md-12
