@@ -57,7 +57,7 @@
 						- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea preinscribir"
 						- url = '/inscripcionsecciones/preinscribirse'
 						- idModal = "preinscripcion#{escuela.id}"
-						= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn, aprobadas: aprobadas}
+						= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn, aprobadas: aprobadas, periodo_id: periodo_id}
 				- else
 					- if @inscripcionperiodo.reportepago.nil?
 						.alert.alert-warning

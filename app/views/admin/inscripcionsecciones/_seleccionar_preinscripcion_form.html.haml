@@ -1,7 +1,7 @@
 -# Este botón puede eliminarse si decidimos desplegar la modal al inicio
 = link_to 'javascript:void(0)', onclick: "$('##{id_modal}').modal();", class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
   = glyph 'education'
-  = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{current_periodo.id}"
+  = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{periodo_id}"
 
 .modal.fade{'aria-hidden': true, role: :dialog, id: id_modal}
   .modal-dialog.modal-lg
@@ -12,7 +12,7 @@
         .text-center{id: "#{id_modal}Title"}
           %h4= title
           %h5= "Escuela de #{@escuela.descripcion_filtro}"
-          %h5= "Período Académico #{current_periodo.id}"
+          %h5= "Período Académico #{periodo_id}"
       .alert.alert-warning
         %h4.text-center= msgDanger.html_safe
       .modal-body.border.p-2
@@ -73,7 +73,7 @@
         selected += '\n';
         selected += $(this).attr('titulo');
       });    
-      msg = `Asignaturas a preinscribir en el período académico #{current_periodo.id} de la Escuela de #{@escuela.descripcion_filtro}:`;
+      msg = `Asignaturas a preinscribir en el período académico #{periodo_id} de la Escuela de #{@escuela.descripcion_filtro}:`;
       msg += selected;
       msg += '\n';
     }
