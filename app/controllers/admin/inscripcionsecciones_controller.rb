@@ -63,11 +63,18 @@ module Admin
 						if estudiante.inscripcionescuelaperiodos.del_periodo(periodo_id).any?
 							flash[:danger] += "Estudiante ya inscrito en el periodo #{periodo_id}. Favor diríjase a los administradores para brindárle el apoyo apropiado."
 						else
-							escupe = escuela.escuelaperiodos.where(periodo_id: periodo_id).first
-							ins_periodo = Inscripcionescuelaperiodo.new
-							ins_periodo.escuelaperiodo_id = escupe.id
+							# escupe = escuela.escuelaperiodos.where(periodo_id: periodo_id).first
+							# # ins_periodo = estudiante.inscripcionescuelaperiodos.de_la_escuela_y_periodo(escupe.id).first
+							# ins_periodo = escupe.inscripcionescuelaperiodos.del_estudiante(estudiante.id).first
+
+							# if ins_periodo.nil?
+							# 	ins_periodo = estudiante.inscripcionescuelaperiodos.new
+							# 	ins_periodo.escuelaperiodo_id = escuelaperiodo.id
+
+							# end
+
+							ins_periodo = Inscripcionescuelaperiodo.find_or_new(escuela.id, periodo_id, estudiante.id)
 							ins_periodo.tipo_estado_inscripcion_id = TipoEstadoInscripcion::PREINSCRITO
-							ins_periodo.estudiante_id = estudiante.id
 
 							if ins_periodo.save
 								asign_inscritas_ids = []
@@ -297,24 +304,29 @@ module Admin
 			begin
 				flash[:success] = ''
 				flash[:danger] = ''
-				escuelaperiodo = Escuelaperiodo.where(escuela_id: @escuela.id, periodo_id: current_periodo.id).first
+				# escuelaperiodo = Escuelaperiodo.where(escuela_id: @escuela.id, periodo_id: current_periodo.id).first
 				# Acá se puede usar el método find_or_create_by 
 				# @inscripciones_del_periodo = Inscripcionescuelaperiodo.find_or_create_by(escuelaperiodo_id: escuelaperiodo.id, estudiante)
 				# El tema es que debe incluirsele un tipo_estado_inscripcion_id por defecto que aún no está definido.
 
 				se_preinscribio = false
-				inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.del_periodo(current_periodo.id).de_la_escuela(@escuela.id).first
+				# inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.de_la_escuela_y_periodo(escuelaperiodo.id).first
 
-				if inscripcion_del_periodo.nil?
-					inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.new
-					inscripcion_del_periodo.escuelaperiodo = escuelaperiodo
+				# if inscripcion_del_periodo.nil?
+				# 	inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.new
+				# 	inscripcion_del_periodo.escuelaperiodo = escuelaperiodo
 
-				else
-					se_preinscribio = true if inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? 'PRE'
-				end
-				inscripcion_del_periodo.tipo_estado_inscripcion_id = 'INS'
+				# else
+				# 	se_preinscribio = true if inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? 'PRE'
+				# end
 
-				flash[:success] = "Inscripción en el período #{current_periodo.id} para la escuela #{escuelaperiodo.escuela.descripcion} realizada con éxito." if inscripcion_del_periodo.save
+				inscripcion_del_periodo = Inscripcionescuelaperiodo.find_or_new(@escuela.id, current_periodo.id, @estudiante.id)
+
+				se_preinscribio = true if inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? TipoEstadoInscripcion::PREINSCRITO
+				
+				inscripcion_del_periodo.tipo_estado_inscripcion_id = TipoEstadoInscripcion::INSCRITO
+
+				flash[:success] = "Inscripción en el período #{current_periodo.id} para la escuela #{@escuela.descripcion} realizada con éxito." if inscripcion_del_periodo.save
 
 				inscripcionsecciones = @estudiante.inscripciones.where(inscripcionescuelaperiodo_id: nil)
 				if inscripcionsecciones.any?

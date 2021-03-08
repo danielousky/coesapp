@@ -38,6 +38,8 @@ class Inscripcionseccion < ApplicationRecord
 	after_save :actualizar_estados
 
 	before_destroy :set_bitacora
+	after_destroy :destroy_inscripcionescuelaperiodo
+
 
 	# VALIDACIONES:
 	validates_uniqueness_of :estudiante_id, scope: [:seccion_id], message: 'El estudiante ya está inscrito en la sección', field_name: false
@@ -131,12 +133,8 @@ class Inscripcionseccion < ApplicationRecord
 
 	# scope :pcis_pendientes_por_asociar, -> {joins(:escuela).where("pci_escuela_id IS NULL and (escuela.id ON ( SELECT escuelas.id FROM escuelas INNER JOIN grados ON escuelas.id = grados.escuela_id WHERE grados.estudiante_id = ? ) )", self.estudiante_id)}
 
-	after_destroy :destroy_inscripcionescuelaperiodo
 
-  	
-	def destroy_inscripcionescuelaperiodo
-		self.inscripcionescuelaperiodo.destroy if (inscripcionescuelaperiodo and !inscripcionescuelaperiodo.inscripcionsecciones.any?)
-	end
+
 
 
 	# Funciones de Estilo
@@ -511,16 +509,26 @@ class Inscripcionseccion < ApplicationRecord
 
 	protected
 
-	def agregar_inscripcionescuelaperiodo
-		# Career.create(student_id: self.student_id, language_id: self.language.id) if self.career.nil?
-		escupe = Escuelaperiodo.where(periodo_id: self.periodo.id, escuela_id: escuela_id).first
-
-		Inscripcionescuelaperiodo.create(estudiante_id: self.estudiante_id, escuelaperiodo_id: escupe.id, tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO) if self.inscripcionescuelaperiodo.nil? and escupe
+	def destroy_inscripcionescuelaperiodo
+		self.inscripcionescuelaperiodo.destroy if (inscripcionescuelaperiodo and !inscripcionescuelaperiodo.inscripcionsecciones.any?)
 	end
 
 	def actualizar_estados
 		actualizar_estado_grado
+		# OJO: REVISAR ESTA ACTUALIZACIÓN. CREO QUE DEBERÍA COLOCARSE ANTES DE VALIDAR (before_validate)
 		# agregar_inscripcionescuelaperiodo
+	end
+
+	def agregar_inscripcionescuelaperiodo
+		if self.inscripcionescuelaperiodo.nil?
+			escupe = Escuelaperiodo.where(periodo_id: self.periodo.id, escuela_id: self.escuela_id).first
+			
+			unless aux = Inscripcionescuelaperiodo.where(estudiante_id: self.estudiante_id, escuelaperiodo_id: escupe.id).first
+
+				aux = Inscripcionescuelaperiodo.create(estudiante_id: self.estudiante_id, escuelaperiodo_id: escupe.id, tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)
+			end
+			self.inscripcionescuelaperiodo_id = aux.id
+		end
 	end
 
 
@@ -577,6 +585,8 @@ class Inscripcionseccion < ApplicationRecord
 		self.set_escuela_default
 		
 		self.pci = self.inscrita_como_pci?
+
+		agregar_inscripcionescuelaperiodo
 	end
 
 	def actualizar_estado_grado
