@@ -3,7 +3,16 @@
 		%tr
 
 			- if @estudiante and (current_admin and current_admin.autorizado? 'Inscripcionsecciones', 'inscribir') #and @estudiante.valido_para_inscribir? current_periodo.id
-				%td= btn_inscribir "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", 'Inscripción del periodo actual', 'Inscribir'
+				%td
+					- insc_esc_per = @estudiante.inscripcionescuelaperiodos.del_periodo(current_periodo.id).de_la_escuela(@escuela.id).first
+					-if insc_esc_per and insc_esc_per.tipo_estado_inscripcion_id.eql? 'PRE'
+						= link_to "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", class: "btn btn-sm btn-warning tooltip-btn", 'data_toggle': :tooltip,  title: 'Confirmar Inscripción del período Actual' do
+							= glyph 'education'
+							¡Confirmar Inscripción!
+					- else
+
+						= btn_inscribir "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", 'Inscripción en el periodo actual', 'Inscribir'
+
 			- if @inscripciones.any?
 				%td= btn_success 'download-alt', "#{kardex_descargar_path(@estudiante.id)}?escuela_id=#{@escuela.id}", "Descargar Kardex de #{@nickname}", 'Kardex'
 				- if false #current_estudiante or @inscripciones.del_periodo(current_periodo.id).any?

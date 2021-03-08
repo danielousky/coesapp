@@ -69,7 +69,7 @@ module Admin
 							ins_periodo.estudiante_id = estudiante.id
 
 							if ins_periodo.save
-								total_inscritas = 0
+								asign_inscritas_ids = []
 								flash[:warning] = ""
 								params[:seleccion].each_pair do |k, asig_id|
 									asignatura = Asignatura.find(asig_id)
@@ -86,7 +86,7 @@ module Admin
 										inscripcion.escuela_id = escuela.id
 
 										if inscripcion.save
-											total_inscritas += 1
+											asign_inscritas_ids << asignatura.id
 										else
 											flash[:danger] += "Error al intentar inscribir en la sección: #{inscripcion.errors.full_messages.to_sentence}"
 										end
@@ -94,11 +94,16 @@ module Admin
 
 								end
 
-								if total_inscritas.eql? 0
+								unless asign_inscritas_ids.any? 
 									ins_periodo.destroy
 									flash[:danger] = "No se completó ninguna inscripción. Por favor inténtelo nuevamente."
 								else
-									flash[:info] = "Proceso de inscripción completado con éxito. Total preinscritas: #{total_inscritas}. "
+									begin
+										EstudianteMailer.preinscrito(estudiante.usuario, ins_periodo).deliver
+									rescue Exception => e
+										flash[:danger] += "No se pudo enviar el correo asociado: #{e}"
+									end
+									flash[:info] = "Proceso de inscripción completado con éxito. Total asignaturas preinscritas: #{asign_inscritas_ids.count}. "
 								end
 
 								# reporte = Reportepago.new()
@@ -309,12 +314,15 @@ module Admin
 					# @inscripciones_del_periodo = Inscripcionescuelaperiodo.find_or_create_by(escuelaperiodo_id: escuelaperiodo.id, estudiante)
 					# El tema es que debe incluirsele un tipo_estado_inscripcion_id por defecto que aún no está definido.
 
-					inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.del_periodo(current_periodo.id).de_la_escuela(params[:escuela_id]).first
+					se_preinscribio = false
+					inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.del_periodo(current_periodo.id).de_la_escuela(@escuela.id).first
 
 					if inscripcion_del_periodo.nil?
 						inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.new
 						inscripcion_del_periodo.escuela_id =  @escuela.id
 						inscripcion_del_periodo.periodo_id =  current_periodo.id
+					else
+						se_preinscribio = true if inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? 'PRE'
 					end
 					inscripcion_del_periodo.tipo_estado_inscripcion_id = 'INS'
 
@@ -381,6 +389,14 @@ module Admin
 					flash[:danger] += "Error general: #{e}"
 				end
 
+
+				if se_preinscribio and inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? 'INS' and inscripcion_del_periodo.inscripcionsecciones.any?
+					begin
+						EstudianteMailer.confirmado(@estudiante.usuario, inscripcion_del_periodo).deliver
+					rescue Exception => e
+						flash[:danger] += "No se pude enviar el email: #{e}"
+					end
+				end
 				flash[:success] = nil if flash[:success].blank?
 				flash[:danger] = nil if flash[:danger].blank?
 

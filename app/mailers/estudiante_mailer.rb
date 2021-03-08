@@ -17,6 +17,24 @@ class EstudianteMailer < ActionMailer::Base
     mail(:to => usuario.email, :subject => "COES-FHE - Recordatorio de clave")
   end
 
+  def preinscrito(usuario, inscripcionperiodo)
+    @asignaturas = inscripcionperiodo.inscripcionsecciones.map { |ins| ins.asignatura}
+    @escuela_desc = inscripcionperiodo.escuela.descripcion
+    @periodo_id = inscripcionperiodo.periodo.id
+    @nombre = usuario.primer_nombre_apellido
+    @genero = usuario.genero
+    mail(to: usuario.email, subject: "¡Preinscripción Exitosa en #{@escuela_desc} para el Período #{@periodo_id} COES-FHE! ")    
+  end
+
+  def confirmado(usuario, inscripcionperiodo)
+    @asignaturas = inscripcionperiodo.inscripcionsecciones.map { |ins| ins.asignatura}
+    @escuela_desc = inscripcionperiodo.escuela.descripcion
+    @periodo_id = inscripcionperiodo.periodo.id
+    @nombre = usuario.primer_nombre_apellido
+    @genero = usuario.genero
+    mail(to: usuario.email, subject: "¡Confirmación de Asignaturas en #{@escuela_desc} para el Período #{@periodo_id} COES-FHE!")
+  end
+
   def bienvenida(usuario)
     @monto = "Bs. 1.500.000."
     

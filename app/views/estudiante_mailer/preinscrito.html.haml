@@ -1,0 +1,17 @@
+- link_coes = link_to 'COESFHE.COM', 'https://coesfhe.com/'
+
+= "Estimad#{@genero}: <b>#{@nombre}</b>,".html_safe
+	
+%p= "Usted ha preinscrito en #{@escuela_desc} para el período #{@periodo_id} en las siguientes asignaturas:".html_safe
+
+%ol
+	- @asignaturas.each do |asig| 
+		%li= asig.descripcion_id
+
+%p El personal de COES validará su solicitud y recibirá más información posteriormente.
+ 
+%p Saludos cordiales.
+
+UCV La casa que vence la sombra
+COES-FHE - UCV
+IMPORTANTE: No dude en contactarnos por controlestfheucv@gmail.com si requiere de algún tipo de apoyo.
