@@ -11,12 +11,6 @@ class EstudianteMailer < ActionMailer::Base
     mail(to: usuario.email, subject: "Confirmación Proceso de Inscripción Idiomas Modernos 2019-02A")
   end
 
-  def olvido_clave(usuario)
-    @nombre = usuario.nombre_completo
-    @clave = usuario.password
-    mail(:to => usuario.email, :subject => "COES-FHE - Recordatorio de clave")
-  end
-
   def preinscrito(usuario, inscripcionperiodo)
     @asignaturas = inscripcionperiodo.inscripcionsecciones.map { |ins| ins.asignatura}
     @escuela_desc = inscripcionperiodo.escuela.descripcion
