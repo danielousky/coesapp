@@ -40,26 +40,23 @@
     done: function(e, data) {
       var idProgress = $(this).attr('progressBarId')
       var imgPreview = $(this).attr('preview')
-      console.log('COMPLETADO!');
-      console.log(data);
-      console.log(e);
-      console.log('FIN!');
-
       $('#'+idProgress+' .progress-bar').css('width','0%');
       $('#'+imgPreview+'').attr('src', data.result.url);
-      $(this).hide();
-      $('#'+idProgress).hide();
+      // $(this).hide();
+      // $('#'+idProgress).hide();
       var result = $('#'+$(this).attr('result'));
-      result.text("¡Imagen agregada con éxito!")
-      result.addClass('text-success')
-      result.removeClass('text-muted')
+      toastr.options.timeOut = 3500;
+      toastr.success("¡Imagen agregada con éxito!");
+      //result.addClass('text-success')
+      //result.removeClass('text-muted')
 
 
 
     },
     fail: function(e, data){
       console.log(data);
-      alert(data._response.errorThrown);
+      toastr.error(data._response.errorThrown);
+      //alert(data._response.errorThrown);
     ;}
 
   });
