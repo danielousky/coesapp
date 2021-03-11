@@ -26,6 +26,12 @@ module Admin
 				@periodos = Periodo.joins(:inscripcionseccion).where("inscripcionsecciones.estudiante_id = #{@estudiante.id}")
 
 				@total = @estudiante.inscripcionsecciones.count
+
+				# OJO: Parche para el caso en que no tengan inscripcionsecciones y si tengan inscripcionescuelaperiodos
+				if @total.eql? 0
+					aux = @estudiante.inscripcionescuelaperiodos
+					aux.destroy_all if aux.any?
+				end
 			end
 
 		end

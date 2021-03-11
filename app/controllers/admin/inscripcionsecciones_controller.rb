@@ -79,27 +79,29 @@ module Admin
 							if ins_periodo.save
 								asign_inscritas_ids = []
 								flash[:warning] = ""
-								params[:seleccion].each_pair do |k, asig_id|
-									asignatura = Asignatura.find(asig_id)
-									# seccion = asignatura.secciones.del_periodo(periodo_id).first
-									unless seccion = asignatura.secciones.del_periodo(periodo_id).reject{|sec| sec.inscripcionsecciones.count >= sec.capacidad}.first
-										flash[:warning] += "Sin cupos disponibles para la asignatura: #{asignatura.descripcion} en el período #{periodo_id}"
-									else
-
-
-										inscripcion = Inscripcionseccion.new()
-										inscripcion.seccion_id = seccion.id
-										inscripcion.estudiante_id = estudiante.id
-										inscripcion.inscripcionescuelaperiodo_id = ins_periodo.id
-										inscripcion.escuela_id = escuela.id
-
-										if inscripcion.save
-											asign_inscritas_ids << asignatura.id
+								if params[:seleccion]
+									params[:seleccion].each_pair do |k, asig_id|
+										asignatura = Asignatura.find(asig_id)
+										# seccion = asignatura.secciones.del_periodo(periodo_id).first
+										unless seccion = asignatura.secciones.del_periodo(periodo_id).reject{|sec| sec.inscripcionsecciones.count >= sec.capacidad}.first
+											flash[:warning] += "Sin cupos disponibles para la asignatura: #{asignatura.descripcion} en el período #{periodo_id}"
 										else
-											flash[:danger] += "Error al intentar inscribir en la sección: #{inscripcion.errors.full_messages.to_sentence}"
-										end
-									end
 
+
+											inscripcion = Inscripcionseccion.new()
+											inscripcion.seccion_id = seccion.id
+											inscripcion.estudiante_id = estudiante.id
+											inscripcion.inscripcionescuelaperiodo_id = ins_periodo.id
+											inscripcion.escuela_id = escuela.id
+
+											if inscripcion.save
+												asign_inscritas_ids << asignatura.id
+											else
+												flash[:danger] += "Error al intentar inscribir en la sección: #{inscripcion.errors.full_messages.to_sentence}"
+											end
+										end
+
+									end
 								end
 
 								unless asign_inscritas_ids.any? 
