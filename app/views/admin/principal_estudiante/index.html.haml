@@ -1,5 +1,4 @@
 =# render partial: '/admin/usuarios/datos_modal'
-
 %nav
 	.nav.nav-tabs
 		= link_to "General", "#general", "data-toggle": :tab, class: 'nav-item nav-link'
@@ -14,14 +13,6 @@
 		- grado = @estudiante.grados.where(escuela_id: escuela.id).first
 		- @escuela = escuela
 
-		- if current_usuario.eql? @estudiante.usuario and grado and (!escuela.id.eql? 'POST') and grado.reportepago.nil? and grado.preinscrito? and !grado.inscripciones.any? 
-			- @grado_id = grado.id
-			- @reportepago = Reportepago.new
-			- content = render partial: "/admin/reportepagos/form"
-			= render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "reportarPagoGrado#{grado.id_flat}", content: content, title: 'Reportar Pago a la Facultad de Ingreso a Escuela', width: "modal-lg"}
-			= link_to 'javascript:void(0)', onclick: "$('#reportarPagoGrado#{grado.id_flat}').modal()", class: 'm-3 btn btn-success' do
-				= glyph 'plus'
-				Repotar Pago Ingreso Escuela
 
 
 		.tab-pane.border.border-top-0.p-3{id: "pane_#{escuela.id}", class: active}
@@ -30,6 +21,14 @@
 			
 			- periodo_ids = @inscripciones.joins(:seccion).group("secciones.periodo_id").count.keys
 			- @periodos = Periodo.where(id: periodo_ids).order(inicia: :desc)
+			- if current_usuario.eql? @estudiante.usuario and grado and (!escuela.id.eql? 'POST') and grado.reportepago.nil? and grado.preinscrito? and !grado.inscripciones.any? 
+				- @grado_id = grado.id
+				- @reportepago = Reportepago.new
+				- content = render partial: "/admin/reportepagos/form"
+				= render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "reportarPagoGrado#{grado.id_flat}", content: content, title: 'Reportar Pago a la Facultad de Ingreso a Escuela', width: "modal-lg"}
+				= link_to 'javascript:void(0)', onclick: "$('#reportarPagoGrado#{grado.id_flat}').modal()", class: 'm-3 btn btn-success' do
+					= glyph 'plus'
+					= "Reportar Pago Ingreso a #{escuela.descripcion}"
 			
 			- if escuela.periodo_inscripcion
 				- periodo_id = escuela.periodo_inscripcion_id
