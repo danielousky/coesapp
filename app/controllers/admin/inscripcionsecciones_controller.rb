@@ -106,12 +106,12 @@ module Admin
 
 								unless asign_inscritas_ids.any? 
 									ins_periodo.destroy
-									flash[:danger] = "No se completó ninguna inscripción. Por favor inténtelo nuevamente."
+									flash[:danger] += " No se completó ninguna inscripción. Por favor inténtelo nuevamente."
 								else
 									begin
 										EstudianteMailer.preinscrito(estudiante.usuario, ins_periodo).deliver
 									rescue Exception => e
-										flash[:danger] += "No se pudo enviar el correo asociado: #{e}"
+										flash[:danger] += " No se pudo enviar el correo asociado: #{e}"
 									end
 									flash[:info] = "Proceso de inscripción completado con éxito. Total asignaturas preinscritas: #{asign_inscritas_ids.count}. "
 								end
@@ -129,7 +129,7 @@ module Admin
 								# 	flash[:danger] += "Error al intentar guardar el reporte de pago: #{ins_periodo.errors.full_messages.to_sentence}"
 								# end
 							else
-								flash[:danger] += "Error al intentar registar la inscripción: #{ins_periodo.errors.full_messages.to_sentence}"
+								flash[:danger] += " Error al intentar registar la inscripción: #{ins_periodo.errors.full_messages.to_sentence}"
 							end
 						end
 					end
@@ -139,7 +139,7 @@ module Admin
 				flash[:danger] = e
 			end
 			flash[:danger] = nil if flash[:danger].blank?
-			flash[:warning] = nil if flash[:danger].blank?
+			flash[:warning] = nil if flash[:warning].blank?
 			redirect_back fallback_location: '/principal_estudiante'
 		end
 
