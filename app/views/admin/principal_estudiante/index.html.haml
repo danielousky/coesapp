@@ -10,13 +10,11 @@
 .tab-content
 	- @estudiante.escuelas.each_with_index do |escuela,i| 
 		- active = (i.eql? 0) ? 'active show' : ''
-		- grado = @estudiante.grados.where(escuela_id: escuela.id).first
-		- @escuela = escuela
-
-
 
 		.tab-pane.border.border-top-0.p-3{id: "pane_#{escuela.id}", class: active}
 			- # VARIABLES:
+			- grado = @estudiante.grados.where(escuela_id: escuela.id).first
+			- @escuela = escuela
 			- @inscripciones = @estudiante.inscripcionsecciones.joins(:escuela).where("escuelas.id = :e or pci_escuela_id = :e", e: @escuela.id)
 			
 			- periodo_ids = @inscripciones.joins(:seccion).group("secciones.periodo_id").count.keys
