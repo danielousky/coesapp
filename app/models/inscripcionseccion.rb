@@ -44,6 +44,8 @@ class Inscripcionseccion < ApplicationRecord
 	# VALIDACIONES:
 	validates_uniqueness_of :estudiante_id, scope: [:seccion_id], message: 'El estudiante ya está inscrito en la sección', field_name: false
 
+	validates_with AsignaturaPeriodoInscripcionUnicaValidator, field_name: false, if: :new_record?
+
 	# SCOPES:
 	scope :preinscritos, -> {joins(:inscripcionescuelaperiodo).where('inscripcionescuelaperiodos.tipo_estado_inscripcion_id = ?', TipoEstadoInscripcion::PREINSCRITO)}
 	scope :inscritos, -> {joins(:inscripcionescuelaperiodo).where('inscripcionescuelaperiodos.tipo_estado_inscripcion_id = ?', TipoEstadoInscripcion::INSCRITO)}
