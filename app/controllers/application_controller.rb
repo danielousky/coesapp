@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
 	end
 
 	def current_estudiante
-		@current_admin ||= Estudiante.find(session[:estudiante_id]) if session[:estudiante_id]
+		@current_estudiante ||= Estudiante.find(session[:estudiante_id]) if session[:estudiante_id]
 	end
 
 	def current_periodo
