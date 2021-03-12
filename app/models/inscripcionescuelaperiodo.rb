@@ -20,6 +20,8 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	scope :del_estudiante, -> (estudiante_id) {where('usuario_id = ?', estudiante_id)}
 	scope :preinscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO)}
 	scope :inscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)}
+	scope :con_reportepago, -> {joins(:reportepago)}
+
 
 
 

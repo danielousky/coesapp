@@ -22,6 +22,7 @@ Rails.application.routes.draw do
         post 'autorizar_usuario'
       end
     end
+    resources :inscripcionescuelaperiodos, only: :index
 
     resources :escuelaperiodos, only: :show
 

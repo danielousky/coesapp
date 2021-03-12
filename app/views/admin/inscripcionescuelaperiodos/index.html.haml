@@ -1,0 +1,80 @@
+%table#dataTable.table.table-sm
+	%thead
+		%tr
+			%th Cédula
+			%th Email
+			%th Apellidos
+			%th Nombres
+			%th Escuelas
+			- if params[:status].eql? 'reported'
+				%th Reporte
+			%th Plan
+			%th Asig. Inscritas
+			%th Créditos
+			%th C. Aprobados
+			%th Total Créditos Plan
+
+	%tbody
+
+		- @inscripciones.each do |ins|
+			%tr
+				- usuario = ins.estudiante.usuario
+				%td= link_to ins.estudiante_id, usuario_path(usuario.id)
+				%td= usuario.email
+				%td= usuario.apellidos
+				%td= usuario.nombres
+				%td= ins.estudiante.escuelas.descripcion.to_sentence
+				- if params[:status].eql? 'reported' and ins.reportepago
+					%td= ins.reportepago.numero
+				- hplan = ins.estudiante.historialplanes.joins(:plan).where("planes.escuela_id = ?", @escuelaperiodo.escuela_id).order('periodo_id DESC').first#.plan_id
+				-# hplan = est.ultimo_plan_de_escuela(@escuelaperiodo.escuela_id)
+				%td= hplan ? hplan.plan_id : "--"
+				%td
+					=# ins.inscripcionsecciones.map{|ins| ins.asignatura.descripcion}
+					= ins.inscripcionsecciones.count
+				%td= ins.inscripcionsecciones.total_creditos
+				%td= ins.inscripcionsecciones.aprobado.total_creditos
+				%td= hplan.plan.creditos if hplan
+
+
+:javascript
+
+	$(document).ready(function() {
+
+		$('#dataTable').DataTable({
+			scrollY: 460,
+			pageLength: 50,
+			// lengthChange: false,
+			paging: false,
+			dom: '<"html5buttons"B>lTfgitp',
+			buttons: [
+				{extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `Inscripciones-#{current_periodo.id}-#{@escuelaperiodo.escuela_id}`, className: 'btn btn-sm btn-outline-info'},
+				{extend: 'pdf', text: "<span class='glyphicon glyphicon-download'></span> PDF", title: `PDF-Inscripciones-#{current_periodo.id}-#{@escuelaperiodo.escuela_id}`, className: 'btn btn-sm btn-outline-info'} 
+			],
+			language: 
+				{
+				"sProcessing":     "Procesando...",
+				"sLengthMenu":     "Mostrar _MENU_ registros",
+				"sZeroRecords":    "No se encontraron resultados",
+				"sEmptyTable":     "Ningún dato disponible en esta tabla",
+				"sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+				"sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+				"sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+				"sInfoPostFix":    "",
+				"sSearch":         "Buscar:",
+				"sUrl":            "",
+				"sInfoThousands":  ",",
+				"sLoadingRecords": "Cargando...",
+				"oPaginate": {
+				"sFirst":    "Primero",
+				"sLast":     "Último",
+				"sNext":     "Siguiente",
+				"sPrevious": "Anterior"
+				},
+				"oAria": {
+					"sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+					"sSortDescending": ": Activar para ordenar la columna de manera descendente"
+				}
+			}
+		});
+	});

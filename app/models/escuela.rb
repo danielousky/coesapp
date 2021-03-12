@@ -32,6 +32,8 @@ class Escuela < ApplicationRecord
 	has_many :administradores
 	accepts_nested_attributes_for :administradores
 
+	#SCOPE
+	scope :descripcion, -> {map{|es| es.descripcion}}
 	# TRIGGERS
 	before_save :set_to_upcase
 

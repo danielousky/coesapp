@@ -61,7 +61,7 @@ module Admin
 					else
 						periodo_id = escuela.periodo_inscripcion.id
 						if estudiante.inscripcionescuelaperiodos.del_periodo(periodo_id).any?
-							flash[:danger] += "Estudiante ya inscrito en el periodo #{periodo_id}. Favor diríjase a los administradores para brindárle el apoyo apropiado."
+							flash[:danger] += "Estudiante ya inscrito en el periodo #{periodo_id}. Favor contacte a los administradores para brindarle el apoyo requerido."
 						else
 							# escupe = escuela.escuelaperiodos.where(periodo_id: periodo_id).first
 							# # ins_periodo = estudiante.inscripcionescuelaperiodos.de_la_escuela_y_periodo(escupe.id).first

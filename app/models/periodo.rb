@@ -30,6 +30,22 @@ class Periodo < ApplicationRecord
     validates :inicia, presence: true#, uniqueness: true
 
 	# FUNCIONES:
+	def es_mayor_al_anno? anno
+		return (self.anno.to_i	> anno)
+	end
+
+
+	def es_mayor_que? perio2
+		retorno = false
+
+		if (self.anno.to_i > perio2.anno.to_i) 
+			retorno = true
+		elsif self.anno.to_i.eql? perio2.anno.to_i and (self.periodo_del_anno.to_i > perio2.periodo_del_anno.to_i)
+			retorno = true
+		end
+		retorno
+	end
+
 
 	def inscripciones
 		inscripcionsecciones

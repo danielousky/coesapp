@@ -45,6 +45,7 @@ class Inscripcionseccion < ApplicationRecord
 	validates_uniqueness_of :estudiante_id, scope: [:seccion_id], message: 'El estudiante ya está inscrito en la sección', field_name: false
 
 	validates_with AsignaturaPeriodoInscripcionUnicaValidator, field_name: false, if: :new_record?
+	validates_with AsignaturaAprobadaUnicaValidator, field_name: false, if: :new_record?
 
 	# SCOPES:
 	scope :preinscritos, -> {joins(:inscripcionescuelaperiodo).where('inscripcionescuelaperiodos.tipo_estado_inscripcion_id = ?', TipoEstadoInscripcion::PREINSCRITO)}
@@ -68,6 +69,7 @@ class Inscripcionseccion < ApplicationRecord
 
 	scope :de_la_escuela, lambda {|escuela_id| includes(:escuela).where("escuelas.id = ?", escuela_id).references(:escuelas)}
 
+	scope :del_estudiante, lambda {|estudiante_id| where("estudiante_id = ?", estudiante_id)}
 	# Así debe ser de_la_escuela
 	# scope :de_la_escuela, lambda {|escuela_id| where("escuelas_id = ?", escuela_id)}
 	# scope :de_las_escuelas, lambda {|escuelas_ids| where("escuelas.id IN (?)", escuelas_ids)}

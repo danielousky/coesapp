@@ -26,7 +26,13 @@
       %label.btn.btn-secondary.btn-sm
         = radio_button_tag '[usuario]nacionalidad', k, (@usuario.nacionalidad.eql? k), required: true
         = k.upcase
-
+.form-group.row
+  = f.label :sexo, class: 'col-form-label col-md-3 text-right', value: 'Sexo:'
+  .col-md-9
+    - Usuario.sexos.map do |k,v| 
+      %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
+        = radio_button_tag '[usuario]sexo', k, false, required: true
+        = k[0].upcase
 .form-group.row
   = f.label :nombres, class: 'col-form-label col-md-3 text-right', value: 'Nombres:'
   .col-md-9
