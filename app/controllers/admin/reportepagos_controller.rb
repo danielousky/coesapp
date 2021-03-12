@@ -20,8 +20,10 @@ module Admin
     def new
       @titulo = "Reporte Pago"
       @reportepago = Reportepago.new
-      @inscripcionescuelaperiodo_id = params[:inscripcionescuelaperiodo_id]
-      @grado_id = params[:grado_id]
+      clazz = params[:reportable_type].constantize
+      @reportable = clazz.find params[:reportable_id]
+      # @inscripcionescuelaperiodo_id = params[:inscripcionescuelaperiodo_id]
+      # @grado_id = params[:grado_id]
     end
 
     # GET /reportepagos/1/edit
@@ -34,33 +36,44 @@ module Admin
     def create
 
       @reportepago = Reportepago.new(reportepago_params)
+      params[:reportable][:id] = params[:reportable][:id].split if params[:reportable][:type].eql? 'Grado'
 
-      respond_to do |format|
-        if @reportepago.save
-          if params[:grado_id] or params[:inscripcionescuelaperiodo_id]
-            if params[:grado_id]
-              obj = Grado.find params[:grado_id].split
-            elsif params[:inscripcionescuelaperiodo_id]
-              obj = Inscripcionescuelaperiodo.find params[:inscripcionescuelaperiodo_id]
-            end
-            if obj
-              obj.reportepago_id = @reportepago.id
-              if obj.save
-                flash[:success] = 'Reporte de Pago guardado con éxito'
-              else
-                flash[:danger] = "Error al intentar asociar el reporte de pago al #{obj.class.name}. Se eliminó el reporte. #{obj.errors.full_messages.to_sentence if (obj and obj.errors)}"
-              end
-            else
-              reportepago.destroy
-              flash[:danger] = "No se encontró el #{obj.class.name}."
-            end
-          end
-          format.html { redirect_to principal_estudiante_index_path}
-          format.json { render :show, status: :created, location: @reportepago }
+      begin
+        clazz = params[:reportable][:type].constantize
+        obj = clazz.find params[:reportable][:id]
+        unless obj
+          flash[:danger] = "No se pudo encontrar el #{clazz} relacionado. "
         else
-          format.html { render :new }
-          format.json { render json: @reportepago.errors, status: :unprocessable_entity }
+          if obj.reportepago
+            flash[:danger] = "Ya posee un reporte de pago. "
+          elsif obj.periodo and (obj.periodo.reportepagos.map{|rp| rp.numero}.include? @reportepago.numero)
+            flash[:danger] = "Número de transacción #{@reportepago.numero} ya fue usado en otra inscripción en el período #{obj.periodo.id}. "
+
+          elsif @reportepago.save
+            obj.reportepago_id = @reportepago.id
+            if obj.save
+              flash[:success] = 'Reporte de Pago guardado con éxito. '
+            else
+              flash[:danger] = "Error al intentar asociar el reporte de pago al #{obj.class.name}. #{obj.errors.full_messages.to_sentence}. "
+            end
+          else
+            flash[:danger] = "No fue posible guardar el reporte de pago: #{obj.errors.full_messages.to_sentence}. "
+          end
         end
+      rescue Exception => e
+         flash[:danger] = "Error General: #{e}. "
+      end
+
+      if current_admin
+        return_to = periodo_index_path
+      else
+        return_to = principal_estudiante_index_path
+      end
+
+      if flash[:danger]
+        redirect_back fallback_location: return_to
+      else
+        redirect_to return_to
       end
     end
 

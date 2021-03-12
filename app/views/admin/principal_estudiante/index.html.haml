@@ -20,7 +20,7 @@
 			- periodo_ids = @inscripciones.joins(:seccion).group("secciones.periodo_id").count.keys
 			- @periodos = Periodo.where(id: periodo_ids).order(inicia: :desc)
 			- if current_usuario.eql? @estudiante.usuario and grado and (!escuela.id.eql? 'POST') and grado.reportepago.nil? and grado.preinscrito? and !grado.inscripciones.any? 
-				- @grado_id = grado.id
+				- @reportable = grado
 				- @reportepago = Reportepago.new
 				- content = render partial: "/admin/reportepagos/form"
 				= render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "reportarPagoGrado#{grado.id_flat}", content: content, title: 'Reportar Pago a la Facultad de Ingreso a Escuela', width: "modal-lg"}
@@ -61,9 +61,9 @@
 							%h6
 								%b Atención: 
 								Aún no reporta el pago de su inscripción. Recuerde que es un paso indispensable para completar su preinscripción. Haga clic 
-								= link_to 'aquí', new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodo.id)
+								= link_to 'aquí', new_reportepago_path(reportable_id: @inscripcionperiodo.id, reportable_type: @inscripcionperiodo.class.name)
 								para reportar el pago
-						= link_to new_reportepago_path(inscripcionescuelaperiodo_id: @inscripcionperiodo.id), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
+						= link_to new_reportepago_path(reportable_id: @inscripcionperiodo.id, reportable_type: @inscripcionperiodo.class.name), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
 							= glyph 'chevron-right'
 							= "Reportar pago de inscripción el periodo #{current_periodo.id}"
 

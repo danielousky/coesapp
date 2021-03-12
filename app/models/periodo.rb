@@ -16,6 +16,7 @@ class Periodo < ApplicationRecord
 	has_many :escuelas, through: :escuelaperiodos
 	
 	has_many :inscripcionescuelaperiodos, through: :escuelaperiodos
+	has_many :reportepagos, through: :inscripcionescuelaperiodos
 
 	has_many :asignaturas, through: :escuelas#, source: :estudiantes
 	

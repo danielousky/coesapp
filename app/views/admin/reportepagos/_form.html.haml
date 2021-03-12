@@ -7,14 +7,23 @@
           %li= message
   .border.p-3.mb-3
     .datos
-      = hidden_field_tag :inscripcionescuelaperiodo_id, @inscripcionescuelaperiodo_id if @inscripcionescuelaperiodo_id
-      = hidden_field_tag :grado_id, @grado_id if @grado_id
+
+      = hidden_field_tag 'reportable[id]', @reportable.id if @reportable
+      = hidden_field_tag 'reportable[type]', @reportable.class.name if @reportable
+
+      =# hidden_field_tag :inscripcionescuelaperiodo_id, @inscripcionescuelaperiodo_id if @inscripcionescuelaperiodo_id
+      =# hidden_field_tag :grado_id, @grado_id if @grado_id
       .form-group.row
         .col-md-2{style: 'text-align: right;'}= f.label :numero, nil, value: 'Número de Transacción'
-        .col-md-10= f.text_field :numero, class: 'form-control upcaseOlyNumber', placeholder: 'Número Transacción', required: true
+        .col-md-10= f.text_field :numero, class: 'form-control onlyNumber', placeholder: 'Número Transacción', required: true
       .form-group.row
         .col-md-2{style: 'text-align: right;'}= f.label :monto, nil, value: 'Monto'
-        .col-md-10= f.number_field :monto, class: 'form-control', placeholder: 'Monto', required: true
+        
+        .col-md-10
+          .input-group
+            = f.text_field :monto, class: 'form-control onlyNumber', placeholder: 'Monto', required: true
+            .input-group-append
+              .input-group-text Bs.
 
       .form-group.row
         .col-md-2{style: 'text-align: right;'}= f.label :banco_origen, nil, value: 'Banco Origen'
@@ -35,14 +44,18 @@
     %hr
     .respaldoImagen
       .alert.alert-warning.text-justify
+        - if current_estudiante and current_estudiante.grados.where(escuela_id: 'POST').any?
+          = correo_ayuda = 'algaramirlay@gmail.com'
+        - else
+          = correo_ayuda = 'controlestfheucv@gmail.com'
         %b IMPORTANTE: 
-        = "Debido a los inconvenientes de conectividad en el país, recomendamos encarecidamente subir archivos de baja resolución (menores a 1 MegaByte), de ser posible capturas de pantalla. Si al intentar subir el archivo adjunto el sistema genera un error o tarda más de 3 minutos en responder, puede intentar nuevamente el proceso con un archivo más liviano o enviarlo al correo electrónico #{link_to 'algaramirlay@gmail.com'} para brindarle el apoyo con su reporte.".html_safe
+        = "Debido a los inconvenientes de conectividad en el país, recomendamos encarecidamente subir archivos de baja resolución (menores a 1 MegaByte), de ser posible capturas de pantalla. Si al intentar subir el archivo adjunto el sistema genera un error o tarda más de 3 minutos en responder, puede intentar nuevamente el proceso con un archivo más liviano o enviarlo al correo electrónico #{link_to correo_ayuda} para brindarle el apoyo con su reporte.".html_safe
 
       .form-group.row
         .col-md-2{style: 'text-align: right;'}= f.label :respaldo, nil, value: 'Imagen de respaldo'
 
         .col-md-10
-          = f.file_field 'respaldo', {class: 'btn btn-sm btn-secondary form-control form-control-file', accept: "image/*", size: "1", id: 'fileUpload'}
+          = f.file_field 'respaldo', {class: 'btn btn-sm btn-secondary form-control form-control-file', accept: "image/*", size: "1", id: 'fileUpload', required: true}
           .text-muted= "<b>Atención:</b> Solo se perimiten imágenes. Sí su soporte se encuentra en formato PDF, por favor haga una captura de la pantalla y luego suba la imagen correspondiente.".html_safe
 
     .form-group.row
@@ -54,7 +67,6 @@
 
 - if false
   :javascript
-
     $('#submitReportPago').click(function(e){
             
         let form = $(this).parents('form')[0] 
@@ -86,9 +98,9 @@
         ]
     });
 
-
-    $('.upcaseOlyNumber').on('input',function(evt){ 
-      var node = $(this);
-      node.val(node.val().replace(/[^0-9]/g,'') );
-      node.val(node.val().toUpperCase());
-      });  
+ 
+:javascript
+  $('.onlyNumber').on('input',function(evt){ 
+    var node = $(this);
+    node.val(node.val().replace(/[^0-9]/g,'') );
+    }); 

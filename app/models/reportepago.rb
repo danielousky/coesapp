@@ -3,10 +3,13 @@ class Reportepago < ApplicationRecord
   has_one :inscripcionescuelaperiodo
   has_one :grado 
 
+  has_one :periodo, through: :inscripcionescuelaperiodo
+
   belongs_to :banco_origen, foreign_key: 'banco_origen_id', class_name: 'Banco'
   
   validates :numero, presence: true
-  # validates_with UniqueNumeroPerPeriodoValidator
+  # La validación debajo no aplica ya que primero se guarda el reporte y luego se asocia al objeto has_one, en este caso el inscripcionescuelaperiodo 
+  # validates_with UnicoNumeroTransPorPeriodoValidator
   validates :monto, presence: true
   validates :tipo_transaccion, presence: true
   validates :fecha_transaccion, presence: true
