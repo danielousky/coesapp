@@ -33,7 +33,7 @@
                   - indice = aprobadas.index asig.id
                   - if (indice != nil and indice > 0)
                     - inscrip = Inscripcionseccion.find aprobadas[indice-1]
-                    - descrip_califi = inscrip.calificacion_en_letras
+                    - descrip_califi = inscrip.colocar_nota_final
                 - else
                   - descrip_califi = nil
                   - disabled = false
@@ -41,8 +41,11 @@
                 - asigAprobada = disabled ? 'text-muted border border-success' : ''
                 %tr{class: asigAprobada}
                   %td
+                    
                     = asig.descripcion_id
-                    = descrip_califi if disabled
+                    - if disabled
+                      %span.badge.badge-success= "Aprobada (#{descrip_califi})"
+
                   %td.text-center= asig.anno
                   %td.text-center= asig.creditos
                   %td.text-center
