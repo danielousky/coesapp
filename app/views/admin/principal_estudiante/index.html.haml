@@ -49,7 +49,7 @@
 						- # OJO: este hay que revisarlo ya que hay que buscar por el 2021 funciona!
 						- periodo_anterior = periodo.periodo_anterior
 						-if @estudiante.inscripcionsecciones.del_periodo(periodo_anterior.id).any? or !@estudiante.inscripcionsecciones.any? or grado.reincorporado?
-							- asignaturas_ofertadas = escuela.asignaturas.activas(periodo_id).order(anno: :desc )
+							- asignaturas_ofertadas = escuela.asignaturas.activas(periodo_id).order(anno: :asc )
 							-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
 							- aprobadas = @inscripciones.aprobadas.joins(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
 							-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
