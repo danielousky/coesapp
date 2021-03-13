@@ -63,16 +63,6 @@ module Admin
 						if estudiante.inscripcionescuelaperiodos.del_periodo(periodo_id).any?
 							flash[:danger] += "Estudiante ya inscrito en el periodo #{periodo_id}. Favor contacte a los administradores para brindarle el apoyo requerido."
 						else
-							# escupe = escuela.escuelaperiodos.where(periodo_id: periodo_id).first
-							# # ins_periodo = estudiante.inscripcionescuelaperiodos.de_la_escuela_y_periodo(escupe.id).first
-							# ins_periodo = escupe.inscripcionescuelaperiodos.del_estudiante(estudiante.id).first
-
-							# if ins_periodo.nil?
-							# 	ins_periodo = estudiante.inscripcionescuelaperiodos.new
-							# 	ins_periodo.escuelaperiodo_id = escuelaperiodo.id
-
-							# end
-
 							ins_periodo = Inscripcionescuelaperiodo.find_or_new(escuela.id, periodo_id, estudiante.id)
 							ins_periodo.tipo_estado_inscripcion_id = TipoEstadoInscripcion::PREINSCRITO
 
@@ -95,6 +85,7 @@ module Admin
 											inscripcion.escuela_id = escuela.id
 
 											if inscripcion.save
+												info_bitacora "Prenscrito en la sección #{inscripcion.seccion.descripcion_simple} exitosamente.", Bitacora::CREACION, inscripcion
 												asign_inscritas_ids << asignatura.id
 											else
 												flash[:danger] += "Error al intentar inscribir en la sección: #{inscripcion.errors.full_messages.to_sentence}"
@@ -109,6 +100,7 @@ module Admin
 									flash[:danger] += " No se completó ninguna inscripción. Por favor inténtelo nuevamente."
 								else
 									begin
+										info_bitacora "Preinscrito en el periodo #{ins_periodo.periodo.id} en #{ins_periodo.escuela.descripcion} exitosamente.", Bitacora::CREACION, ins_periodo
 										EstudianteMailer.preinscrito(estudiante.usuario, ins_periodo).deliver
 									rescue Exception => e
 										flash[:danger] += " No se pudo enviar el correo asociado: #{e}"
@@ -369,7 +361,7 @@ module Admin
 							flash[:danger] += "Se superó la capacidad de la sección por favor amplíela o indíquele a su superior para realizar la inscripción"
 						else
 							if ins.save
-								info_bitacora "Inscripción en #{ins.seccion.descripcion} (#{ins.asignatura.id}). Id inscripcion: #{ins.id}" , Bitacora::CREACION, ins
+								info_bitacora "Inscripción (Confimación) en #{ins.seccion.descripcion} (#{ins.asignatura.id}). Id inscripcion: #{ins.id}" , Bitacora::CREACION, ins
 								guardadas += 1
 							else
 								flash[:danger] += ins.errors.full_messages.to_sentence
@@ -394,6 +386,7 @@ module Admin
 
 			if se_preinscribio and inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? 'INS' and inscripcion_del_periodo.inscripcionsecciones.any?
 				begin
+					info_bitacora "Confirmación de inscripción en el periodo #{inscripcion_del_periodo.periodo.id} en #{inscripcion_del_periodo.escuela.descripcion} exitosamente.", Bitacora::CREACION, inscripcion_del_periodo
 					EstudianteMailer.confirmado(@estudiante.usuario, inscripcion_del_periodo).deliver
 				rescue Exception => e
 					flash[:danger] += "No se pude enviar el email: #{e}"
