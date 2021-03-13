@@ -19,7 +19,7 @@
         - current_admin.escuelas.all.each do |e| 
           %td.tdFiltrables{class: "fil#{e.id}"}
             -# inscripciones = e.inscripcionsecciones.del_periodo(periodo)
-            - inscripciones = e.inscripcionescuelaperiodos.del_periodo(periodo.id)
+            -# inscripciones = e.inscripcionescuelaperiodos.del_periodo(periodo.id)
             =# link_to_if val > 0, val, "#{inscritos_escuela_periodo_descargar_path(periodo.id)}?escuela_id=#{e.id}", class: 'link', target: "_blank"
             - if false#val > 0
               - e.planes.each do |plan| 
@@ -28,9 +28,7 @@
                   = link_to "#{exportar_lista_csv_descargar_path(plan)}?periodo_id=#{periodo.id}", class: 'btn btn-sm mx-1 tooltip-btn', target: '_blank', 'data_toggle': :tooltip, title: "Total: #{totalXPlan}"  do
                     = glyph 'download'
                     = plan.id.upcase
-
-            - if escupe = Escuelaperiodo.where(escuela_id: e.id, periodo_id: periodo.id).first
-              = render partial: '/admin/escuelaperiodos/pre_vs_ins', locals: {ins: inscripciones, escupe: escupe}
+            = render partial: '/admin/escuelaperiodos/pre_vs_ins', locals: {escuela: e, periodo: periodo}
 
         - if current_admin and ((current_admin.autorizado? 'Periodos', 'update') or (current_admin.autorizado? 'Periodos', 'destroy'))
           %td

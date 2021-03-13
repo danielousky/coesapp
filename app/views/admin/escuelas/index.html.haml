@@ -21,14 +21,7 @@
         %td.align-middle= escuela.descripcion
         %td.align-middle.text-right=# ins.secciones_creadas.count#escuela.secciones.del_periodo(current_periodo.id).count
         %td.align-middle.text-right
-          - if escupe = Escuelaperiodo.where(escuela_id: escuela.id, periodo_id: current_periodo.id).first
-            - if current_periodo.es_mayor_al_anno? 2020
-              - ins_per = escuela.inscripcionescuelaperiodos.del_periodo(current_periodo.id)
-              = render partial: '/admin/escuelaperiodos/pre_vs_ins', locals: {ins: ins_per, escupe: escupe}
-            - else
-              - ins = escuela.inscripcionsecciones.del_periodo(current_periodo.id).group(:estudiante_id).count
-              = link_to_if((current_admin and current_admin.autorizado?('Escuelaperiodos', 'index')), ins.count, escuelaperiodo_path(escupe.id), class: 'tooltip-btn', 'data-toggle': :tooltip, title: "Total preinscritos #{current_periodo.id}", 'data-placement': :right )
-
+          = render partial: '/admin/escuelaperiodos/pre_vs_ins', locals: {escuela: escuela, periodo: current_periodo}
         %td.align-middle
           - if (current_admin and current_admin.autorizado? 'Escuelas', 'destroy')
             - if !(escuela.inscripciones.any?)
