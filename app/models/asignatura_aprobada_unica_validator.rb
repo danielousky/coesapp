@@ -7,6 +7,6 @@ class AsignaturaAprobadaUnicaValidator < ActiveModel::Validator
 
   private
     def asignatura_aprobada(record)
-      record.grado.inscripciones.joins(:asignatura).del_estudiante(record.estudiante_id).aprobadas.where("asignaturas.id = #{record.asignatura.id}").any?      
+      record.grado.inscripciones.joins(:asignatura).del_estudiante(record.estudiante_id).aprobadas.where("asignaturas.id = '#{record.asignatura.id}'").any?      
     end
 end
