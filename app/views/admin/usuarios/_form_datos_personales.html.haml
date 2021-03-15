@@ -31,7 +31,7 @@
   .col-md-9
     - Usuario.sexos.map do |k,v| 
       %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
-        = radio_button_tag '[usuario]sexo', k, false, required: true
+        = radio_button_tag '[usuario]sexo', k, (@usuario.sexo.eql? k), required: true
         = k[0].upcase
 .form-group.row
   = f.label :nombres, class: 'col-form-label col-md-3 text-right', value: 'Nombres:'
