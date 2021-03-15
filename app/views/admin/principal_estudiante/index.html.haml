@@ -48,7 +48,7 @@
 					- else
 						- # OJO: este hay que revisarlo ya que hay que buscar, por el 2021 funciona!
 						- periodo_anterior = periodo.periodo_anterior
-						-if (grado.confirmado? or grado.reincorporado?) and (!grado.inscripcionsecciones.any? or grado.inscripcionsecciones.del_periodo(periodo_anterior.id).any?)
+						-if (grado.confirmado? or grado.reincorporado?) and (!grado.inscripciones.any? or grado.inscripciones.del_periodo(periodo_anterior.id).any?)
 							- asignaturas_ofertadas_x_escuela = escuela.asignaturas.activas(@periodo_id).order(anno: :asc )
 							-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
 							- @aprobadas = @inscripciones.aprobadas.joins(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
@@ -64,7 +64,7 @@
 								%b Atención: 
 								Verifique alguna de las siguientes opciones con el personal administrativo para habilitar su inscripción:
 								= "- El estudiante aún no  estar confirmado o reincorporado en #{escuela.descripcion.titleize}"
-								= "- El estudiante no debe tener registros académicos previos (Nuevos Ingresos) o debe haber inscrito asignaturas en el período inmediatemente anterior (Regulares)."
+								= "- El estudiante no debe tener registros académicos previos (Nuevos Ingresos) o debe haber inscrito asignaturas en el período inmediatemente anterior #{periodo_anterior.id} (Regulares)."
 				- else
 					.alert.alert-info
 						= "Inscritas en el período actual #{periodo_id}: #{@inscripcionperiodo.count}"
