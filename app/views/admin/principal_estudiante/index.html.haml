@@ -48,7 +48,7 @@
 					- else
 						- # OJO: este hay que revisarlo ya que hay que buscar por el 2021 funciona!
 						- periodo_anterior = periodo.periodo_anterior
-						-if grado.confirmado? and (@estudiante.inscripcionsecciones.del_periodo(periodo_anterior.id).any? or !@estudiante.inscripcionsecciones.any? or grado.reincorporado?)
+						-if (grado.confirmado? or grado.reincorporado?) and (!@estudiante.inscripcionsecciones.any? or @estudiante.inscripcionsecciones.del_periodo(periodo_anterior.id).any?)
 							- asignaturas_ofertadas_x_escuela = escuela.asignaturas.activas(@periodo_id).order(anno: :asc )
 							-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
 							- @aprobadas = @inscripciones.aprobadas.joins(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
