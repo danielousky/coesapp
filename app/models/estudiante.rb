@@ -1,7 +1,7 @@
 class Estudiante < ApplicationRecord
 	# ASOCIACIONES:
 	belongs_to :usuario, foreign_key: :usuario_id 
-	belongs_to :tipo_estado_inscripcion
+	# belongs_to :tipo_estado_inscripcion
 
 	belongs_to :citahoraria, optional: true
 
@@ -29,7 +29,7 @@ class Estudiante < ApplicationRecord
 	accepts_nested_attributes_for :combinaciones
 
 	# TRIGGERS
-	after_initialize :set_default, :if => :new_record?
+	# after_initialize :set_default, :if => :new_record?
 
 	# VALIDACIONES:
 	validates :usuario_id, presence: true, uniqueness: true
