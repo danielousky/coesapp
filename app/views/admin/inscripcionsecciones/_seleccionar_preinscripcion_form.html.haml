@@ -22,12 +22,13 @@
 
           = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: asignaturas_ofertadas, pcis: false}
 
-          - pcis = Asignatura.pcis(@periodo_id).sin_la_escuela(@escuela.id)
-          - if pcis.any?
+          - unless (@escuela.id.eql? 'POST')
+            - pcis = Asignatura.pcis(@periodo_id).sin_la_escuela(@escuela.id)
+            - if pcis.any?
 
-            %hr
-            %h4 Asignaturas PCI 
-            = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: pcis, pcis: true}
+              %hr
+              %h4 Asignaturas PCI 
+              = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: pcis, pcis: true}
 
           .modal-footer
             %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
