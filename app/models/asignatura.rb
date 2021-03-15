@@ -39,6 +39,7 @@ class Asignatura < ApplicationRecord
 	scope :no_pcis, lambda { |periodo_id| joins(:programaciones).where('programaciones.periodo_id = ? and programaciones.pci IS FALSE', periodo_id) }
 
 	scope :de_escuela, lambda {|escuela_id| joins(:escuela).where('escuelas.id': escuela_id)}
+	scope :sin_la_escuela, -> (escuela_id){joins(:escuela).where("escuelas.id != '#{escuela_id}'")}
 
 	# scope :pcis, -> {where('pci IS TRUE')}
 	# scope :no_pcis, -> {where('pci IS FALSE')}
@@ -61,6 +62,10 @@ class Asignatura < ApplicationRecord
 		programaciones.where(periodo_id: periodo_id).count > 0
 	end
 
+	def desc_confirm_inscripcion
+		"- #{self.descripcion} - #{self.creditos}"
+	end
+
 	def descripcion_id
 		"#{id}: #{descripcion}"
 	end
@@ -80,6 +85,10 @@ class Asignatura < ApplicationRecord
 	def activa? periodo_id
 		# return self.activa #self.activa.eql? true ? true : false
 		self.programaciones.del_periodo(periodo_id).any?
+	end
+
+	def descripcion_id_con_escuela
+		"#{descripcion_id} <span class='badge badge-success'>#{self.escuela.descripcion}</span>".html_safe
 	end
 	def descripcion_con_id_pci? periodo_id = nil
 

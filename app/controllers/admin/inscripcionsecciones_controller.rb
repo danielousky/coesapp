@@ -47,6 +47,7 @@ module Admin
 		end
 
 		def preinscribirse
+			params[:secciones] = params[:secciones].reject{|a| a.blank? }
 			begin
 				flash[:danger] = ""
 				unless @grado = Grado.find([params[:estudiante_id], params[:escuela_id]])
@@ -69,15 +70,12 @@ module Admin
 							if ins_periodo.save
 								asign_inscritas_ids = []
 								flash[:warning] = ""
-								if params[:seleccion]
-									params[:seleccion].each_pair do |k, asig_id|
-										asignatura = Asignatura.find(asig_id)
-										# seccion = asignatura.secciones.del_periodo(periodo_id).first
-										unless seccion = asignatura.secciones.del_periodo(periodo_id).reject{|sec| sec.inscripcionsecciones.count >= sec.capacidad}.first
-											flash[:warning] += "Sin cupos disponibles para la asignatura: #{asignatura.descripcion} en el período #{periodo_id}"
+								if params[:secciones]
+									params[:secciones].each do |seccion_id|
+										seccion = Seccion.find(seccion_id)
+										unless seccion.hay_cupos?
+											flash[:warning] += "Sin cupos disponibles para: #{seccion.descripcion_simple} en el período #{periodo_id}"
 										else
-
-
 											inscripcion = Inscripcionseccion.new()
 											inscripcion.seccion_id = seccion.id
 											inscripcion.estudiante_id = estudiante.id
@@ -86,12 +84,11 @@ module Admin
 
 											if inscripcion.save
 												info_bitacora "Prenscrito en la sección #{inscripcion.seccion.descripcion_simple} exitosamente.", Bitacora::CREACION, inscripcion
-												asign_inscritas_ids << asignatura.id
+												asign_inscritas_ids << seccion.asignatura.id
 											else
 												flash[:danger] += "Error al intentar inscribir en la sección: #{inscripcion.errors.full_messages.to_sentence}"
 											end
 										end
-
 									end
 								end
 

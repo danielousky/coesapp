@@ -400,7 +400,7 @@ module Admin
           if @usuario.estudiante.save
             flash[:success] = "Estudiante actualizado con éxito"
           else
-            flash[:error] = "No se pudo completar la actualización. Por favor revise e inténtelo nuevamente: #{@usuario.estudiante.errors.full_messages.to_sentence}}."
+            flash[:error] = "No se pudo completar la actualización. Por favor revise e inténtelo nuevamente: #{@usuario.estudiante.errors.full_messages.to_sentence}."
           end
         end  
         redirect_to url_back

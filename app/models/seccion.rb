@@ -51,6 +51,14 @@ class Seccion < ApplicationRecord
 
 	# FUNCIONES:
 
+	def hay_cupos?
+		capacidad and (capacidad > 0) and (self.capacidad - total_estudiantes) > 0
+	end
+
+	def descripcion_con_cupos
+		"#{numero} - (#{capacidad_vs_inscritos})"
+	end
+
 	def escuelaperiodo
 		Escuelaperiodo.where(periodo_id: self.periodo_id, escuela_id: self.escuela.id).first
 	end

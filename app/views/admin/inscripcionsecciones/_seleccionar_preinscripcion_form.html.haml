@@ -1,7 +1,7 @@
 -# Este botón puede eliminarse si decidimos desplegar la modal al inicio
 = link_to 'javascript:void(0)', onclick: "$('##{id_modal}').modal();", class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
   = glyph 'education'
-  = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{periodo_id}"
+  = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{@periodo_id}"
 
 .modal.fade{'aria-hidden': true, role: :dialog, id: id_modal}
   .modal-dialog.modal-lg
@@ -12,78 +12,70 @@
         .text-center{id: "#{id_modal}Title"}
           %h4= title
           %h5= "Escuela de #{@escuela.descripcion_filtro}"
-          %h5= "Período Académico #{periodo_id}"
+          %h5= "Período Académico #{@periodo_id}"
       .alert.alert-warning
         %h4.text-center= msgDanger.html_safe
       .modal-body.border.p-2
         = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
           = hidden_field_tag 'estudiante_id', @estudiante.id
           = hidden_field_tag 'escuela_id', @escuela.id
-          %table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table
-            %thead
-              %tr
-                %th{style: 'width: 70%'} Asigantura
-                %th{style: 'width: 10%'} Año
-                %th{style: 'width: 10%'} Créditos
-                %th{style: 'width: 10%'} Seleccionar
-            %tbody
-              - asignaturas_ofertadas.each_with_index do |asig, i| 
-                - if aprobadas.include? asig.id
-                  - disabled = true
-                  - indice = aprobadas.index asig.id
-                  - if (indice != nil and indice > 0)
-                    - inscrip = Inscripcionseccion.find aprobadas[indice-1]
-                    - descrip_califi = inscrip.colocar_nota_final
-                - else
-                  - descrip_califi = nil
-                  - disabled = false
 
-                - asigAprobada = disabled ? 'text-muted border border-success' : ''
-                %tr{class: asigAprobada}
-                  %td
-                    
-                    = asig.descripcion_id
-                    - if disabled
-                      %span.badge.badge-success= "Aprobada (#{descrip_califi})"
+          = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: asignaturas_ofertadas, pcis: false}
 
-                  %td.text-center= asig.anno
-                  %td.text-center= asig.creditos
-                  %td.text-center
-                    -unless disabled
-                      = check_box_tag "seleccion[#{i}]", asig.id, nil, class: 'checkboxInscripcion', titulo: "- #{asig.descripcion} - #{asig.creditos}"
+          - pcis = Asignatura.pcis(@periodo_id).sin_la_escuela(@escuela.id)
+          - if pcis.any?
+
+            %hr
+            %h4 Asignaturas PCI 
+            = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: pcis, pcis: true}
+
           .modal-footer
             %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
             = submit_tag title_btn, class: 'btn btn-outline-success btn-sm', id: 'submitBtn', 'data-disable-with': 'Enviando'
 
 :javascript
   
-  $('input.checkboxInscripcion').on('click', function(){
+  $('.selectInscripcion').on('change', function(){
     let ele = $(this);
+    let opcion = ele.children("option:selected");
     let trParent = ele.closest('tr');
-    if (ele.prop('checked'))
-      trParent.addClass('table-info')
+    if (opcion.val() == '')
+      trParent.removeClass('table-info');
     else{
-      trParent.removeClass('table-info')
+      trParent.addClass('table-info');
     }
   })
 
   $('#submitBtn').on('click', function(event){
     let selected = '\n';
-    let checkeds = $("input.checkboxInscripcion[type=checkbox]:checked");
+    let selecteds = $(".selectInscripcion option:selected");
+    // let selecteds = $('.selectInscripcion option')
+    //let selecteds = $(".selectInscripcion option[value!='']:selected")
     let msg;
-    if (checkeds.length > 0) {
-      checkeds.each(function(){
+    let total = 0;
+    
+    selecteds.each(function(){
+      if ($(this).val() != ''){
+        total += 1;
         selected += '\n';
-        selected += $(this).attr('titulo');
-      });    
-      msg = `Asignaturas a preinscribir en el período académico #{periodo_id} de la Escuela de #{@escuela.descripcion_filtro}:`;
+        selected += $(this).parent().attr('titulo');
+      }
+    });
+
+    if (total == 0){
+      event.preventDefault();
+      alert('ATENCIÓN: DEBE SELECCIONAR AL MENOS UNA ASIGNATURA A INSCRIBIR');
+
+    }else{
+      msg = `Asignaturas a preinscribir en el período académico #{@periodo_id} de la Escuela de #{@escuela.descripcion_filtro}:`;
       msg += selected;
       msg += '\n';
+      msg += '\n';
+      msg += "RECUERDE QUE SU ELECCIÓN ES DEFINITIVA Y NO PODRÁ SER CAMBIADA. ¿Está seguro?" 
+      if (window.confirm(msg) == false) {
+        event.preventDefault();
+      }
     }
-    msg += '\n';
-    msg += "Recuerde que su elección es definitiva y no podrá ser cambiada. ¿Está seguro?" 
-    if (window.confirm(msg) == false) {
-      event.preventDefault();
-    }
+    
   })
 
