@@ -46,9 +46,9 @@
 							= render partial: 'admin/inscripcionsecciones/confirmar_inscripcion_form', locals: {inscripciones: inscripciones_del_periodo, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
 
 					- else
-						- # OJO: este hay que revisarlo ya que hay que buscar por el 2021 funciona!
+						- # OJO: este hay que revisarlo ya que hay que buscar, por el 2021 funciona!
 						- periodo_anterior = periodo.periodo_anterior
-						-if (grado.confirmado? or grado.reincorporado?) and (!@estudiante.inscripcionsecciones.any? or @estudiante.inscripcionsecciones.del_periodo(periodo_anterior.id).any?)
+						-if (grado.confirmado? or grado.reincorporado?) and (!grado.inscripcionsecciones.any? or grado.inscripcionsecciones.del_periodo(periodo_anterior.id).any?)
 							- asignaturas_ofertadas_x_escuela = escuela.asignaturas.activas(@periodo_id).order(anno: :asc )
 							-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
 							- @aprobadas = @inscripciones.aprobadas.joins(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
@@ -59,7 +59,16 @@
 							- url = '/inscripcionsecciones/preinscribirse'
 							- idModal = "preinscripcion#{escuela.id}"
 							= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas_x_escuela, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
+						- else
+							.alert.alert-warning
+								%b Atención: 
+								Verifique alguna de las siguientes opciones con el personal administrativo para habilitar su inscripción:
+								= "- El estudiante aún no  estar confirmado o reincorporado en #{escuela.descripcion.titleize}"
+								= "- El estudiante no debe tener registros académicos previos (Nuevos Ingresos) o debe haber inscrito asignaturas en el período inmediatemente anterior (Regulares)."
 				- else
+					.alert.alert-info
+						= "Inscritas en el período actual #{periodo_id}: #{@inscripcionperiodo.count}"
+
 					- if @inscripcionperiodo.reportepago.nil?
 						.alert.alert-warning
 							%h6
