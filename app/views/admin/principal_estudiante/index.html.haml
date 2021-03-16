@@ -66,9 +66,6 @@
 								= "El estudiante aún no  esta confirmado o reincorporado en #{escuela.descripcion.titleize}"
 								= "El estudiante no debe tener registros académicos previos (Nuevos Ingresos) o debe haber inscrito asignaturas en el período inmediatemente anterior #{periodo_anterior.id} (Regulares)."
 				- else
-					.alert.alert-info
-						= "Inscritas en el período actual #{periodo_id}: #{@inscripcionperiodo.count}"
-
 					- if @inscripcionperiodo.reportepago.nil?
 						.alert.alert-warning
 							%h6
