@@ -9,9 +9,9 @@
     - asignaturas.each do |asig| 
       - if @aprobadas.include? asig.id
         - aprobada = true
-        - indice = aprobadas.index asig.id
+        - indice = @aprobadas.index asig.id
         - if (indice != nil and indice > 0)
-          - inscrip = Inscripcionseccion.find aprobadas[indice-1]
+          - inscrip = Inscripcionseccion.find @aprobadas[indice-1]
           - descrip_califi = inscrip.colocar_nota_final
       - else
         - descrip_califi = nil
