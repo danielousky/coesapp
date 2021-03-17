@@ -54,7 +54,7 @@
 											Reporte de Pago: 
 											= ins_esc_per.reportepago.numero
 									- else
-										= link_to new_reportepago_path(reportable_id: ins_esc_per.id, reportable_tipo: ins_esc_per.class.name) do
+										= link_to new_reportepago_path(reportable_id: ins_esc_per.id, reportable_type: ins_esc_per.class.name) do
 											.badge.badge-danger
 												= glyph 'remove'
 												Sin Reporte de Pago
