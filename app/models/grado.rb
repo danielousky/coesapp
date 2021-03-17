@@ -9,6 +9,7 @@ class Grado < ApplicationRecord
 	belongs_to :escuela
 	belongs_to :estudiante
 	belongs_to :plan, optional: true
+	belongs_to :autorizar_inscripcion_en_periodo, optional: true, class_name: 'Periodo', foreign_key: :autorizar_inscripcion_en_periodo_id
 	belongs_to :reportepago, optional: true, dependent: :destroy
 
 	has_many :historialplanes, foreign_key: [:escuela_id, :estudiante_id]
@@ -50,6 +51,8 @@ class Grado < ApplicationRecord
 
 	enum tipo_ingreso: TIPO_INGRESOS
 
+	before_save :set_autorizar_inscripcion_en_periodo_id
+
 	# def inscripciones
 	# 	Inscripcionseccion.joins(:escuela).where("estudiante_id = ? and escuelas.id = ?", estudiante_id, escuela_id)
 	# end
@@ -58,6 +61,13 @@ class Grado < ApplicationRecord
 	# def inscripciones
 	# 	Inscripcionseccion.where("estudiante_id = ? and escuelas_id = ?", estudiante_id, escuela_id)
 	# end
+
+	def autorizar_inscripcion_en_periodo_decrip
+		autorizar_inscripcion_en_periodo_id ? autorizar_inscripcion_en_periodo_id : 'Sin Autorización Especial'
+	end
+	def autorizar_inscripcion_en_periodo_decrip_badge
+		"<span class='badge badge-info'>#{autorizar_inscripcion_en_periodo_decrip}</span>".html_safe
+	end
 
 
 	def printHorario periodo_id
@@ -179,7 +189,11 @@ class Grado < ApplicationRecord
 		end
 	end
 
-	# private
+	private
+
+	def set_autorizar_inscripcion_en_periodo_id
+		self.autorizar_inscripcion_en_periodo_id = nil if self.autorizar_inscripcion_en_periodo_id.eql? ''
+	end
 
 	# def actualizar_estado_inscripciones
 	# 	if asignatura.tipoasignatura_id.eql? Tipoasignatura::PROYECTO

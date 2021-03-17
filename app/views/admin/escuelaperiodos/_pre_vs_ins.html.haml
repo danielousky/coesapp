@@ -1,5 +1,10 @@
 - if escupe = Escuelaperiodo.where(escuela_id: escuela.id, periodo_id: periodo.id).first
 	- if periodo.es_mayor_al_anno? 2020
+		= # Esperados
+		.tooltip-btn{'data-toggle': :tooltip, title: "Total Esperados",'data-placement': :right }
+			= escuela.grados.confirmado.inscritos_ucv.count
+		= "/"
+
 		- total_inscritos = escupe.inscripcionescuelaperiodos
 		- pre = total_inscritos.preinscritos.count
 		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), pre, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=#{TipoEstadoInscripcion::PREINSCRITO}", class: 'tooltip-btn', 'data-toggle': :tooltip, title: "Total preinscritos #{periodo.id}", 'data-placement': :right)

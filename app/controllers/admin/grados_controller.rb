@@ -118,6 +118,8 @@ module Admin
       grado = Grado.where(estudiante_id: params[:estudiante_id], escuela_id: params[:escuela_id])
       params[:grado]['inscrito_ucv'] = true if (params[:grado]['estado_inscripcion'] and params[:grado]['estado_inscripcion'].eql? 'reincorporado')
 
+      params[:grado]['autorizar_inscripcion_en_periodo_id'] = nil if params[:grado]['autorizar_inscripcion_en_periodo_id'].blank?
+
       if grado.update_all(grado_params.to_hash)
         flash[:success] = 'Actualización exitosa' 
       else
@@ -155,7 +157,7 @@ module Admin
     private
 
       def grado_params
-        params.require(:grado).permit(:escuela_id, :estudiante_id, :estado, :culminacion_periodo_id, :tipo_ingreso, :inscrito_ucv, :estado_inscripcion, :iniciado_periodo_id, :plan_id)
+        params.require(:grado).permit(:escuela_id, :estudiante_id, :estado, :culminacion_periodo_id, :tipo_ingreso, :inscrito_ucv, :estado_inscripcion, :iniciado_periodo_id, :plan_id, :autorizar_inscripcion_en_periodo_id)
       end
 
   end
