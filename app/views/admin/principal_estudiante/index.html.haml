@@ -46,8 +46,8 @@
 							= render partial: 'admin/inscripcionsecciones/confirmar_inscripcion_form', locals: {inscripciones: inscripciones_del_periodo, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
 
 					- else
-						- # OJO: este hay que revisarlo ya que hay que buscar, por el 2021 funciona!
-						- periodo_anterior = periodo.periodo_anterior
+						- periodo_anterior = escuela.periodo_anterior periodo_id
+
 						-if (grado.confirmado? or grado.reincorporado?) and (!grado.inscripciones.any? or grado.inscripciones.del_periodo(periodo_anterior.id).any?)
 							- asignaturas_ofertadas_x_escuela = escuela.asignaturas.activas(@periodo_id).order(anno: :asc )
 							-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
