@@ -115,12 +115,13 @@ module Admin
     # Fin Index
 
     def cambiar_inscripcion
-      grado = Grado.where(estudiante_id: params[:estudiante_id], escuela_id: params[:escuela_id])
+      grado = Grado.where(estudiante_id: params[:estudiante_id], escuela_id: params[:escuela_id]).first
       params[:grado]['inscrito_ucv'] = true if (params[:grado]['estado_inscripcion'] and params[:grado]['estado_inscripcion'].eql? 'reincorporado')
 
       params[:grado]['autorizar_inscripcion_en_periodo_id'] = nil if params[:grado]['autorizar_inscripcion_en_periodo_id'].blank?
 
-      if grado.update_all(grado_params.to_hash)
+      if grado.update(grado_params.to_hash)
+        info_bitacora "Actualización de Datos para la Inscripcion en #{grado.escuela_id} de #{grado.estudiante_id}: #{params[:grado]}", Bitacora::ACTUALIZACION, grado
         flash[:success] = 'Actualización exitosa' 
       else
         flash[:success] = 'No se pudo completar la actualización. Por favor verifique e inténtelo nuevamente.'
