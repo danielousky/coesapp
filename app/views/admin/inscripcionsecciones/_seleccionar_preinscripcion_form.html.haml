@@ -1,7 +1,9 @@
+- @limiteCreditos = @periodo.anual? ? 49 : 25
+
 -# Este botón puede eliminarse si decidimos desplegar la modal al inicio
 = link_to 'javascript:void(0)', onclick: "$('##{id_modal}').modal();", class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
   = glyph 'education'
-  = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{@periodo_id}"
+  = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{@periodo.id}"
 
 .modal.fade{'aria-hidden': true, role: :dialog, id: id_modal}
   .modal-dialog.modal-lg
@@ -12,32 +14,65 @@
         .text-center{id: "#{id_modal}Title"}
           %h4= title
           %h5= "Escuela de #{@escuela.descripcion_filtro}"
-          %h5= "Período Académico #{@periodo_id}"
-      .alert.alert-warning
-        %h4.text-center= msgDanger.html_safe
-      .modal-body.border.p-2
-        = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
+          %h5= "Período Académico #{@periodo.id}"
+      .alert.alert-warning.text-center= msgDanger.html_safe
+      = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
+        .modal-body.border.p-2{style: 'overflow-y:scroll;max-height:350px'}
           = hidden_field_tag 'estudiante_id', @estudiante.id
           = hidden_field_tag 'escuela_id', @escuela.id
 
           = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: asignaturas_ofertadas, pcis: false}
 
           - unless (@escuela.id.eql? 'POST')
-            - pcis = Asignatura.pcis(@periodo_id).sin_la_escuela(@escuela.id)
+            - pcis = Asignatura.pcis(@periodo.id).sin_la_escuela(@escuela.id)
             - if pcis.any?
 
               %hr
               %h4 Asignaturas PCI 
               = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: pcis, pcis: true}
 
-          .modal-footer
-            %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
-            = submit_tag title_btn, class: 'btn btn-outline-success btn-sm', id: 'submitBtn', 'data-disable-with': 'Enviando'
+        = render partial: '/admin/inscripcionsecciones/total_creditos'
+        .modal-footer
+          %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
+          = submit_tag title_btn, class: 'disabled btn btn-success btn-sm', id: 'submitBtn', 'data-disable-with': 'Enviando', disabled: true
 
 :javascript
+
+  function totalizar() {
+    let selecteds = $(".selectInscripcion :selected");
+    let creditosSeleccionados = 0;
+    let total = $('#totalCreditosNumero');
+    selecteds.each(function(){
+      if ($(this).val() != ''){
+        creditosSeleccionados += Number($(this).parent().attr('creditos'));
+      }
+    });
+
+    total.text(creditosSeleccionados);
+    $('#total_creditos').val(total.text());
+    let limiteCreditos = Number(#{@limiteCreditos})
+    let submitBtn = $('#submitBtn');
+    if ((creditosSeleccionados > 0) & (creditosSeleccionados <= limiteCreditos)){
+      submitBtn.removeClass('disabled');
+      submitBtn.attr('disabled', false);
+    }else{
+      submitBtn.addClass('disabled');
+      submitBtn.attr('disabled', 'disabled');
+    }
+    let tr = total.closest('tr')
+    if (creditosSeleccionados > limiteCreditos){
+      tr.removeClass('table-success');
+      tr.addClass('table-danger');
+    }else{  
+      tr.removeClass('table-danger');
+      tr.addClass('table-success');
+    }
+  }
   
   $('.selectInscripcion').on('change', function(){
     let ele = $(this);
+    totalizar();
+
     let opcion = ele.children("option:selected");
     let trParent = ele.closest('tr');
     if (opcion.val() == '')
@@ -68,7 +103,7 @@
       alert('ATENCIÓN: DEBE SELECCIONAR AL MENOS UNA ASIGNATURA A INSCRIBIR');
 
     }else{
-      msg = `Asignaturas a preinscribir en el período académico #{@periodo_id} de la Escuela de #{@escuela.descripcion_filtro}:`;
+      msg = `${total} Asignaturas a preinscribir en el período académico #{@periodo.id} de la Escuela de #{@escuela.descripcion_filtro}:`;
       msg += selected;
       msg += '\n';
       msg += '\n';

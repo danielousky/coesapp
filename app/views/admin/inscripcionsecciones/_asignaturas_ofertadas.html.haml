@@ -31,11 +31,11 @@
         %td.align-middle.text-center= asig.creditos
         %td.align-middle.pl-3
           -unless aprobada
-            - secciones = asig.secciones.del_periodo(@periodo_id)#.con_cupos
+            - secciones = asig.secciones.del_periodo(@periodo.id)#.con_cupos
             - if secciones.any?
               - secciones = secciones.select{|s| s.hay_cupos?}
               - if secciones.any?
-                = collection_select("secciones", nil, secciones, :id, :descripcion_con_cupos, { prompt: 'Seleccione'}, {class: "form-control selectInscripcion", style: 'width: 90%', titulo: asig.desc_confirm_inscripcion})
+                = collection_select("secciones", nil, secciones, :id, :descripcion_con_cupos, { prompt: 'Seleccione'}, {class: "form-control selectInscripcion", style: 'width: 90%', titulo: asig.desc_confirm_inscripcion, creditos: asig.creditos})
               - else
                 %b.pl-3.text-muted
                   = collection_select(nil, nil, secciones, nil, nil, { prompt: 'Sin Cupos'}, {class: "form-control selectInscripcion", style: 'width: 90%', disabled: true, readonly: true})
