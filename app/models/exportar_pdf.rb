@@ -67,25 +67,21 @@ class ExportarPdf
 	end
 
 
-	def self.hacer_constancia_estudio estudiante_ci, periodo_id, escuela_id
+	def self.hacer_constancia_estudio bita_id, verificando = false
 		# Variable Locales
-		estudiante = Estudiante.find estudiante_ci
+		bita = Bitacora.find bita_id
+		inscripcionperiodo = Inscripcionescuelaperiodo.find bita.id_objeto
+		estudiante = inscripcionperiodo.estudiante
 		usuario = estudiante.usuario
-		escuela = Escuela.find escuela_id
-
-		# inscripciones = estudiante.inscripcionsecciones.del_periodo periodo_id
-
-		# inscripciones = estudiante.inscripcionsecciones.del_periodo(periodo_id).includes(:escuela).where("escuelas.id = ?", escuela_id).references(:escuelas)
-
-		inscripciones = estudiante.inscripcionsecciones.del_periodo(periodo_id).de_la_escuela(escuela.id)
+		escuela = inscripcionperiodo.escuela
+		periodo_id = inscripcionperiodo.periodo.id
+		inscripciones = inscripcionperiodo.inscripcionsecciones
 		
 		total = inscripciones.count 
-		# total_creditos = secciones.joins(:cal_materia).sum("cal_materia.creditos")
-
 		pdf = Prawn::Document.new(top_margin: 20)
 
 		#titulo
-		encabezado_central_con_logo pdf, "CONSTANCIA DE ESTUDIO", escuela
+		encabezado_central_con_logo pdf, "CONSTANCIA DE ESTUDIO", escuela, nil, estudiante
 
 		pdf.move_down 5
 
@@ -124,15 +120,17 @@ class ExportarPdf
 
 		pdf.move_down 20
 
-		pdf.text "Constancia que se expide a solicitud de la parte interesada en la Ciudad Universitaria en Caracas, el día #{I18n.l(Time.new, format: "%d de %B de %Y")}.", size: 10
+		pdf.text "Constancia que se expide a solicitud de la parte interesada en la Ciudad Universitaria en Caracas, el día #{I18n.l(bita.created_at, format: "%d de %B de %Y")}.", size: 10
 		pdf.move_down 30
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
 		pdf.move_down 50
 
-		pdf.text "Prof. Pedro Coronado", size: 11, align: :center
-		pdf.text "Jef(a) de Control de Estudio", size: 11, align: :center
+		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/constancia_estudio"
+
+		colocar_qr_y_firmas pdf, enlace 
 
 		return pdf
+
 	end
 
 
@@ -169,26 +167,21 @@ class ExportarPdf
 		return pdf
 	end
 
-	def self.hacer_constancia_inscripcion_sin_horario estudiante_ci, periodo_id, escuela_id
+	def self.hacer_constancia_inscripcion_sin_horario bita_id, verificando = false
 		# Variable Locales
-		estudiante = Estudiante.find estudiante_ci
+		
+		bita = Bitacora.find bita_id
+		inscripcionperiodo = bita.objeto
+		estudiante = inscripcionperiodo.estudiante
 		usuario = estudiante.usuario
-
-		escuela = Escuela.find escuela_id
-
-		# inscripciones = estudiante.inscripcionsecciones.del_periodo periodo_id
-
-		# VERSIÓN ORIGINAL FUNCIONAL
-		# inscripciones = estudiante.inscripcionsecciones.del_periodo(periodo_id).includes(:escuela).where("escuelas.id = ?", escuela_id).references(:escuelas)
-
-		inscripciones = estudiante.inscripcionsecciones.del_periodo(periodo_id).de_la_escuela(escuela.id)
-
-		# total_creditos = secciones.joins(:cal_materia).sum("cal_materia.creditos")
+		escuela = inscripcionperiodo.escuela
+		periodo_id = inscripcionperiodo.periodo.id
+		inscripciones = inscripcionperiodo.inscripcionsecciones
 
 		pdf = Prawn::Document.new(top_margin: 20)
 
 		#titulo
-		encabezado_central_con_logo pdf, "CONSTANCIA DE INSCRIPCIÓN", escuela
+		encabezado_central_con_logo pdf, "CONSTANCIA DE INSCRIPCIÓN", escuela, nil, estudiante
 
 		pdf.move_down 5
 
@@ -229,39 +222,37 @@ class ExportarPdf
 		# pdf.table([[t,u]], width: 540)
 		pdf.move_down 20
 
-		pdf.text "Constancia que se expide a solicitud de la parte interesada en la Ciudad Universitaria en Caracas, el día #{I18n.l(Time.new, format: "%d de %B de %Y")}.", size: 10
+		pdf.text "Constancia que se expide a solicitud de la parte interesada en la Ciudad Universitaria en Caracas, el día #{I18n.l(bita.created_at, format: "%d de %B de %Y")}.", size: 10
 		pdf.move_down 30
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
 		pdf.move_down 50
 
-		pdf.text "Prof. Pedro Coronado", size: 11, align: :center
-		pdf.text "Jef(a) de Control de Estudio", size: 11, align: :center
+		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/constancia_inscripcion"
+
+		colocar_qr_y_firmas pdf, enlace 
 
 		return pdf
 	end
 
 
-	def self.hacer_constancia_inscripcion estudiante_ci, periodo_id, escuela_id
+	def self.hacer_constancia_inscripcion bita_id, verificando = false
 
-
-		# Variable Locales
-		estudiante = Estudiante.find estudiante_ci
+		bita = Bitacora.find bita_id
+		inscripcionperiodo = bita.objeto
+		estudiante = inscripcionperiodo.estudiante
 		usuario = estudiante.usuario
+		escuela = inscripcionperiodo.escuela
+		periodo_id = inscripcionperiodo.periodo.id
+		inscripciones = inscripcionperiodo.inscripcionsecciones
 
-		escuela = Escuela.find escuela_id
-
-		grado = Grado.find [estudiante_ci,escuela_id] #estudiante.grados.where(escuela_id: escuela.id).first
-
-		# inscripciones = estudiante.inscripcionsecciones.del_periodo(periodo_id).de_la_escuela(escuela.id)
-		inscripciones = grado.inscripciones.del_periodo(periodo_id)
-
+		grado = Grado.find [estudiante.id,escuela.id]
 		pdf = Prawn::Document.new(top_margin: 20)
 
-		contenido_inscripcion_horario pdf, estudiante, usuario, escuela, grado, inscripciones, periodo_id
+		contenido_inscripcion_horario pdf, estudiante, usuario, escuela, grado, inscripciones, periodo_id, bita, verificando
 		
 		pdf.start_new_page
 		
-		contenido_inscripcion_horario pdf, estudiante, usuario, escuela, grado, inscripciones, periodo_id
+		contenido_inscripcion_horario pdf, estudiante, usuario, escuela, grado, inscripciones, periodo_id, bita, verificando
 
 		return pdf
 	end
@@ -354,7 +345,7 @@ class ExportarPdf
 		periodo_ids = inscripciones.joins(:seccion).group("secciones.periodo_id").count.keys
 		periodos = Periodo.where(id: periodo_ids)
 
-		encabezado_central_con_logo pdf, "Historia Académica", escuela
+		encabezado_central_con_logo pdf, "Historia Académica", escuela, nil, estudiante 
 		#titulo
 		pdf.text "<b>Fecha de Emisión:</b> #{I18n.l(Time.now, format: '%a, %d / %B / %Y (%I:%M%p)')}", size: 9, inline_format: true
 		pdf.text "<b>Cédula:</b> #{estudiante.usuario_id}", size: 9, inline_format: true
@@ -423,11 +414,63 @@ class ExportarPdf
 
 	private
 
-	def self.contenido_inscripcion_horario pdf, estudiante, usuario, escuela, grado, inscripciones, periodo_id
+	def self.colocar_qr_y_firmas pdf, enlace, tamano=120
+
+		if enlace
+			imagen_qr = generar_codigo_qr enlace
+			pdf.image imagen_qr, width: 120, at: [10, (pdf.y)+20]#, vposition: (pdf.y), position: :center
+			pdf.move_down 10
+
+			pdf.text "<a href='#{enlace}' style='margin-right:100px' target='_blank'>clic para verificar</a>", align: :center, size: 8, inline_format: true
+			
+
+			pdf.text "Prof. Pedro Coronado", size: 11, align: :center
+			pdf.text "Jef(a) de Control de Estudio", size: 11, align: :center
+
+			pdf.move_down 20
+			
+			pdf.text "<b>IMPORTANTE:</b> PARA VALIDAR LA AUTENTICIDAD DEL PRESENTE DOCUMENTO ESCANEE EL CÓDIGO QR CON SU TELÉFONO INTELIGENTE O CON UN DISPOSITIVO INDICADO PARA ELLO." , align: :justify, size: 11, inline_format: true
+		else
+			# pdf.image "app/assets/images/foto-perfil.png", at: [430, 395], height: 100
+
+			pdf.move_down 20
+			pdf.text "Prof. Pedro Coronado", size: 11, align: :center
+			pdf.text "Jef(a) de Control de Estudio", size: 11, align: :center
+			pdf.image "app/assets/images/sellos_firmas/sello_coesfhe_azul.png", width: 120, at: [210, (pdf.y)-20]
+			pdf.image "app/assets/images/sellos_firmas/firma_jefe_coes.png", width: 150, at: [190, (pdf.y)+50]
+		end
+
+	end
+
+	def self.generar_codigo_qr enlace
+
+		require 'rqrcode'
+		
+		qrcode = RQRCode::QRCode.new(enlace)
+
+		png = qrcode.as_png(
+			bit_depth: 1,
+			border_modules: 4,
+			color_mode: ChunkyPNG::COLOR_GRAYSCALE,
+			color: 'black',
+			file: "tmp/barcode.png",
+			fill: 'white',
+			module_px_size: 6,
+			resize_exactly_to: false,
+			resize_gte_to: false,
+			size: 200
+		)
+
+		return "#{Rails.root.to_s}/tmp/barcode.png"
+
+	end
+
+
+	def self.contenido_inscripcion_horario pdf, estudiante, usuario, escuela, grado, inscripciones, periodo_id, bita, verificando
 		total = inscripciones.count
 
 		#titulo
-		encabezado_central_con_logo pdf, "CONSTANCIA DE INSCRIPCIÓN Y HORARIO", escuela
+		encabezado_central_con_logo pdf, "CONSTANCIA DE INSCRIPCIÓN Y HORARIO", escuela, 9, estudiante
 
 		pdf.move_down 5
 
@@ -476,15 +519,14 @@ class ExportarPdf
 
 		pdf.move_down 10
 
-		pdf.text "Constancia que se expide a solicitud de la parte interesada en la Ciudad Universitaria en Caracas, el día #{I18n.l(Time.new, format: "%d de %B de %Y")}.", size: 10
+		pdf.text "Constancia que se expide a solicitud de la parte interesada en la Ciudad Universitaria en Caracas, el día #{I18n.l(bita.created_at, format: "%d de %B de %Y")}.", size: 10
 		pdf.move_down 10
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
 		pdf.move_down 40
 
-		pdf.text "Prof. Pedro Coronado", size: 11, align: :center
-		pdf.text "Jef(a) de Control de Estudio", size: 11, align: :center
+		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/constancia_inscripcion"
 
-		
+		colocar_qr_y_firmas pdf, enlace, 100
 	end
 
 	def self.insertar_contenido_constancia_preinscripcion pdf, grado
@@ -512,8 +554,6 @@ class ExportarPdf
 		pdf.text "Nombre y Firma del funcionario receptor                                                                  Firma del Estudiante", size: 10, align: :center
 
 	end
-
-
 
 	def self.resumen pdf, inscripcion
 
@@ -684,7 +724,7 @@ class ExportarPdf
 		pdf.move_down 10		
 	end
 
-	def self.encabezado_central_con_logo pdf, titulo, escuela = nil, size = nil
+	def self.encabezado_central_con_logo pdf, titulo, escuela = nil, size = nil, estudiante = nil
 
 		size_logo = size ? size*4 : 50 
 		size ||= 12
@@ -703,6 +743,8 @@ class ExportarPdf
 				pdf.text escuela.descripcion.upcase, align: :center, size: size
 			end
 		end
+
+		pdf.image ActiveStorage::Blob.service.send(:path_for, estudiante.usuario.foto_perfil.key), at: [450, 720], height: 80 if estudiante and estudiante.usuario and estudiante.usuario.foto_perfil
 
 		pdf.move_down 5
 		pdf.text titulo, align: :center, size: size, style: :bold

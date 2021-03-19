@@ -23,6 +23,10 @@ class Bitacora < ApplicationRecord
   belongs_to :usuario, primary_key: :ci, optional: true
   belongs_to :seccion, primary_key: :ci, optional: true
 
+  def objeto
+    (id_objeto and tipo_objeto) ? tipo_objeto.constantize.find(id_objeto) : nil
+  end
+
   protected
 
   def set_default_tipo

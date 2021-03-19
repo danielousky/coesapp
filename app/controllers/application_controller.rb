@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::Base
 	protect_from_forgery
+
+	helper_method :set_hostname
 	helper_method :current_usuario 
 	helper_method :current_admin
 	helper_method :current_profesor
@@ -8,6 +10,10 @@ class ApplicationController < ActionController::Base
 	helper_method :current_escuela
 
 	private
+
+	def set_hostname
+		@hostname = request.host || "https://coesfhe.com"
+	end
 
 	def info_bitacora_crud tipo, objeto, comentario = nil
 		descripcion = Bitacora.tipos.key tipo

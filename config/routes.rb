@@ -14,6 +14,13 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :verificar do
+    member do
+      get 'constancia_estudio'
+      get 'constancia_inscripcion'
+    end
+  end
+
   scope module: :admin do
     resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas, :bitacoras, :reportepagos, :bancos
 
@@ -115,6 +122,7 @@ Rails.application.routes.draw do
     end
     resources :descargar do
       member do
+        get 'verificar_constancia_estudio'
         get 'exportar_lista_csv'
         get :kardex
         get 'acta_examen_excel'

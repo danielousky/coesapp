@@ -230,7 +230,11 @@ class Inscripcionseccion < ApplicationRecord
 
 	def estado_inscripcion
 		if self.sin_calificar?
-			return 'Inscrito'
+			if inscripcionescuelaperiodo and inscripcionescuelaperiodo.tipo_estado_inscripcion
+				return inscripcionescuelaperiodo.tipo_estado_inscripcion.descripcion.titleize
+			else
+				return ''
+			end
 		else
 			return self.estado.titleize
 		end

@@ -11,4 +11,12 @@ class TipoEstadoInscripcion < ApplicationRecord
 	# VALIDACIONES:
     validates :id, presence: true, uniqueness: true
 
+	def inscrito?
+		id.eql? INSCRITO
+	end
+
+	def preinscrito?
+		id.eql? PREINSCRITO
+	end
+
 end

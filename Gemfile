@@ -19,6 +19,7 @@ gem 'toastr-rails'
 # gem 'pdf-writer', :git => 'https://github.com/metaskills/pdf-writer.git'
 # gem 'iconv'
 
+gem 'rqrcode'
 
 gem 'mini_magick'
 gem "jquery-fileupload-rails"

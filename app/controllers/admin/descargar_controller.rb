@@ -4,7 +4,7 @@ module Admin
 		before_action :filtro_logueado
 		before_action :filtro_admin_profe, only: [:listado_seccion, :notas_seccion, :listado_seccion_excel]
 		before_action :filtro_estudiante, only: [:programaciones, :cita_horaria]
-		before_action :filtro_administrador, except: [:programaciones, :cita_horaria, :kardex, :constancia_inscripcion, :constancia_preinscripcion, :constancia_estudio, :listado_seccion, :notas_seccion, :listado_seccion_excel]
+		before_action :filtro_administrador, except: [:programaciones, :cita_horaria, :kardex, :constancia_inscripcion, :constancia_preinscripcion, :constancia_estudio, :listado_seccion, :notas_seccion, :listado_seccion_excel, :verificar_constancia_estudio]
 
 		def listado_completo_estudiante
 			# file = ExportarExcel.listado_estudiantes current_periodo.id, params[:estado]
@@ -121,7 +121,11 @@ module Admin
 			
 		end
 
-		def constancia_inscripcion
+
+
+
+
+		def constancia_inscripcion_antigua
 			if current_estudiante
 				periodo_id = current_estudiante.ultimo_periodo_inscrito_en params[:escuela_id]
 			else
@@ -154,24 +158,69 @@ module Admin
 			end
 		end
 
-		def constancia_estudio
-			if current_estudiante
-				periodo_id = current_estudiante.ultimo_periodo_inscrito_en params[:escuela_id]
-			else
-				periodo_id = current_periodo.id
-			end
-
-			if periodo_id.nil?
-				flash[:error] = "Usted no posse inscripciones en la escuela solicidata"
+		def constancia_inscripcion
+			ins = Inscripcionescuelaperiodo.find params[:id]
+			if ins.nil?
+				flash[:danger] = "Inscripción no encontrada"
 				redirect_back fallback_location: root_path
 			else
-				pdf = ExportarPdf.hacer_constancia_estudio params[:id], periodo_id, params[:escuela_id]
-				unless send_data pdf.render, filename: "constancia_estudio_#{params[:id].to_s}.pdf", type: "application/pdf", disposition: "inline"
-					flash[:error] = "En estos momentos no se pueden descargar el acta, intentelo más tarde."
+				bita = Bitacora.new
+				bita.descripcion = "Descarga Constancia Inscripción ##{ins.descripcion}"
+				bita.tipo = Bitacora::DESCARGA
+				bita.usuario_id = current_usuario.id
+				bita.id_objeto = ins.id
+				bita.tipo_objeto = ins.class.name
+				bita.ip_origen = request.remote_ip
+				bita.save
+
+				if ins.secciones.map{|s| s.horario}.compact.any?
+					pdf = ExportarPdf.hacer_constancia_inscripcion bita.id
+				else
+					pdf = ExportarPdf.hacer_constancia_inscripcion_sin_horario bita.id
 				end
-				return
-			end
-			
+				
+
+				respond_to do |format|
+					format.pdf do
+						send_data pdf.render,
+						filename: "export.pdf",
+						type: 'application/pdf',
+						disposition: 'inline',
+						filename: "constancia_inscripcion_#{params[:id].to_s}.pdf"
+					end
+				end
+			end			
+		end
+
+
+
+		def constancia_estudio
+			ins = Inscripcionescuelaperiodo.find params[:id]
+			if ins.nil?
+				flash[:danger] = "Inscripción no encontrada"
+				redirect_back fallback_location: root_path
+			else
+				bita = Bitacora.new
+				bita.descripcion = "Descarga Constancia Estudio ##{ins.descripcion}"
+				bita.tipo = Bitacora::DESCARGA
+				bita.usuario_id = current_usuario.id
+				bita.id_objeto = ins.id
+				bita.tipo_objeto = ins.class.name
+				bita.ip_origen = request.remote_ip
+				bita.save
+
+				pdf = ExportarPdf.hacer_constancia_estudio bita.id
+				
+				respond_to do |format|
+					format.pdf do
+						send_data pdf.render,
+						filename: "export.pdf",
+						type: 'application/pdf',
+						disposition: 'inline',
+						filename: "constancia_estudio_#{params[:id].to_s}.pdf"
+					end
+				end
+			end			
 		end
 
 		# EXCELs

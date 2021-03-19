@@ -3,6 +3,8 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	has_many :inscripcionsecciones, dependent: :destroy
 	accepts_nested_attributes_for :inscripcionsecciones
 
+	has_many :secciones, through: :inscripcionsecciones, source: :seccion
+
 	belongs_to :estudiante, primary_key: 'usuario_id'
 	belongs_to :escuelaperiodo
 	belongs_to :tipo_estado_inscripcion
@@ -23,6 +25,17 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	scope :con_reportepago, -> {joins(:reportepago)}
 
 
+	def descripcion
+		"#{escuela.id}-#{periodo.id}-#{estudiante.id}"
+	end
+
+	def inscrito?
+		tipo_estado_inscripcion.inscrito?
+	end
+
+	def preinscrito?
+		tipo_estado_inscripcion.inscrito?
+	end
 
 
 	def self.find_or_new(escuela_id, periodo_id, estudiante_id)
