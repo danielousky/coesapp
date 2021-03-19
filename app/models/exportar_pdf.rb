@@ -744,7 +744,9 @@ class ExportarPdf
 			end
 		end
 
-		pdf.image ActiveStorage::Blob.service.send(:path_for, estudiante.usuario.foto_perfil.key), at: [450, 720], height: 80 if estudiante and estudiante.usuario and estudiante.usuario.foto_perfil
+		if estudiante and estudiante.usuario and estudiante.usuario.foto_perfil and estudiante.usuario.foto_perfil.attached?
+			pdf.image estudiante.usuario.foto_perfil.service_url, at: [450, 720], height: 80 
+		end
 
 		pdf.move_down 5
 		pdf.text titulo, align: :center, size: size, style: :bold
