@@ -1,9 +1,9 @@
 .border.mt-3.p-3
-	= render partial: '/admin/estudiantes/generables_docs', locals: {ins: @inscripciones}
+	= render partial: '/admin/estudiantes/generables_docs'
 	%h6.titulo.text-center Registro de Historial Académico:
 	.row
 		.col-2
-		.col-8= render partial: '/admin/estudiantes/resumen_academico', locals: {ins: @inscripciones}
+		.col-8= render '/admin/estudiantes/resumen_academico'
 		.col-2
 
 	#accordion

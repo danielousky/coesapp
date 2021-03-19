@@ -1,33 +1,33 @@
 %b Resumen Académico:
 %table.table.table-sm.table-hover
-	- cursados = ins.total_creditos_cursados
-	- aprobados = ins.total_creditos_aprobados
+	- cursados = @inscripciones.total_creditos_cursados
+	- aprobados = @inscripciones.total_creditos_aprobados
 	- eficiencia = (cursados and cursados > 0) ? (aprobados.to_f/cursados.to_f).round(4) : 0.0
 
-	- aux = ins.cursadas
+	- aux = @inscripciones.cursadas
 	- promedio_simple = (aux and aux.count > 0 and !aux.average('calificacion_final').nil?) ? aux.average('calificacion_final').round(4) : 0.0
 
-	- aux = ins.aprobadas
+	- aux = @inscripciones.aprobadas
 	- promedio_simple_aprob = (aux and aux.count > 0 and !aux.average('calificacion_final').nil?) ? aux.average('calificacion_final').round(4) : 0.0
 	
-	- aux = ins.ponderado_aprobadas
+	- aux = @inscripciones.ponderado_aprobadas
 	- ponderado_apro = aprobados > 0 ? (aux.to_f/aprobados.to_f).round(4) : 0.0
 
-	- aux = ins.ponderado
+	- aux = @inscripciones.ponderado
 	- ponderado = cursados > 0 ? (aux.to_f/cursados.to_f).round(4) : 0.0
 	
 	%tr
 		%td Créditos Inscritos:
-		%th= ins.total_creditos
+		%th= @inscripciones.total_creditos
 	%tr
 		%td Créditos Cursados:
 		%th= cursados
 	%tr
 		%td Créditos Aprobados (Sin Equivalencias):
-		%th= ins.sin_equivalencias.total_creditos_aprobados
+		%th= @inscripciones.sin_equivalencias.total_creditos_aprobados
 	%tr
 		%td Créditos Equivalencia:
-		%th= ins.por_equivalencia.total_creditos
+		%th= @inscripciones.por_equivalencia.total_creditos
 	%tr
 		%td Total Créditos Aprobados:
 		%th= aprobados

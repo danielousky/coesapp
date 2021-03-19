@@ -92,6 +92,9 @@
             .tab-pane.border.p-3.border-top-0{id: "pane_#{escuela.id}", class: activeTab}
               - @inscripciones = @estudiante.inscripcionsecciones.joins(:escuela).where("escuelas.id = :e or pci_escuela_id = :e", e: @escuela.id)
               -# @inscripciones = grado.inscripcionsecciones # ¡¡¡ Probar !!!
+              - escupe = escuela.escuelaperiodos.where(periodo_id: current_periodo.id).first
+              - @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: escupe.id).first
+
               - periodo_ids = @inscripciones.joins(:seccion).group("secciones.periodo_id").count.keys
               %h6.alert.alert-info.pb-ms-3
                 = "Escuela: #{@escuela.descripcion.titleize}"

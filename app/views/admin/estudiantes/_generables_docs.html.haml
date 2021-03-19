@@ -1,10 +1,9 @@
-- insc_esc_per = @estudiante.inscripcionescuelaperiodos.del_periodo(current_periodo.id).de_la_escuela(@escuela.id).first
 
 %table.mb-3.flex-column
 	%tr
 		- if @estudiante and (current_admin and current_admin.autorizado? 'Inscripcionsecciones', 'inscribir') #and @estudiante.valido_para_inscribir? current_periodo.id
 			%td
-				-if insc_esc_per and insc_esc_per.preinscrito?
+				-if @inscripcionperiodo and @inscripcionperiodo.preinscrito?
 					= link_to "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", class: "btn btn-sm btn-warning tooltip-btn", 'data_toggle': :tooltip,  title: 'Confirmar Inscripción del período Actual' do
 						= glyph 'education'
 						¡Confirmar Inscripción!
@@ -12,17 +11,15 @@
 
 					= btn_inscribir "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", 'Inscripción en el periodo actual', 'Inscribir'
 
-		- if @inscripciones.any?
+		- if @inscripcionperiodo 
 			%td
 				=# SUSTITUIR POR ESTUDIANTE_ID, ESCUELA_ID POR GRADO!
 				=# btn_success 'download-alt', "#{kardex_descargar_path(@grado.id)}", "Descargar Kardex de #{@nickname}", 'Kardex'
 				= btn_success 'download-alt', "#{kardex_descargar_path(@estudiante.id)}?escuela_id=#{@escuela.id}", "Descargar Kardex de #{@nickname}", 'Kardex'
-			- if current_estudiante and insc_esc_per and insc_esc_per.inscrito?
-				%td= btn_success 'download-alt', "#{constancia_inscripcion_descargar_path(insc_esc_per.id, :pdf)}", "Constancia de Inscripción de #{@nickname}", 'Constancia Inscripción'
+			- if @inscripcionperiodo.inscrito?
+				%td= btn_success 'download-alt', "#{constancia_inscripcion_descargar_path(@inscripcionperiodo.id, :pdf)}", "Constancia de Inscripción de #{@nickname}", 'Constancia Inscripción'
 
-				%td= btn_success 'download-alt', "#{constancia_estudio_descargar_path(insc_esc_per.id, :pdf)}", "Constancia de Estudio de #{@nickname}", 'Constancia Estudio'
-			-# if @inscripciones.del_periodo(current_periodo.id).any?
-			/%td= btn_success 'download-alt', "#", "Horario de #{@nickname} en el periodo actual #{current_periodo.id}", 'Horario'
+				%td= btn_success 'download-alt', "#{constancia_estudio_descargar_path(@inscripcionperiodo.id, :pdf)}", "Constancia de Estudio de #{@nickname}", 'Constancia Estudio'
 		- else
 			- if false
 				%td= btn_success 'download-alt', "#{constancia_preinscripcion_descargar_path(@estudiante.id)}?escuela_id=#{@escuela.id}", "Constancia de Preinscripción de #{@nickname}", 'Constancia Preinscripción'

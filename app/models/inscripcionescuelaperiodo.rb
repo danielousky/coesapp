@@ -30,11 +30,11 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	end
 
 	def inscrito?
-		tipo_estado_inscripcion.inscrito?
+		self.tipo_estado_inscripcion.inscrito?
 	end
 
 	def preinscrito?
-		tipo_estado_inscripcion.inscrito?
+		tipo_estado_inscripcion.preinscrito?
 	end
 
 

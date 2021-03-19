@@ -183,7 +183,6 @@ module Admin
 				respond_to do |format|
 					format.pdf do
 						send_data pdf.render,
-						filename: "export.pdf",
 						type: 'application/pdf',
 						disposition: 'inline',
 						filename: "constancia_inscripcion_#{params[:id].to_s}.pdf"
@@ -214,7 +213,6 @@ module Admin
 				respond_to do |format|
 					format.pdf do
 						send_data pdf.render,
-						filename: "export.pdf",
 						type: 'application/pdf',
 						disposition: 'inline',
 						filename: "constancia_estudio_#{params[:id].to_s}.pdf"
