@@ -17,10 +17,10 @@
 				=# SUSTITUIR POR ESTUDIANTE_ID, ESCUELA_ID POR GRADO!
 				=# btn_success 'download-alt', "#{kardex_descargar_path(@grado.id)}", "Descargar Kardex de #{@nickname}", 'Kardex'
 				= btn_success 'download-alt', "#{kardex_descargar_path(@estudiante.id)}?escuela_id=#{@escuela.id}", "Descargar Kardex de #{@nickname}", 'Kardex'
-			- if current_estudiante or insc_esc_per
+			- if current_estudiante and insc_esc_per and insc_esc_per.inscrito?
 				%td= btn_success 'download-alt', "#{constancia_inscripcion_descargar_path(insc_esc_per.id, :pdf)}", "Constancia de Inscripción de #{@nickname}", 'Constancia Inscripción'
-				- if true #insc_esc_per.inscrito?
-					%td= btn_success 'download-alt', "#{constancia_estudio_descargar_path(insc_esc_per.id, :pdf)}", "Constancia de Estudio de #{@nickname}", 'Constancia Estudio'
+
+				%td= btn_success 'download-alt', "#{constancia_estudio_descargar_path(insc_esc_per.id, :pdf)}", "Constancia de Estudio de #{@nickname}", 'Constancia Estudio'
 			-# if @inscripciones.del_periodo(current_periodo.id).any?
 			/%td= btn_success 'download-alt', "#", "Horario de #{@nickname} en el periodo actual #{current_periodo.id}", 'Horario'
 		- else
