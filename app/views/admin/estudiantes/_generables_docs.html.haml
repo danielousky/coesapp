@@ -16,7 +16,7 @@
 				=# SUSTITUIR POR ESTUDIANTE_ID, ESCUELA_ID POR GRADO!
 				=# btn_success 'download-alt', "#{kardex_descargar_path(@grado.id)}", "Descargar Kardex de #{@nickname}", 'Kardex'
 				= btn_success 'download-alt', "#{kardex_descargar_path(@estudiante.id)}?escuela_id=#{@escuela.id}", "Descargar Kardex de #{@nickname}", 'Kardex'
-			- if @inscripcionperiodo.inscrito?
+			- if false #@inscripcionperiodo.inscrito?
 				%td= btn_success 'download-alt', "#{constancia_inscripcion_descargar_path(@inscripcionperiodo.id, :pdf)}", "Constancia de Inscripción de #{@nickname}", 'Constancia Inscripción'
 
 				%td= btn_success 'download-alt', "#{constancia_estudio_descargar_path(@inscripcionperiodo.id, :pdf)}", "Constancia de Estudio de #{@nickname}", 'Constancia Estudio'
