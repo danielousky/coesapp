@@ -1,8 +1,8 @@
 %table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table
   %thead
     %tr
-      %th #
-      %th{style: 'width: 60%'}
+      %th{style: 'width: 4%'} #
+      %th{style: 'width: 56%'}
         Asignaturas
         %span.badge.badge-dark= asignaturas.count
       %th{style: 'width: 5%'} Año
@@ -22,7 +22,7 @@
 
       - asigAprobada = aprobada ? 'text-muted border border-success' : ''
       %tr{class: "#{asigAprobada}"}
-        %td= i+1
+        %td.align-middle.text-right= i+1
         %td.align-middle
           - if pcis
             = asig.descripcion_id_con_escuela
