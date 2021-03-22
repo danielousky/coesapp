@@ -1,7 +1,5 @@
 class TipoEstadoInscripcion < ApplicationRecord
 
-	
-	RESERVADO = 'RES'
 	PREINSCRITO = 'PRE'
 	INSCRITO = 'INS'
 	REINCORPODADO = 'REINC'
@@ -21,7 +19,4 @@ class TipoEstadoInscripcion < ApplicationRecord
 		id.eql? PREINSCRITO
 	end
 
-	def reservado?
-		id.eql? RESERVADO
-	end
 end

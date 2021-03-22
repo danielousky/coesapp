@@ -37,10 +37,6 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 		tipo_estado_inscripcion.preinscrito?
 	end
 
-	def reservado?
-		tipo_estado_inscripcion.reservado?
-	end
-
 
 	def self.find_or_new(escuela_id, periodo_id, estudiante_id)
 

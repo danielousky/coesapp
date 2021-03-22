@@ -32,7 +32,7 @@
 				- @periodo = escuela.periodo_inscripcion
 				- escupe = escuela.escuelaperiodos.where(periodo_id: @periodo.id).first
 				- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: escupe.id).first
-				- if @inscripcionperiodo.nil? or (@inscripcionperiodo and @inscripcionperiodo.reservado?)
+				- unless @inscripcionperiodo
 					- if false #escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
 						-# inscripciones_del_periodo = @inscripciones.del_periodo(periodo.id)#.inscritos
 						- inscripciones_del_periodo = @inscripciones.del_periodo(@periodo.id).preinscritos
@@ -55,7 +55,7 @@
 							-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
 							- titulo_modal = "Proceso de Preinscripción #{@periodo.id}"
 							- titulo_btn = "Preinscribirse"
-							- msgDanger = "Seleccione las asignaturas que desea preinscribir"
+							- msgDanger = "<b>Atención: </b> Seleccione las asignaturas que desea preinscribir"
 							- url = '/inscripcionsecciones/preinscribirse'
 							- idModal = "preinscripcion#{escuela.id}"
 							= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas_x_escuela, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
