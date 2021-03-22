@@ -131,11 +131,15 @@ module Admin
 										unless seccion.hay_cupos?
 											flash[:warning] += "Sin cupos disponibles para: #{seccion.descripcion_simple} en el período #{periodo_id}"
 										else
-											inscripcion = Inscripcionseccion.new()
-											inscripcion.seccion_id = seccion.id
-											inscripcion.estudiante_id = estudiante.id
-											inscripcion.inscripcionescuelaperiodo_id = ins_periodo.id
-											inscripcion.escuela_id = escuela.id
+
+											unless inscripcion = ins_periodo.inscripcionsecciones.where(seccion_id: seccion.id, estudiante_id: estudiante.id).first
+
+												inscripcion = Inscripcionseccion.new()
+												inscripcion.seccion_id = seccion.id
+												inscripcion.estudiante_id = estudiante.id
+												inscripcion.inscripcionescuelaperiodo_id = ins_periodo.id
+												inscripcion.escuela_id = escuela.id
+											end
 
 											if inscripcion.save
 												info_bitacora "Prenscrito en la sección #{inscripcion.seccion.descripcion_simple} exitosamente.", Bitacora::CREACION, inscripcion
