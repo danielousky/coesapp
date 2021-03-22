@@ -200,6 +200,7 @@ module Admin
         @escuela.periodo_inscripcion_id = params[:periodo_inscripcion_id]
         if @escuela.save
           aux = @escuela.periodo_inscripcion_id.nil? ? 'Inscripción Cerrada' : "Inscripción abierta para el período #{@escuela.periodo_inscripcion_id}."
+          info_bitacora aux, Bitacora::ACTUALIZACION, @escuela
           flash[:success] = aux
         else
           flash[:danger] = "Error al intentar establecer periodo de inscripción: #{@escuela.errors.full_messages.to_sentence}"
