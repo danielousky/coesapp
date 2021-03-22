@@ -1,8 +1,8 @@
 %h6.titulo Imágenes de Soportes:
 - if @usuario.estudiante and @usuario.estudiante.grados.where(escuela_id: 'POST').any?
-  = correo_ayuda = 'algaramirlay@gmail.com'
+  - correo_ayuda = 'algaramirlay@gmail.com'
 - else
-  = correo_ayuda = 'controlestfheucv@gmail.com'
+  - correo_ayuda = 'controlestfheucv@gmail.com'
 
 .alert.alert-warning
   %b IMPORTANTE: 
