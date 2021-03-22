@@ -1,12 +1,15 @@
 %table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table
   %thead
     %tr
-      %th{style: 'width: 60%'} Asigantura
+      %th #
+      %th{style: 'width: 60%'}
+        Asignaturas
+        %span.badge.badge-dark= asignaturas.count
       %th{style: 'width: 5%'} Año
       %th{style: 'width: 5%'} Créd
       %th{style: 'width: 30%'} Sección
   %tbody
-    - asignaturas.each do |asig| 
+    - asignaturas.each_with_index do |asig, i|
       - if @aprobadas.include? asig.id
         - aprobada = true
         - indice = @aprobadas.index asig.id
@@ -19,6 +22,7 @@
 
       - asigAprobada = aprobada ? 'text-muted border border-success' : ''
       %tr{class: "#{asigAprobada}"}
+        %td= i+1
         %td.align-middle
           - if pcis
             = asig.descripcion_id_con_escuela
