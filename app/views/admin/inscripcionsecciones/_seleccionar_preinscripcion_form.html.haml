@@ -18,7 +18,7 @@
       .alert.alert-warning.text-center= msgDanger.html_safe
       .alert.alert-danger.text-center
         %b Atención:
-        Una vez que inicie la selección de asignaturas, evite refrescar la pantalla ya que el proceso de inscripción será cerrado automáticamente con la selección que tenga hasta ese momento.
+        Una vez que inicie la selección de asignaturas, evite refrescar la pantalla para conservar su cupo.
 
       = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
         .modal-body.border.p-2{style: 'overflow-y:scroll;max-height:350px'}
