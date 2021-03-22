@@ -16,6 +16,10 @@
           %h5= "Escuela de #{@escuela.descripcion_filtro}"
           %h5= "Período Académico #{@periodo.id}"
       .alert.alert-warning.text-center= msgDanger.html_safe
+      .alert.alert-danger.text-center
+        %b Atención:
+        Una vez que inicie la selección de asignaturas, evite refrescar la pantalla ya que el proceso de inscripción será cerrado automáticamente con la selección que tenga hasta ese momento.
+
       = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
         .modal-body.border.p-2{style: 'overflow-y:scroll;max-height:350px'}
           = hidden_field_tag 'estudiante_id', @estudiante.id

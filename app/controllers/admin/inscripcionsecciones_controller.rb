@@ -1,14 +1,14 @@
 module Admin
 	class InscripcionseccionesController < ApplicationController
 		before_action :filtro_logueado
-		before_action :filtro_administrador, except: [:confirmar_inscripcion, :preinscribirse]#, only: [:destroy]
+		before_action :filtro_administrador, except: [:confirmar_inscripcion, :preinscribirse, :reservar_cupo]#, only: [:destroy]
 		# before_action :filtro_admin_mas_altos!, except: [:destroy]
 		# before_action :filtro_ninja!, only: [:destroy]
 
 		# before_action :filtro_autorizado, except: [:index, :buscar_estudiante, :seleccionar, :inscribir, :resumen]
 		# before_action :filtro_autorizado_inscribir, only: [:buscar_estudiante, :seleccionar, :inscribir, :resumen]
 
-		before_action :filtro_autorizado#, except: [:buscar_estudiante, :seleccionar, :resumen]
+		before_action :filtro_autorizado, except: [:reservar_cupo]
 		before_action :set_inscripcionseccion, only: [:cambiar_seccion]
 		before_action :set_estudiante, only: [:seleccionar, :inscribir]
 		before_action :set_escuela, only: [:buscar_estudiante,:seleccionar, :inscribir]
@@ -20,6 +20,55 @@ module Admin
 		# 	inscripcion = Inscripcionseccion.find params[:inscripcionseccion_id]
 		# 	inscripcion.pci_escuela_id = params[:escuela_pci_id]
 		# end
+
+		def reservar_cupo
+			asignatura = Asignatura.find params[:asignatura_id]
+			p "  Asignatura Total: #{Inscripcionseccion.joins(:asignatura).where("estudiante_id = #{params[:estudiante_id]} & asignaturas.id = '#{params[:asignatura_id]}'").count }".center(200, "--") 
+			Inscripcionseccion.joins(:asignatura).where("estudiante_id = #{params[:estudiante_id]} AND asignaturas.id = '#{params[:asignatura_id]}'").destroy_all
+			
+			# ins_sec.destroy if ins_sec
+			# if inscripciones.any?
+			# 	inscripciones.destroy_all 
+			# 	p "  Inscripcion Destruida    ".center(200, "#")
+			# end
+
+
+			if !params[:seccion_id].eql? ""
+				sec = Seccion.find params[:seccion_id]
+				unless sec.hay_cupos?
+					msg = "Sin cupos disponibles para: #{sec.descripcion_con_cupos} en el período #{sec.periodo.id}"
+					estatus = 'error'
+				else
+					ins = Inscripcionseccion.new
+					ins.estudiante_id = params[:estudiante_id]
+					ins.seccion_id = sec.id
+					ins.escuela_id = sec.escuela.id
+					if ins.save and ins.inscripcionescuelaperiodo.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::RESERVADO) 
+						msg = "Cupo reservado"
+						estatus = 'success'
+					else
+						estatus = 'error'
+						msg = "Error: #{ins.errors.full_messages.to_sentence}"
+					end
+				end
+
+			else
+				msg = "Cupo liberado"
+				estatus = 'success'
+			end	
+
+
+			respond_to do |format|
+
+				format.json do 
+					render json: {data: msg, status: estatus}
+
+				end
+
+			end
+
+		end
+
 
 		def confirmar_inscripcion
 			total_ratificadas = 0
@@ -67,67 +116,66 @@ module Admin
 						if params['total_creditos'].to_i > limiteCreditos 
 							flash[:danger] += "Supera el límite de créditos permitidos por #{escuela.descripcion}. Por favor, corrija su inscripción e inténtelo de nuevo."
 						else
+							# ins_periodo = estudiante.inscripcionescuelaperiodos.del_periodo(periodo_id).first
 
-							if estudiante.inscripcionescuelaperiodos.del_periodo(periodo_id).any?
-								flash[:danger] += "Estudiante ya inscrito en el periodo #{periodo_id}. Favor contacte a los administradores para brindarle el apoyo requerido."
-							else
-								ins_periodo = Inscripcionescuelaperiodo.find_or_new(escuela.id, periodo_id, estudiante.id)
-								ins_periodo.tipo_estado_inscripcion_id = TipoEstadoInscripcion::PREINSCRITO
+							ins_periodo = Inscripcionescuelaperiodo.find_or_new(escuela.id, periodo_id, estudiante.id)
 
-								if ins_periodo.save
-									asign_inscritas_ids = []
-									flash[:warning] = ""
-									if params[:secciones]
-										params[:secciones].each do |seccion_id|
-											seccion = Seccion.find(seccion_id)
-											unless seccion.hay_cupos?
-												flash[:warning] += "Sin cupos disponibles para: #{seccion.descripcion_simple} en el período #{periodo_id}"
+							ins_periodo.tipo_estado_inscripcion_id = TipoEstadoInscripcion::PREINSCRITO
+
+							if ins_periodo.save
+								asign_inscritas_ids = []
+								flash[:warning] = ""
+								if params[:secciones]
+									params[:secciones].each do |seccion_id|
+										seccion = Seccion.find(seccion_id)
+										unless seccion.hay_cupos?
+											flash[:warning] += "Sin cupos disponibles para: #{seccion.descripcion_simple} en el período #{periodo_id}"
+										else
+											inscripcion = Inscripcionseccion.new()
+											inscripcion.seccion_id = seccion.id
+											inscripcion.estudiante_id = estudiante.id
+											inscripcion.inscripcionescuelaperiodo_id = ins_periodo.id
+											inscripcion.escuela_id = escuela.id
+
+											if inscripcion.save
+												info_bitacora "Prenscrito en la sección #{inscripcion.seccion.descripcion_simple} exitosamente.", Bitacora::CREACION, inscripcion
+												asign_inscritas_ids << seccion.asignatura.id
 											else
-												inscripcion = Inscripcionseccion.new()
-												inscripcion.seccion_id = seccion.id
-												inscripcion.estudiante_id = estudiante.id
-												inscripcion.inscripcionescuelaperiodo_id = ins_periodo.id
-												inscripcion.escuela_id = escuela.id
-
-												if inscripcion.save
-													info_bitacora "Prenscrito en la sección #{inscripcion.seccion.descripcion_simple} exitosamente.", Bitacora::CREACION, inscripcion
-													asign_inscritas_ids << seccion.asignatura.id
-												else
-													flash[:danger] += "Error al intentar inscribir en la sección: #{inscripcion.errors.full_messages.to_sentence}"
-												end
+												flash[:danger] += "Error al intentar inscribir en la sección: #{inscripcion.errors.full_messages.to_sentence}"
 											end
 										end
 									end
-
-									unless asign_inscritas_ids.any? 
-										ins_periodo.destroy
-										flash[:danger] += " No se completó ninguna inscripción. Por favor inténtelo nuevamente."
-									else
-										begin
-											info_bitacora "Preinscrito en el periodo #{ins_periodo.periodo.id} en #{ins_periodo.escuela.descripcion} exitosamente.", Bitacora::CREACION, ins_periodo
-											EstudianteMailer.preinscrito(estudiante.usuario, ins_periodo).deliver
-										rescue Exception => e
-											flash[:danger] += " No se pudo enviar el correo asociado: #{e}"
-										end
-										flash[:info] = "Proceso de inscripción completado con éxito. Total asignaturas preinscritas: #{asign_inscritas_ids.count}. "
-									end
-
-									# reporte = Reportepago.new()
-									# reporte.numero = params[:reportepago][:numero]
-									# reporte.tipo_transaccion = params[:reportepago][:tipo_transaccion]
-									# reporte.fecha_transaccion = params[:reportepago][:fecha_transaccion]
-									# reporte.respaldo = params[:reportepago][:respaldo]
-									# reporte.inscripcionescuelaperiodo_id = ins_periodo.id
-
-									# if reporte.save
-									# 	flash[:success] = " Reporte de pago generado con éxito."
-									# else
-									# 	flash[:danger] += "Error al intentar guardar el reporte de pago: #{ins_periodo.errors.full_messages.to_sentence}"
-									# end
-								else
-									flash[:danger] += " Error al intentar registar la inscripción: #{ins_periodo.errors.full_messages.to_sentence}"
 								end
+
+								unless asign_inscritas_ids.any? 
+									ins_periodo.destroy
+									flash[:danger] += " No se completó ninguna inscripción. Por favor inténtelo nuevamente."
+								else
+									begin
+										info_bitacora "Preinscrito en el periodo #{ins_periodo.periodo.id} en #{ins_periodo.escuela.descripcion} exitosamente.", Bitacora::CREACION, ins_periodo
+										EstudianteMailer.preinscrito(estudiante.usuario, ins_periodo).deliver
+									rescue Exception => e
+										flash[:danger] += " No se pudo enviar el correo asociado: #{e}"
+									end
+									flash[:info] = "Proceso de inscripción completado con éxito. Total asignaturas preinscritas: #{asign_inscritas_ids.count}. "
+								end
+
+								# reporte = Reportepago.new()
+								# reporte.numero = params[:reportepago][:numero]
+								# reporte.tipo_transaccion = params[:reportepago][:tipo_transaccion]
+								# reporte.fecha_transaccion = params[:reportepago][:fecha_transaccion]
+								# reporte.respaldo = params[:reportepago][:respaldo]
+								# reporte.inscripcionescuelaperiodo_id = ins_periodo.id
+
+								# if reporte.save
+								# 	flash[:success] = " Reporte de pago generado con éxito."
+								# else
+								# 	flash[:danger] += "Error al intentar guardar el reporte de pago: #{ins_periodo.errors.full_messages.to_sentence}"
+								# end
+							else
+								flash[:danger] += " Error al intentar registar la inscripción: #{ins_periodo.errors.full_messages.to_sentence}"
 							end
+
 						end
 					end
 				end
@@ -499,7 +547,7 @@ module Admin
 					render json: {tr: tr, msg: msg}, status: :ok 
 				end
 
-	        end
+			end
 		end
 
 		private
