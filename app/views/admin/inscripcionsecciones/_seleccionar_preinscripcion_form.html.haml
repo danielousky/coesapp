@@ -42,8 +42,10 @@
     let selecteds = $(".selectInscripcion :selected");
     let creditosSeleccionados = 0;
     let total = $('#totalCreditosNumero');
+    let asigTotal = 0
     selecteds.each(function(){
       if ($(this).val() != ''){
+        asigTotal += 1;
         creditosSeleccionados += Number($(this).parent().attr('creditos'));
       }
     });
@@ -52,7 +54,7 @@
     $('#total_creditos').val(total.text());
     let limiteCreditos = Number(#{@limiteCreditos})
     let submitBtn = $('#submitBtn');
-    if ((creditosSeleccionados > 0) & (creditosSeleccionados <= limiteCreditos)){
+    if ((asigTotal > 0) & (creditosSeleccionados <= limiteCreditos)){
       submitBtn.removeClass('disabled');
       submitBtn.attr('disabled', false);
     }else{
