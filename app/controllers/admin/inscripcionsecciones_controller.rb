@@ -24,7 +24,6 @@ module Admin
 		def reservar_cupo
 			asignatura = Asignatura.find params[:asignatura_id]
 			periodo = asignatura.escuela.periodo_inscripcion
-			p "  Asignatura Total: #{Inscripcionseccion.joins(:asignatura).where("estudiante_id = #{params[:estudiante_id]} & asignaturas.id = '#{params[:asignatura_id]}'").count }".center(200, "--") 
 			Inscripcionseccion.joins(:asignatura).joins(:periodo).where("estudiante_id = #{params[:estudiante_id]} AND asignaturas.id = '#{params[:asignatura_id]}' AND periodos.id = '#{periodo.id}'").destroy_all
 			
 			# ins_sec.destroy if ins_sec
