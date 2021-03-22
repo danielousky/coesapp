@@ -200,13 +200,14 @@ module Admin
         @escuela.periodo_inscripcion_id = params[:periodo_inscripcion_id]
         if @escuela.save
           aux = @escuela.periodo_inscripcion_id.nil? ? 'Inscripción Cerrada' : "Inscripción abierta para el período #{@escuela.periodo_inscripcion_id}."
-          render json: {data: aux, status: :success}
+          flash[:success] = aux
         else
-          render json: {data: "Error al intentar establecer periodo de inscripción: #{@escuela.errors.full_messages.to_sentence}", status: :error}
+          flash[:danger] = "Error al intentar establecer periodo de inscripción: #{@escuela.errors.full_messages.to_sentence}"
         end
       rescue Exception => e
-        render json: {data: "Error inesperado: #{e}", status: :error}
+        flash[:danger] = "Error inesperado: #{e}"
       end
+      redirect_back fallback_location: escuelas_path
 
     end
 
