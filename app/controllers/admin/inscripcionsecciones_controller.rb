@@ -22,59 +22,68 @@ module Admin
 		# end
 
 		def reservar_cupo
-			asignatura = Asignatura.find params[:asignatura_id]
-			periodo = Periodo.find '2021-01S' #asignatura.escuela.periodo_inscripcion
-			limite_creditos = periodo.anual? ? 49 : 25
-			inscripcion = Inscripcionseccion.joins(:asignatura).joins(:periodo).where("estudiante_id = #{params[:estudiante_id]} AND asignaturas.id = '#{params[:asignatura_id]}' AND periodos.id = '#{periodo.id}'").first
+			begin
+				asignatura = Asignatura.find params[:asignatura_id]
+				grado = Grado.find params[:grado_id].split("-")
 
-			
-			if params[:seccion_id].eql? ''
-				if inscripcion and inscripcion.destroy
-					msg = "Cupo liberado"
-					estado = 'success'
-				else
-					msg = "Inscripcion no encontrada o no se pudo eliminar. Por favor, inténtelo nuevamente."
-					estado = 'error'
-				end
-			else
+				periodo = grado.escuela.periodo_inscripcion
+				limite_creditos = periodo.anual? ? 49 : 25
+				inscripcion = Inscripcionseccion.joins(:asignatura).joins(:periodo).where("estudiante_id = #{params[:estudiante_id]} AND asignaturas.id = '#{params[:asignatura_id]}' AND periodos.id = '#{periodo.id}'").first
 
-				if (inscripcion and inscripcion.inscripcionescuelaperiodo and (inscripcion.inscripcionescuelaperiodo.total_creditos > inscripcion.inscripcionescuelaperiodo.limite_creditos_permitidos))
-
-					estado = 'error'
-					msg = "Supera el límite de créditos permitidos por #{inscripcion.escuela.descripcion}. Por favor, corrija su inscripción e inténtelo de nuevo. (#{inscripcion.inscripcionescuelaperiodo.total_creditos} / #{limite_creditos})"
-				else
-					inscripcion.destroy if inscripcion
-
-					sec = Seccion.find params[:seccion_id]
-					unless sec.hay_cupos?
-						msg = "Sin cupos disponibles para: #{sec.descripcion} en el período #{sec.periodo.id}"
-						estado = 'error'
+				
+				if params[:seccion_id].eql? ''
+					if inscripcion and inscripcion.destroy
+						msg = "Cupo liberado"
+						estado = 'success'
 					else
-						ins = Inscripcionseccion.new
-						ins.estudiante_id = params[:estudiante_id]
-						ins.seccion_id = sec.id
-						ins.escuela_id = sec.escuela.id
+						msg = "Inscripcion no encontrada o no se pudo eliminar. Por favor, inténtelo nuevamente."
+						estado = 'error'
+					end
+				else
 
-						if ins.save
-							info_bitacora "Cupo Reservado para la sección #{ins.seccion.descripcion_simple}.", Bitacora::CREACION, ins
-							if ins.inscripcionescuelaperiodo and ins.inscripcionescuelaperiodo.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::RESERVADO)
-								msg = "Cupo reservado"
-								estado = 'success'
+					if (inscripcion and inscripcion.inscripcionescuelaperiodo and (inscripcion.inscripcionescuelaperiodo.total_creditos > inscripcion.inscripcionescuelaperiodo.limite_creditos_permitidos))
+
+						estado = 'error'
+						msg = "Supera el límite de créditos permitidos por #{inscripcion.escuela.descripcion}. Por favor, corrija su inscripción e inténtelo de nuevo. (#{inscripcion.inscripcionescuelaperiodo.total_creditos} / #{limite_creditos})"
+					else
+						inscripcion.destroy if inscripcion
+
+						sec = Seccion.find params[:seccion_id]
+						unless sec.hay_cupos?
+							msg = "Sin cupos disponibles para: #{sec.descripcion} en el período #{sec.periodo.id}"
+							estado = 'error'
+						else
+							ins = Inscripcionseccion.new
+							ins.estudiante_id = params[:estudiante_id]
+							ins.seccion_id = sec.id
+							ins.escuela_id = grado.escuela.id 
+							ins.pci_escuela_id = sec.escuela.id if params[:pci]
+							
+
+							if ins.save
+								info_bitacora "Cupo Reservado para la sección #{ins.seccion.descripcion_simple}.", Bitacora::CREACION, ins
+								if ins.inscripcionescuelaperiodo and ins.inscripcionescuelaperiodo.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::RESERVADO)
+									msg = "Cupo reservado"
+									estado = 'success'
+								else
+									estado = 'error'
+									msg = "Error: #{ins.inscripcionescuelaperiodo.errors.full_messages.to_sentence}"
+								end
 							else
 								estado = 'error'
-								msg = "Error: #{ins.inscripcionescuelaperiodo.errors.full_messages.to_sentence}"
+								msg = "Error: #{ins.errors.full_messages.to_sentence}"
 							end
-						else
-							estado = 'error'
-							msg = "Error: #{ins.errors.full_messages.to_sentence}"
 						end
-					end
 
-				end			
+					end			
 
 
+				end
+
+			rescue Exception => e
+				estado = 'error'
+				msg = "Error: #{e}"				
 			end
-
 			cupo = sec ? sec.descripcion_con_cupos : 'Seleccione'
 			respond_to do |format|
 

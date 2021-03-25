@@ -116,7 +116,10 @@
     let ele = $(this);
     let asignaturaId = ele.attr('asigId');
     let estudianteId = ele.attr('estudianteId');
-    reservar(`#{reservar_cupo_inscripcionsecciones_path()}?asignatura_id=${asignaturaId}&seccion_id=${this.value}&estudiante_id=${estudianteId}`, event, ele);
+    let grado = ele.attr('gradoId');
+    let pci = ele.attr('pci');
+
+    reservar(`#{reservar_cupo_inscripcionsecciones_path()}?asignatura_id=${asignaturaId}&seccion_id=${this.value}&estudiante_id=${estudianteId}&grado_id=${grado}&pci=${pci}`, event, ele);
 
   })
 
