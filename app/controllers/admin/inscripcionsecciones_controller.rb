@@ -23,7 +23,7 @@ module Admin
 
 		def reservar_cupo
 			asignatura = Asignatura.find params[:asignatura_id]
-			periodo = asignatura.escuela.periodo_inscripcion
+			periodo = Periodo.find '2021-01S' #asignatura.escuela.periodo_inscripcion
 			limite_creditos = periodo.anual? ? 49 : 25
 			inscripcion = Inscripcionseccion.joins(:asignatura).joins(:periodo).where("estudiante_id = #{params[:estudiante_id]} AND asignaturas.id = '#{params[:asignatura_id]}' AND periodos.id = '#{periodo.id}'").first
 
