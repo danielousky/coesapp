@@ -18,7 +18,7 @@
         Una vez que inicie la selección de asignaturas, evite refrescar la pantalla para conservar su cupo.
 
       = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
-        .modal-body.border.p-2{style: 'overflow-y:scroll;max-height:350px'}
+        .modal-body.border.p-2{style: 'overflow-y:scroll;max-height:300px'}
           = hidden_field_tag 'estudiante_id', @estudiante.id
           = hidden_field_tag 'escuelaperiodo_id', @escupe.id
 
