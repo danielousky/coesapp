@@ -4,7 +4,7 @@
   = glyph 'education'
   = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{@periodo.id}"
 
-.modal.fade{'aria-hidden': false, role: :dialog, id: id_modal, 'data-backdrop': 'static'}
+.modal.fade{'aria-hidden': false, role: :dialog, id: id_modal, data: {backdrop: 'static', keyboard: :false} }
   .modal-dialog.modal-lg
     .modal-content
       .alert.alert-info
