@@ -35,7 +35,8 @@
         = render partial: '/admin/inscripcionsecciones/total_creditos'
         .modal-footer
           / %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
-          = submit_tag title_btn, class: 'disabled btn btn-success btn-sm', id: 'submitBtn', 'data-disable-with': 'Enviando', disabled: true
+          - disabledClass = (@totalCreditosReservados > 0) ? '' : 'disabled'
+          = submit_tag title_btn, class: "#{disabledClass} btn btn-success btn-sm", id: 'submitBtn', 'data-disable-with': 'Enviando', disabled: !(@totalCreditosReservados > 0)
 
 :javascript
 
