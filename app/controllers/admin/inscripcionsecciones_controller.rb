@@ -112,7 +112,7 @@ module Admin
 			elsif (inscripcionescuelaperiodo.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO))
 				info_bitacora "Estudiante #{inscripcionescuelaperiodo.estudiante_id} Preinscrito en el periodo #{inscripcionescuelaperiodo.periodo.id} en #{inscripcionescuelaperiodo.escuela.descripcion}.", Bitacora::CREACION, inscripcionescuelaperiodo
 				begin
-					info_bitacora "Envío de correo de Preinscripcion #{inscripcionescuelaperiodo.estudiante_id} Preinscrito en el periodo #{inscripcionescuelaperiodo.periodo.id} en #{inscripcionescuelaperiodo.escuela.descripcion}.", Bitacora::CREACION, inscripcionescuelaperiodo if EstudianteMailer.preinscrito(estudiante.usuario, inscripcionescuelaperiodo).deliver
+					info_bitacora "Envío de correo de Preinscripcion #{inscripcionescuelaperiodo.estudiante_id} Preinscrito en el periodo #{inscripcionescuelaperiodo.periodo.id} en #{inscripcionescuelaperiodo.escuela.descripcion}.", Bitacora::CREACION, inscripcionescuelaperiodo if EstudianteMailer.preinscrito(inscripcionescuelaperiodo.estudiante.usuario, inscripcionescuelaperiodo).deliver
 					
 				rescue Exception => e
 					flash[:warning] = "Correo de completación de proceso de preinscripción no enviado: #{e}" 
