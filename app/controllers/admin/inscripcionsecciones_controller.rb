@@ -379,10 +379,10 @@ module Admin
 
 				flash[:success] = "Inscripción en el período #{current_periodo.id} para la escuela #{@escuela.descripcion} realizada con éxito." if inscripcion_del_periodo.save
 
-				inscripcionsecciones = @estudiante.inscripciones.where(inscripcionescuelaperiodo_id: nil)
+				inscripcionsecciones = @estudiante.inscripciones.del_periodo(current_periodo.id).where(inscripcionescuelaperiodo_id: nil)
 				if inscripcionsecciones.any?
 					if inscripcionsecciones.update(inscripcionescuelaperiodo_id: inscripcion_del_periodo.id)
-						flash[:success] += "  | Confirmas #{inscripcionsecciones.count} preinscripciones"
+						flash[:success] += "  | Confirmas #{inscripcion_del_periodo.inscripcionsecciones.count} preinscripciones"
 					end
 				end
 
@@ -443,8 +443,12 @@ module Admin
 
 			if se_preinscribio and inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? 'INS' and inscripcion_del_periodo.inscripcionsecciones.any?
 				begin
-					info_bitacora "Confirmación de inscripción en el periodo #{inscripcion_del_periodo.periodo.id} en #{inscripcion_del_periodo.escuela.descripcion} exitosamente.", Bitacora::CREACION, inscripcion_del_periodo
-					EstudianteMailer.confirmado(@estudiante.usuario, inscripcion_del_periodo).deliver
+					info_bitacora "Confirmación inscripción estudiante #{inscripcion_del_periodo.estudiante_id} en periodo #{inscripcion_del_periodo.periodo.id} en #{inscripcion_del_periodo.escuela.descripcion}.", Bitacora::CREACION, inscripcion_del_periodo
+
+
+					if EstudianteMailer.confirmado(@estudiante, inscripcion_del_periodo).deliver
+						info_bitacora "Se envió correo de confirmacion de inscripción estudiante #{inscripcion_del_periodo.estudiante_id} en periodo #{inscripcion_del_periodo.periodo.id} en #{inscripcion_del_periodo.escuela.descripcion}.", Bitacora::CREACION, inscripcion_del_periodo
+					end
 				rescue Exception => e
 					flash[:danger] += "No se pude enviar el email: #{e}"
 				end

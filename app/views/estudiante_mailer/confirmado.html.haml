@@ -5,8 +5,8 @@
 %p= "Su inscripción en #{@escuela_desc} para el período #{@periodo_id} ha sido validada para las siguientes asignaturas:".html_safe
 
 %ol
-	- @asignaturas.each do |asig| 
-		%li= asig.descripcion_id
+	- @secciones.each do |sec| 
+		%li= sec.desc_asig_numero
 
 %p Favor estar atento a la fecha de inicio de las clases.
  

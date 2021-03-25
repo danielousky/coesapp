@@ -50,9 +50,12 @@ class Seccion < ApplicationRecord
 	# scope :order_by_total_inscripciones, -> {joins(:inscripcionsecciones).order('inscripcionsecciones.')}
 
 	# FUNCIONES:
+	def estudiante_inscrito? estudiante_ci
+		inscripciones.map{|ins| ins.estudiante_id}.include? estudiante_ci.to_s
+	end
 
 	def hay_cupos?
-		capacidad and (capacidad > 0) and (self.capacidad - total_estudiantes) > 0
+		self.capacidad and (self.capacidad > 0) and (self.total_estudiantes < self.capacidad)
 	end
 
 	def descripcion_con_cupos
@@ -307,6 +310,10 @@ class Seccion < ApplicationRecord
 
 	def descripcion_con_uxxi
 		"(#{asignatura.id_uxxi}) - #{descripcion}"
+	end
+
+	def desc_asig_numero
+		"#{asignatura.descripcion_id} (#{numero})"
 	end
 
 	def descripcion_simple
