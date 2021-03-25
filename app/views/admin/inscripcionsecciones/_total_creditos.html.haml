@@ -1,9 +1,11 @@
-= hidden_field_tag 'total_creditos', 0
+= hidden_field_tag 'total_creditos', @totalCreditosReservados
+- tableColor = (@totalCreditosReservados > @limiteCreditos) ? 'table-danger' : 'table-success'
+
 %table.table.table-sm.responsive-table
   %tbody
-    %tr.table-success
+    %tr{class: tableColor}
       %td
       %td{style: 'width: 65%;text-align:right;'} Total a Inscribir:
       %td
-        %b.text-right#totalCreditosNumero{style: 'width: 5%'} 0
+        %b.text-right#totalCreditosNumero{style: 'width: 5%'}= @totalCreditosReservados
       %td{style: 'width: 30%'}= "Créditos de #{@limiteCreditos} permitidos"

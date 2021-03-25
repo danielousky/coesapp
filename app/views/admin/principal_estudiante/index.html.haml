@@ -30,8 +30,9 @@
 			
 			- if escuela.periodo_inscripcion
 				- @periodo = escuela.periodo_inscripcion
-				- escupe = escuela.escuelaperiodos.where(periodo_id: @periodo.id).first
-				- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: escupe.id).first
+				- @escupe = escuela.escuelaperiodos.where(periodo_id: @periodo.id).first
+				- @limiteCreditos = @escupe.limite_creditos_permitidos
+				- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first
 				- if @inscripcionperiodo.nil? or (@inscripcionperiodo and @inscripcionperiodo.reservado?)
 					- if false #escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
 						-# inscripciones_del_periodo = @inscripciones.del_periodo(periodo.id)#.inscritos
@@ -46,6 +47,7 @@
 
 					- else
 						-# periodo_anterior = escuela.periodo_anterior @periodo.id
+						- @totalCreditosReservados = @inscripcionperiodo ? @inscripcionperiodo.total_creditos : 0
 						- periodo_anterior = escuela.periodo_anterior @periodo.id
 						- periodo_anteanterior = escuela.periodo_anterior periodo_anterior.id
 						-if (grado.autorizar_inscripcion_en_periodo_id.eql? @periodo.id) or ((grado.confirmado? or grado.reincorporado?) and (!grado.inscripciones.any? or grado.inscripciones.del_periodo(periodo_anterior.id).any? or grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
@@ -59,6 +61,10 @@
 							- url = '/inscripcionsecciones/preinscribirse'
 							- idModal = "preinscripcion#{escuela.id}"
 							= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas_x_escuela, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
+							- if @inscripcionperiodo and @inscripcionperiodo.reservado?
+								:javascript
+									$(`##{idModal}`).modal();
+
 						- else
 							.alert.alert-warning
 								%b Atención: 

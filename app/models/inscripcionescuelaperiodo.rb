@@ -4,6 +4,7 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	accepts_nested_attributes_for :inscripcionsecciones
 
 	has_many :secciones, through: :inscripcionsecciones, source: :seccion
+	has_many :asignaturas, through: :secciones
 
 	belongs_to :estudiante, primary_key: 'usuario_id'
 	belongs_to :escuelaperiodo
@@ -24,6 +25,18 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	scope :inscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)}
 	scope :con_reportepago, -> {joins(:reportepago)}
 
+	def limite_creditos_permitidos
+		self.escuelaperiodo.limite_creditos_permitidos
+	end
+
+
+	def total_asignaturas
+		asignaturas.count
+	end
+
+	def total_creditos
+		asignaturas.sum(:creditos)
+	end
 
 	def descripcion
 		"#{escuela.id}-#{periodo.id}-#{estudiante.id}"

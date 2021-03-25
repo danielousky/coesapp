@@ -10,6 +10,8 @@
       %th{style: 'width: 30%'} Sección
   %tbody
     - asignaturas.each_with_index do |asig, i|
+      - value = @inscripciones.joins(:asignatura).joins(:seccion).where("asignaturas.id = '#{asig.id}' AND secciones.periodo_id = '#{@periodo.id}'").first
+      - value = value ? value.seccion_id : nil
       - if @aprobadas.include? asig.id
         - aprobada = true
         - indice = @aprobadas.index asig.id
@@ -20,8 +22,9 @@
         - descrip_califi = nil
         - aprobada = false
 
+      - reservada = !value.nil? ? 'table-info' : ''
       - asigAprobada = aprobada ? 'text-muted border border-success' : ''
-      %tr{class: "#{asigAprobada}"}
+      %tr{class: "#{asigAprobada} #{reservada}"}
         %td.align-middle.text-right= i+1
         %td.align-middle
           - if pcis
@@ -37,12 +40,10 @@
           -unless aprobada
             - secciones = asig.secciones.del_periodo(@periodo.id)#.con_cupos
             - if secciones.any?
-              - secciones = secciones.select{|s| s.hay_cupos?}
-              - if secciones.any?
-                -# aux = @estudiante.secciones.where(id: s.id).first
-                -# value = aux ? aux.id : nil
+              - secciones = secciones.select{|s| s.hay_cupos? or s.estudiante_inscrito? @estudiante.id }
 
-                = collection_select("secciones", nil, secciones, :id, :descripcion_con_cupos, { prompt: 'Seleccione'}, {class: "form-control selectInscripcion", style: 'width: 90%', titulo: asig.desc_confirm_inscripcion, creditos: asig.creditos, onchange: "switches('#{reservar_cupo_inscripcionsecciones_path()}?asignatura_id=#{asig.id}&seccion_id='+this.value+'&estudiante_id=#{@estudiante.id}')"})
+              - if secciones.any?
+                = collection_select("secciones", nil, secciones, :id, :descripcion_con_cupos, {selected: value, include_blank: 'Seleccione'}, {class: "form-control selectInscripcion", style: 'width: 90%', titulo: asig.desc_confirm_inscripcion, creditos: asig.creditos, asigId: asig.id, estudianteId: @estudiante.id})
               - else
                 %b.pl-3.text-muted
                   = collection_select(nil, nil, secciones, nil, nil, { prompt: 'Sin Cupos'}, {class: "form-control selectInscripcion", style: 'width: 90%', disabled: true, readonly: true})

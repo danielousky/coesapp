@@ -1,16 +1,13 @@
-- @limiteCreditos = @periodo.anual? ? 49 : 25
 
 -# Este botón puede eliminarse si decidimos desplegar la modal al inicio
 = link_to 'javascript:void(0)', onclick: "$('##{id_modal}').modal();", class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
   = glyph 'education'
   = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{@periodo.id}"
 
-.modal.fade{'aria-hidden': true, role: :dialog, id: id_modal}
+.modal.fade{'aria-hidden': false, role: :dialog, id: id_modal, 'data-backdrop': 'static'}
   .modal-dialog.modal-lg
     .modal-content
       .alert.alert-info
-        %button.close{"aria-label": "Cerrar", "data-dismiss": :modal, type: :button}
-          %span{"aria-hidden": true} ×
         .text-center{id: "#{id_modal}Title"}
           %h4= title
           %h5= "Escuela de #{@escuela.descripcion_filtro}"
@@ -23,7 +20,7 @@
       = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
         .modal-body.border.p-2{style: 'overflow-y:scroll;max-height:350px'}
           = hidden_field_tag 'estudiante_id', @estudiante.id
-          = hidden_field_tag 'escuela_id', @escuela.id
+          = hidden_field_tag 'escuelaperiodo_id', @escupe.id
 
           = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: asignaturas_ofertadas, pcis: false}
 
@@ -37,13 +34,53 @@
 
         = render partial: '/admin/inscripcionsecciones/total_creditos'
         .modal-footer
-          %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
+          / %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
           = submit_tag title_btn, class: 'disabled btn btn-success btn-sm', id: 'submitBtn', 'data-disable-with': 'Enviando', disabled: true
 
 :javascript
 
+  function reservar(url, ev, el) {
+    toastr.options.timeOut = 3500;
+    let opcion = el.children("option:selected");
+    $.ajax({
+    url: url,
+    type: 'POST',
+    dataType: 'json',
+    beforeSend: function() {
+      $('#cargando').modal({keyboard: false, show: true, backdrop: 'static'})
+    },
+    complete: function(json){
+      if (json["responseJSON"].status == 'success'){
+        toastr.success(json["responseJSON"].data);
+
+        totalizar();
+        let trParent = el.closest('tr');
+        if (opcion.val() == '')
+          trParent.removeClass('table-info');
+        else{
+          let cantidad = opcion.text()
+          trParent.addClass('table-info');
+        }
+
+
+      }else{
+        toastr.error(json["responseJSON"].data);
+        ev.preventDefault();
+      }
+      console.log('responseJSON: '+json["responseJSON"]);
+      opcion.text(json["responseJSON"].cupo);
+      $('#cargando').modal('hide');
+    }
+    });
+  }
+
+
+
   function totalizar() {
-    let selecteds = $(".selectInscripcion :selected");
+
+    // let selecteds = $(".selectInscripcion :selected");
+    let selecteds = $(".selectInscripcion option:selected");
+
     let creditosSeleccionados = 0;
     let total = $('#totalCreditosNumero');
     let asigTotal = 0
@@ -75,17 +112,12 @@
     }
   }
   
-  $('.selectInscripcion').on('change', function(){
+  $('.selectInscripcion').on('change', function(event){
     let ele = $(this);
-    totalizar();
+    let asignaturaId = ele.attr('asigId');
+    let estudianteId = ele.attr('estudianteId');
+    reservar(`#{reservar_cupo_inscripcionsecciones_path()}?asignatura_id=${asignaturaId}&seccion_id=${this.value}&estudiante_id=${estudianteId}`, event, ele);
 
-    let opcion = ele.children("option:selected");
-    let trParent = ele.closest('tr');
-    if (opcion.val() == '')
-      trParent.removeClass('table-info');
-    else{
-      trParent.addClass('table-info');
-    }
   })
 
   $('#submitBtn').on('click', function(event){
