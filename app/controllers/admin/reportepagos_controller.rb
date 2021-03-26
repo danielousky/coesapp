@@ -1,9 +1,11 @@
 module Admin
   class ReportepagosController < ApplicationController
     before_action :filtro_logueado
+    before_action :filtro_autorizado, only: [:edit, :show]
     # before_action :filtro_estudiante
     before_action :set_reportepago, only: [:show, :edit, :update, :destroy]
     before_action :resize_image, only: [:create, :update]
+
 
     # GET /reportepagos
     # GET /reportepagos.json
@@ -14,6 +16,7 @@ module Admin
     # GET /reportepagos/1
     # GET /reportepagos/1.json
     def show
+      @estudiante = @reportepago.inscripcionescuelaperiodo.estudiante
     end
 
     # GET /reportepagos/new
@@ -65,7 +68,7 @@ module Admin
       end
 
       if current_admin
-        return_to = periodo_index_path
+        return_to = (@reportepago.objeto and @reportepago.objeto.estudaante) ? usuario_path(@reportepago.objeto.estudiante.usuario) : periodo_index_path
       else
         return_to = principal_estudiante_index_path
       end
@@ -82,7 +85,14 @@ module Admin
     def update
       respond_to do |format|
         if @reportepago.update(reportepago_params)
-          format.html { redirect_to principal_estudiante_index_path, success: 'Reporte de Pago guardado con éxito' }
+
+          if current_admin
+            return_to = (@reportepago.objeto and @reportepago.objeto.estudiante) ? usuario_path(@reportepago.objeto.estudiante.usuario) : periodo_index_path
+          else
+            return_to = principal_estudiante_index_path
+          end
+
+          format.html { redirect_to return_to, success: 'Reporte de Pago guardado con éxito' }
           format.json { render :show, status: :ok, location: @reportepago }
         else
           format.html { render :edit }
@@ -109,7 +119,7 @@ module Admin
 
         if aux #and aux.byte_size > 1.megabyte
           mini_image = MiniMagick::Image.new(params[:reportepago][:respaldo].tempfile.path)
-          mini_image.resize '400x400'
+          mini_image.resize '800x800'
         end
 
       end

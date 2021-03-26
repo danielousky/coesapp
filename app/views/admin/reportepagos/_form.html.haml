@@ -59,7 +59,13 @@
           .text-muted= "<b>Atención:</b> Solo se perimiten imágenes. Sí su soporte se encuentra en formato PDF, por favor haga una captura de la pantalla y luego suba la imagen correspondiente.".html_safe
 
     .form-group.row
-      .col-md-2{style: 'text-align: right;'}= btn_atras principal_estudiante_index_path
+      .col-md-2{style: 'text-align: right;'}
+        -if current_admin
+          - return_to = (@reportepago.objeto and @reportepago.objeto.estudiante) ? usuario_path(@reportepago.objeto.estudiante.usuario) : periodo_index_path
+        - else
+          - return_to = principal_estudiante_index_path
+      
+        = btn_atras return_to
       .col-md-10
         = button_tag 'reportepago[commit]', type: :submit, class: 'btn btn-sm btn-success', id: 'submitReportePago' do
           = glyph 'chevron-right'

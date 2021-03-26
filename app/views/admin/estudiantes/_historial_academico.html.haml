@@ -18,20 +18,39 @@
 							-# ins_esc_per = inscripciones_periodo.last.inscripcionescuelaperiodo
 							- ins_esc_per = @estudiante.inscripcionescuelaperiodos.del_periodo(periodo.id).de_la_escuela(@escuela.id).first
 							-
-							- if @escuela.periodo_inscripcion.eql? periodo
+							- if true #@escuela.periodo_inscripcion.eql? periodo
 								- if ins_esc_per
 									- if ins_esc_per.tipo_estado_inscripcion
 										.badge.badge-info= ins_esc_per.tipo_estado_inscripcion.descripcion.singularize
 									- if ins_esc_per.reportepago
-										.badge.badge-success
-											= glyph 'check'
-											Reporte de Pago: 
-											= ins_esc_per.reportepago.numero
+
+										- @reportepago = ins_esc_per.reportepago
+										- content = render file: "/admin/reportepagos/show"
+
+										- if false
+											= # Este ejemplo incluye un elemento popover. Debe incluirse en el application.js el respectivo $('.popover').popover();
+											%button.btn.btn-sm.btn-success.popover{ data: {content: content.html_safe, toggle: :popover}, title: "Reporte de Pago #{ins_esc_per.decripcion_amplia}", type: :button}
+												= glyph 'check'
+												Reporte de Pago: 
+												= ins_esc_per.reportepago.numero
+
+
+										= render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "reportarPago#{@reportepago.id}", content: content, title: "Reporte de Pago #{ins_esc_per.decripcion_amplia}", width: "modal-lg"}
+
+										.float-right
+											= link_to 'javascript:void(0)', class: 'btn btn-sm btn-success', onclick: "$('#reportarPago#{@reportepago.id}').modal()" do
+												= glyph 'check'
+												= "Reporte de Pago: "
+												= ins_esc_per.reportepago.numero
+												- if current_admin and (current_admin.autorizado? 'Reportepagos', 'edit')
+													= link_to edit_reportepago_path(@reportepago), class: 'btn btn-primary btn-sm tooltip-btn ml-2', data: {toggle: :tooltip}, title: 'Editar Reporte de Pago'  do
+														= glyph 'pencil'
+
 									- else
-										= link_to new_reportepago_path(reportable_id: ins_esc_per.id, reportable_type: ins_esc_per.class.name) do
-											.badge.badge-danger
-												= glyph 'remove'
-												Sin Reporte de Pago
+										= link_to new_reportepago_path(reportable_id: ins_esc_per.id, reportable_type: ins_esc_per.class.name), class: 'btn btn-sm btn-danger' do
+											
+											= glyph 'remove'
+											Sin Reporte de Pago
 
 					.collapse{id: "collapse#{periodo.id}", "aria-labelledby": "heading#{periodo.id}", "data-parent": "#accordion", "data-toggle": false}
 						.card-body

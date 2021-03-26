@@ -38,6 +38,10 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 		asignaturas.sum(:creditos)
 	end
 
+	def decripcion_amplia
+		"#{escuela.descripcion} #{periodo.id} #{estudiante.descripcion}"
+	end
+
 	def descripcion
 		"#{escuela.id}-#{periodo.id}-#{estudiante.id}"
 	end

@@ -1,22 +1,30 @@
-%p#notice= notice
+.border.p-3{style: 'font-size: 14px;'}
+  .float-right.badge.badge-dark
+    %b Fecha:
+    = "#{(@reportepago.fecha_transaccion).strftime('%d/%m/%Y')}"
 
-%p
-  %b Inscripcionescuelaperiodo:
-  = @reportepago.inscripcionescuelaperiodo
-%p
-  %b Numero:
-  = @reportepago.numero
-%p
-  %b Tipo transaccion:
-  = @reportepago.tipo_transaccion
-%p
-  %b Fecha:
-  = @reportepago.fecha_transaccion
-%p
-  %b Respaldo:
-  =# image_tag(url_for(@reportepago.respaldo))
-  = image_tag main_app.url_for(@reportepago.respaldo) if @reportepago.respaldo and @reportepago.respaldo.attached?
+  - if current_admin and (current_admin.autorizado? 'Reportepagos', 'edit')
+    = link_to edit_reportepago_path(@reportepago), class: 'badge badge-primary tooltip-btn', data: {toggle: :tooltip}, title: 'Editar Reporte de Pago'  do
+      = glyph 'pencil'
+  
+  %table.table.table-sm.table-hover.table-responsive-md.mt-3
+    %tbody
+      %tr
+        %th.text-right Banco:
+        %td= @reportepago.banco_origen.descripcion
+      %tr
+        %th.text-right Monto:
+        %td= number_to_currency(@reportepago.monto, unit: 'Bs.', separator: ",", delimiter: ".") 
+      %tr
+        %th.text-right Tipo Transacción:
+        %td= @reportepago.tipo_transaccion.titleize
+      %tr
+        %th.text-right Fecha Transacción:
+        %td= "#{(@reportepago.fecha_transaccion).strftime('%d de %M de %Y')}"
+      %tr
+        %th.text-right Pago Reportado en Fecha:
+        %td= "#{(@reportepago.created_at).strftime('%d de %M de %Y')}"        
 
-= link_to 'Edit', edit_reportepago_path(@reportepago)
-\|
-= link_to 'Back', reportepagos_path
+  - if @reportepago.respaldo and @reportepago.respaldo.attached?
+    .align-middle.text-center
+      = image_tag main_app.url_for(@reportepago.respaldo), width: '90%'

@@ -24,8 +24,15 @@ class Reportepago < ApplicationRecord
   end
 
   def descripcion
-
   	aux = "#{self.numero} x (#{monto_con_formato}) del #{self.banco_origen.nombre}"
+  end
+
+  def objeto
+    if grado
+      grado
+    else
+      inscripcionescuelaperiodo
+    end
   end
 
 end

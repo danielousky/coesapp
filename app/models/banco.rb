@@ -9,4 +9,8 @@ class Banco < ApplicationRecord
 		Banco.create(id: '0108', nombre: 'Banco Provincial')
 		Banco.create(id: '0104', nombre: 'Banco Venezolano de Crédito')
 	end
+
+	def descripcion
+		"#{nombre} (#{id})"
+	end
 end
