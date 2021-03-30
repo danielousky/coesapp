@@ -86,6 +86,7 @@
           -# @escuelas_del_estudiante = @estudiante.grados
           - @escuelas_del_estudiante = @estudiante.escuelas
           - @estudiante.grados.each do |grado|
+            - @grado = grado
             - escuela = grado.escuela
             - activeTab = (session[:tabEscuela].eql? escuela.id) ? 'active' : ''
             - @escuela = escuela

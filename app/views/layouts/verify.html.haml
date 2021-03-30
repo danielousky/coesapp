@@ -1,0 +1,27 @@
+!!!
+%html
+  %head
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
+    %title= content_for?(:title) ? yield(:title) : 'Coesapp'
+    %meta{:name => "description", :content => "#{content_for?(:description) ? yield(:description) : 'Coesapp'}"}
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => 'reload'
+    = javascript_include_tag 'application', 'data-turbolinks-track' => 'reload'
+    = csrf_meta_tags
+    = favicon_link_tag 'logo.ico'
+    = render 'layouts/nojavascript'
+
+  %body
+    %header
+      .container.fixed-top 
+        .fixed-top 
+          %nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+            %a.navbar-brand{href: root_path} COES-FHE
+    %main{:role => "main"}
+      %br
+      %br
+      %br
+      = render 'layouts/messages'
+      = yield
+      %br
+      %br
+

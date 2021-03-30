@@ -78,7 +78,9 @@ class ExportarPdf
 		inscripciones = inscripcionperiodo.inscripcionsecciones
 		
 		total = inscripciones.count 
-		pdf = Prawn::Document.new(top_margin: 20)
+		# pdf = Prawn::Document.new(top_margin: 20)
+
+		pdf = Prawn::Document.new(top_margin: 20, bottom_margin: 10, background: "app/assets/images/bg_validacion.png")
 
 		#titulo
 		encabezado_central_con_logo pdf, "CONSTANCIA DE ESTUDIO", escuela, nil, estudiante
@@ -123,9 +125,9 @@ class ExportarPdf
 		pdf.text "Constancia que se expide a solicitud de la parte interesada en la Ciudad Universitaria en Caracas, el día #{I18n.l(bita.created_at, format: "%d de %B de %Y")}.", size: 10
 		pdf.move_down 30
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
-		pdf.move_down 50
+		pdf.move_down 40
 
-		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/constancia_estudio"
+		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/documento"
 
 		colocar_qr_y_firmas pdf, enlace 
 
@@ -178,7 +180,8 @@ class ExportarPdf
 		periodo_id = inscripcionperiodo.periodo.id
 		inscripciones = inscripcionperiodo.inscripcionsecciones
 
-		pdf = Prawn::Document.new(top_margin: 20)
+    	pdf = Prawn::Document.new(top_margin: 20, background: "app/assets/images/bg_validacion.png")
+
 
 		#titulo
 		encabezado_central_con_logo pdf, "CONSTANCIA DE INSCRIPCIÓN", escuela, nil, estudiante
@@ -186,8 +189,15 @@ class ExportarPdf
 		pdf.move_down 5
 
 		# pdf.start_page_numbering(50, 800, 500, nil, "<b><PAGENUM>/<TOTALPAGENUM></b>", 1)
+		if escuela.id.eql? 'POST'
+			grado = Grado.where(escuela_id: escuela.id, estudiante_id: estudiante.id).first
+			plan = grado.ultimo_plan
+			plan ||= 'Sin Plan de Estudio o Maestría Asociada' 
 
-		pdf.text "Quien suscribe, Jefe de Control de Estudios de la Facultad de HUMANIDADES Y EDUCACIÓN, de la Universidad Central de Venezuela, por medio de la presente hace constar que #{usuario.la_el} BR. <b>#{estudiante.usuario.apellido_nombre}</b>, titular de la Cédula de Identidad <b>#{estudiante.id}</b> está inscrit#{usuario.genero} en la Escuela de <b>#{escuela.descripcion.upcase}</b> para el período <b>#{periodo_id}</b> con las siguientes asignaturas:", size: 10, inline_format: true, align: :justify
+			pdf.text "Quien suscribe, Director(a) de la Comisión de Estudios de Postgrado de la Facultad de HUMANIDADES Y EDUCACIÓN, de la Universidad Central de Venezuela, por medio de la presente hace constar que #{usuario.la_el} BR. <b>#{estudiante.usuario.apellido_nombre}</b>, titular de la Cédula de Identidad <b>#{estudiante.id}</b> está inscrit#{usuario.genero} el (la) <b>#{plan.upcase}</b> para el período lectivo <b>#{periodo_id}</b> con las siguientes asignaturas:", size: 10, inline_format: true, align: :justify
+		else
+			pdf.text "Quien suscribe, Jefe de Control de Estudios de la Facultad de HUMANIDADES Y EDUCACIÓN, de la Universidad Central de Venezuela, por medio de la presente hace constar que #{usuario.la_el} BR. <b>#{estudiante.usuario.apellido_nombre}</b>, titular de la Cédula de Identidad <b>#{estudiante.id}</b> está inscrit#{usuario.genero} en la Escuela de <b>#{escuela.descripcion.upcase}</b> para el período <b>#{periodo_id}</b> con las siguientes asignaturas:", size: 10, inline_format: true, align: :justify
+		end
 
 		pdf.move_down 20
 
@@ -227,9 +237,12 @@ class ExportarPdf
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
 		pdf.move_down 50
 
-		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/constancia_inscripcion"
-
-		colocar_qr_y_firmas pdf, enlace 
+		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/documento"
+		if escuela.id.eql? 'POST'
+			colocar_qr_y_firmas pdf, enlace, nil, true
+		else
+			colocar_qr_y_firmas pdf, enlace
+		end
 
 		return pdf
 	end
@@ -246,7 +259,8 @@ class ExportarPdf
 		inscripciones = inscripcionperiodo.inscripcionsecciones
 
 		grado = Grado.find [estudiante.id,escuela.id]
-		pdf = Prawn::Document.new(top_margin: 20)
+		# pdf = Prawn::Document.new(top_margin: 20)
+    	pdf = Prawn::Document.new(top_margin: 20, background: "app/assets/images/bg_validacion.png")
 
 		contenido_inscripcion_horario pdf, estudiante, usuario, escuela, grado, inscripciones, periodo_id, bita, verificando
 		
@@ -331,11 +345,11 @@ class ExportarPdf
 		data
 	end
 
-	def self.hacer_kardex id, escuela_id, alfabetico=false
+	def self.hacer_kardex id, alfabetico=false
 
 		pdf = Prawn::Document.new(top_margin: 20)
 
-		grado = Grado.find [id,escuela_id]
+		grado = Grado.find id.split("-")
 		estudiante = grado.estudiante #Estudiante.find id
 		# periodos = estudiante.escuela.periodos.order("inicia DESC")
 		escuela = grado.escuela #Escuela.find escuela_id
@@ -414,32 +428,36 @@ class ExportarPdf
 
 	private
 
-	def self.colocar_qr_y_firmas pdf, enlace, tamano=120
+	def self.colocar_qr_y_firmas pdf, enlace, tamano=120, post=false
 
 		if enlace
 			imagen_qr = generar_codigo_qr enlace
-			pdf.image imagen_qr, width: 120, at: [10, (pdf.y)+20]#, vposition: (pdf.y), position: :center
-			pdf.move_down 10
+			pdf.image imagen_qr, width: 120, at: [10, (pdf.y)+40]#, vposition: (pdf.y), position: :center
 
-			pdf.text "<a href='#{enlace}' style='margin-right:100px' target='_blank'>clic para verificar</a>", align: :center, size: 8, inline_format: true
+			if post
+				pdf.text "Profa.  María Eugenia Martínez", size: 11, align: :center
+				pdf.text "Directora (E)", size: 11, align: :center
+			else
+				pdf.text "Prof. Pedro Coronado", size: 11, align: :center
+				pdf.text "Jefe(a) de Control de Estudio", size: 11, align: :center
+				pdf.image "app/assets/images/sellos_firmas/firma_jefe_coes.png", width: 150, at: [190, (pdf.y)+60]
+				pdf.image "app/assets/images/sellos_firmas/sello_coesfhe_azul.png", width: 120, at: [210, (pdf.y)-30]
+				pdf.move_down 60
+				pdf.text "<b>ATENCIÓN:</b> Para verificar la autenticidad del presente documento escanee el código QR, haga clic <a href='#{enlace}' target='_blank'>AQUÍ</a> ó escriba la siguiente dirección web en su navegador: #{enlace}." , align: :justify, size: 11, inline_format: true
+			end
+
 			
-
-			pdf.text "Prof. Pedro Coronado", size: 11, align: :center
-			pdf.text "Jef(a) de Control de Estudio", size: 11, align: :center
-
-			pdf.move_down 20
-			
-			pdf.text "<b>IMPORTANTE:</b> PARA VALIDAR LA AUTENTICIDAD DEL PRESENTE DOCUMENTO ESCANEE EL CÓDIGO QR CON SU TELÉFONO INTELIGENTE O CON UN DISPOSITIVO INDICADO PARA ELLO." , align: :justify, size: 11, inline_format: true
 		else
 			# pdf.image "app/assets/images/foto-perfil.png", at: [430, 395], height: 100
 
 			pdf.move_down 20
 			pdf.text "Prof. Pedro Coronado", size: 11, align: :center
 			pdf.text "Jef(a) de Control de Estudio", size: 11, align: :center
-			pdf.image "app/assets/images/sellos_firmas/sello_coesfhe_azul.png", width: 120, at: [210, (pdf.y)-20]
-			pdf.image "app/assets/images/sellos_firmas/firma_jefe_coes.png", width: 150, at: [190, (pdf.y)+50]
+			pdf.image "app/assets/images/sellos_firmas/firma_jefe_coes.png", width: 150, at: [190, (pdf.y)+60]
+			pdf.image "app/assets/images/sellos_firmas/sello_coesfhe_azul.png", width: 120, at: [210, pdf.y-30]
 		end
 
+		# El presente documento ha sido "firmado electrónicamente", cumpliendo con el Decreto Ley de mensaje de Datos y Firma Electrónica, de fecha 10 de Febrero de 2001, publicado en la *Gaceta Oficial** Nro 37.148, del 28 de febrero de 2001.
 	end
 
 	def self.generar_codigo_qr enlace
@@ -524,7 +542,7 @@ class ExportarPdf
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
 		pdf.move_down 40
 
-		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/constancia_inscripcion"
+		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/documento"
 
 		colocar_qr_y_firmas pdf, enlace, 100
 	end

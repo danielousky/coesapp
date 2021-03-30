@@ -1,0 +1,12 @@
+%h5.titulo.text-center= @titulo
+%table.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3.align-middle
+	%thead
+		%tr
+			%th Fecha Generación
+			%th Descrpción
+			%th Enlace
+	%tbody
+		%tr
+			%td= I18n.l(@bitacora.created_at, format: "%d de %B de %Y") 
+			%td= @bitacora.descripcion
+			%td= link_to 'Descargar', descargar_documento_verificar_path(@bitacora.id, :pdf)

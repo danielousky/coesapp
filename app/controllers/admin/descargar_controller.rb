@@ -80,7 +80,7 @@ module Admin
 
 		def kardex
 			info_bitacora 'Descarga de kardex', Bitacora::DESCARGA
-			pdf = ExportarPdf.hacer_kardex params[:id], params[:escuela_id]
+			pdf = ExportarPdf.hacer_kardex params[:id]
 			unless send_data pdf.render, filename: "kardex_#{params[:id]}.pdf", type: "application/pdf", disposition: "attachment"
 				flash[:error] = "En estos momentos no se pueden descargar el kardex, intentelo luego."
 			end

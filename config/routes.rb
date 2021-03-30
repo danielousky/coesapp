@@ -16,8 +16,8 @@ Rails.application.routes.draw do
 
   resources :verificar do
     member do
-      get 'constancia_estudio'
-      get 'constancia_inscripcion'
+      get 'documento'
+      get 'descargar_documento'
     end
   end
 
