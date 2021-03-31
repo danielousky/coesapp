@@ -13,6 +13,7 @@
 			%th Créditos
 			%th C. Aprobados
 			%th Total Créditos Plan
+			%th Start date
 
 	%tbody
 
@@ -26,15 +27,21 @@
 				%td= ins.estudiante.escuelas.descripcion.to_sentence
 				- if params[:status].eql? 'reported' and ins.reportepago
 					%td= ins.reportepago.numero
-				- hplan = ins.estudiante.historialplanes.joins(:plan).where("planes.escuela_id = ?", @escuelaperiodo.escuela_id).order('periodo_id DESC').first#.plan_id
+				- plan = ins.grado.plan if ins.grado
+				- if plan.nil?
+					- hplan = ins.estudiante.historialplanes.joins(:plan).where("planes.escuela_id = ?", @escuelaperiodo.escuela_id).order('periodo_id DESC').first#.plan_id
+					- plan = hplan.plan if plan
+					- plan ? hplan.plan_id : "--"
 				-# hplan = est.ultimo_plan_de_escuela(@escuelaperiodo.escuela_id)
-				%td= hplan ? hplan.plan_id : "--"
+				%td= plan ? plan.id : "--"
 				%td
 					=# ins.inscripcionsecciones.map{|ins| ins.asignatura.descripcion}
 					= ins.inscripcionsecciones.count
 				%td= ins.inscripcionsecciones.total_creditos
 				%td= ins.inscripcionsecciones.aprobado.total_creditos
-				%td= hplan.plan.creditos if hplan
+				%td= plan.creditos if plan
+				- if params[:status].eql? 'reported' and ins.reportepago
+					%td= I18n.l(ins.reportepago.created_at, format: "%d / %m / %Y")
 
 
 :javascript
@@ -77,4 +84,5 @@
 				}
 			}
 		});
+
 	});

@@ -25,6 +25,10 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	scope :inscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)}
 	scope :con_reportepago, -> {joins(:reportepago)}
 
+	def grado
+		Grado.where(escuela_id: self.escuela.id, estudiante_id: self.estudiante_id).first 
+	end
+
 	def limite_creditos_permitidos
 		self.escuelaperiodo.limite_creditos_permitidos
 	end
