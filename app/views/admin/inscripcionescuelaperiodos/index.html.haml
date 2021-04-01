@@ -1,7 +1,17 @@
 
+
 %table#dataTable.table.table-sm
+	= text_field_tag nil, nil, {id: :max, class: 'float-right form-control-sm ml-3', placeholder: 'Hasta', onfocus: "(this.type='date')"}
+	= text_field_tag nil, nil, {id: :min, class: 'float-right form-control-sm ml-1', placeholder: 'Desde', onfocus: "(this.type='date')"}
+	.float-right.ml-3.pt-2 Fecha:
 	%thead
 		%tr
+			%th
+				- if params[:status].eql? 'reported' 
+					Fecha Reporte
+				- else
+					Fecha Preins
+
 			%th Cédula
 			%th Email
 			%th Apellidos
@@ -20,6 +30,13 @@
 		- @inscripciones.each do |ins|
 			%tr
 				- usuario = ins.estudiante.usuario
+				- if params[:status].eql? 'reported' and ins.reportepago
+					- obj = ins.reportepago
+				- else
+					- obj = ins
+				
+				%td= I18n.l(obj.created_at, format: "%d/%m/%Y")
+
 				%td= link_to ins.estudiante_id, usuario_path(usuario.id)
 				%td= usuario.email
 				%td= usuario.apellidos
@@ -41,11 +58,39 @@
 				%td= ins.inscripcionsecciones.aprobado.total_creditos
 				%td= plan.creditos if plan
 
+
 :javascript
+
+	var minDate, maxDate;
+
+	// Custom filtering function which will search data in column four between two values
+	$.fn.dataTable.ext.search.push(
+		function( settings, data, dataIndex ) {
+			var min = minDate;
+			var max = maxDate;
+			var aux = data[0].split("/");
+
+			var date = new Date(aux[2], aux[1]-1, aux[0], 4);
+
+			if (
+			( min === null && max === null ) ||
+			( min === null && date <= max ) ||
+			( min <= date   && max === null ) ||
+			( min <= date   && date <= max )
+			) {
+				return true;
+			}
+				return false;
+		}
+	);
+
 
 	$(document).ready(function() {
 
-		$('#dataTable').DataTable({
+		minDate = null;
+		maxDate = null;
+
+		let tableData =  $('#dataTable').DataTable({
 			scrollY: 460,
 			pageLength: 50,
 			// lengthChange: false,
@@ -80,6 +125,23 @@
 					"sSortDescending": ": Activar para ordenar la columna de manera descendente"
 				}
 			}
+		});
+
+		$('#min, #max').on('change', function () {
+
+			let aux = $('#min').val();
+			if (aux != ""){
+				aux = aux.split('-');
+				minDate = new Date(aux[0], aux[1]-1, aux[2], 4);
+			}
+			aux = $('#max').val();
+			if (aux != ""){
+				aux = aux.split('-');
+				maxDate = new Date(aux[0], aux[1]-1, aux[2], 4);
+			}
+
+			tableData.draw();
+
 		});
 
 	});
