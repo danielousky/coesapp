@@ -68,7 +68,7 @@ module Admin
       end
 
       if current_admin
-        return_to = (@reportepago.objeto and @reportepago.objeto.estudaante) ? usuario_path(@reportepago.objeto.estudiante.usuario) : periodo_index_path
+        return_to = (@reportepago.objeto and @reportepago.objeto.estudiante) ? usuario_path(@reportepago.objeto.estudiante.usuario) : periodos_path
       else
         return_to = principal_estudiante_index_path
       end
@@ -87,7 +87,7 @@ module Admin
         if @reportepago.update(reportepago_params)
 
           if current_admin
-            return_to = (@reportepago.objeto and @reportepago.objeto.estudiante) ? usuario_path(@reportepago.objeto.estudiante.usuario) : periodo_index_path
+            return_to = (@reportepago.objeto and @reportepago.objeto.estudiante) ? usuario_path(@reportepago.objeto.estudiante.usuario) : periodos_path
           else
             return_to = principal_estudiante_index_path
           end
