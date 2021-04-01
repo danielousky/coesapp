@@ -61,7 +61,7 @@
     .form-group.row
       .col-md-2{style: 'text-align: right;'}
         -if current_admin
-          - return_to = (@reportepago.objeto and @reportepago.objeto.estudiante) ? usuario_path(@reportepago.objeto.estudiante.usuario) : periodo_index_path
+          - return_to = (@reportepago.objeto and @reportepago.objeto.estudiante) ? usuario_path(@reportepago.objeto.estudiante.usuario) : periodo_path
         - else
           - return_to = principal_estudiante_index_path
       
