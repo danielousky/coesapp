@@ -192,7 +192,9 @@ class ExportarPdf
 		if escuela.id.eql? 'POST'
 			grado = Grado.where(escuela_id: escuela.id, estudiante_id: estudiante.id).first
 			plan = grado.ultimo_plan
+			plan = grado.ultimo_plan.descripcion if plan
 			plan ||= 'Sin Plan de Estudio o Maestría Asociada' 
+
 
 			pdf.text "Quien suscribe, Director(a) de la Comisión de Estudios de Postgrado de la Facultad de HUMANIDADES Y EDUCACIÓN, de la Universidad Central de Venezuela, por medio de la presente hace constar que #{usuario.la_el} BR. <b>#{estudiante.usuario.apellido_nombre}</b>, titular de la Cédula de Identidad <b>#{estudiante.id}</b> está inscrit#{usuario.genero} el (la) <b>#{plan.upcase}</b> para el período lectivo <b>#{periodo_id}</b> con las siguientes asignaturas:", size: 10, inline_format: true, align: :justify
 		else
