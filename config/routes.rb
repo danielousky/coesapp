@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  default_url_options host: "coesfhe.com"
   resources :visitors, only: [:index] do
     collection do
       post :validar

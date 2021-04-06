@@ -127,7 +127,7 @@ class ExportarPdf
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
 		pdf.move_down 40
 
-		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/documento"
+		enlace = verificando ? nil : "https://coesfhe.com/verificar/#{bita.id}/documento"
 
 		colocar_qr_y_firmas pdf, enlace 
 
@@ -180,7 +180,11 @@ class ExportarPdf
 		periodo_id = inscripcionperiodo.periodo.id
 		inscripciones = inscripcionperiodo.inscripcionsecciones
 
-    	pdf = Prawn::Document.new(top_margin: 20, background: "app/assets/images/bg_validacion.png")
+		if escuela.id.eql? 'POST'
+    		pdf = Prawn::Document.new(top_margin: 20)
+    	else
+    		pdf = Prawn::Document.new(top_margin: 20, background: "app/assets/images/bg_validacion.png")
+    	end
 
 
 		#titulo
@@ -188,7 +192,6 @@ class ExportarPdf
 
 		pdf.move_down 5
 
-		# pdf.start_page_numbering(50, 800, 500, nil, "<b><PAGENUM>/<TOTALPAGENUM></b>", 1)
 		if escuela.id.eql? 'POST'
 			grado = Grado.where(escuela_id: escuela.id, estudiante_id: estudiante.id).first
 			plan = grado.ultimo_plan
@@ -433,13 +436,13 @@ class ExportarPdf
 	def self.colocar_qr_y_firmas pdf, enlace, tamano=120, post=false
 
 		if enlace
-			imagen_qr = generar_codigo_qr enlace
-			pdf.image imagen_qr, width: 120, at: [10, (pdf.y)+40]#, vposition: (pdf.y), position: :center
 
 			if post
 				pdf.text "Profa.  María Eugenia Martínez", size: 11, align: :center
 				pdf.text "Directora (E)", size: 11, align: :center
 			else
+				imagen_qr = generar_codigo_qr enlace
+				pdf.image imagen_qr, width: 120, at: [10, (pdf.y)+40]
 				pdf.text "Prof. Pedro Coronado", size: 11, align: :center
 				pdf.text "Jefe(a) de Control de Estudio", size: 11, align: :center
 				pdf.image "app/assets/images/sellos_firmas/firma_jefe_coes.png", width: 150, at: [190, (pdf.y)+60]
@@ -763,6 +766,7 @@ class ExportarPdf
 				pdf.text escuela.descripcion.upcase, align: :center, size: size
 			end
 		end
+
 
 		if estudiante and estudiante.usuario and estudiante.usuario.foto_perfil and estudiante.usuario.foto_perfil.attached?
 			require 'open-uri'
