@@ -1,5 +1,6 @@
-
-
+= link_to periodos_path, class: 'btn btn-sm btn-secondary tooltip-btn float-left mr-3', 'data_toggle': :tooltip,  title: 'Regresar' do
+	= glyph 'chevron-left'
+	Regresar 
 %table#dataTable.table.table-sm
 	= text_field_tag nil, nil, {id: :max, class: 'float-right form-control-sm ml-3', placeholder: 'Hasta', onfocus: "(this.type='date')"}
 	= text_field_tag nil, nil, {id: :min, class: 'float-right form-control-sm ml-1', placeholder: 'Desde', onfocus: "(this.type='date')"}
