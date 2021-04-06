@@ -19,6 +19,7 @@
 			%th Escuelas
 			- if params[:status].eql? 'reported'
 				%th Reporte
+				%th Monto
 			%th Plan
 			%th Asig. Inscritas
 			%th Créditos
@@ -44,6 +45,7 @@
 				%td= ins.estudiante.escuelas.descripcion.to_sentence
 				- if params[:status].eql? 'reported' and ins.reportepago
 					%td= ins.reportepago.numero
+					%td= ins.reportepago.monto_con_formato
 				- plan = ins.grado.plan if ins.grado
 				- if plan.nil?
 					- hplan = ins.estudiante.historialplanes.joins(:plan).where("planes.escuela_id = ?", @escuelaperiodo.escuela_id).order('periodo_id DESC').first#.plan_id
