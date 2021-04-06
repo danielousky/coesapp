@@ -1,3 +1,27 @@
+desc "Actualización de inscripciones_secciones a nil en caso errado de 2021-01S"
+task :update_inscripcionsecciones_no_202101S => :environment do
+	begin
+			
+		total_actualizaciones = 0
+		arrs = Inscripcionseccion.joins(:seccion).group('inscripcionescuelaperiodo_id').having('count(*) > 4').order("count(*) DESC").count
+
+		arrs.each do |arr|
+			if !arr[0].nil?
+				insper = Inscripcionescuelaperiodo.find arr[0] 
+				inscripciones = insper.inscripcionsecciones.joins(:seccion).where("secciones.periodo_id != ?", '2021-01S')
+				total_actualizaciones += inscripciones.update_all(inscripcionescuelaperiodo_id: nil)
+			end
+		end
+		p total_actualizaciones
+	
+
+	rescue Exception => e
+		p "Error General: #{e}"
+	end
+	total_actualizaciones
+end
+
+
 desc 'Agrega cita horaria 2019-02A'
 task :add_cita_horaria_201902a => :environment do
 
