@@ -199,7 +199,7 @@ class ExportarPdf
 			plan ||= 'Sin Plan de Estudio o Maestría Asociada' 
 
 
-			pdf.text "Quien suscribe, Director(a) de la Comisión de Estudios de Postgrado de la Facultad de HUMANIDADES Y EDUCACIÓN, de la Universidad Central de Venezuela, por medio de la presente hace constar que #{usuario.la_el} BR. <b>#{estudiante.usuario.apellido_nombre}</b>, titular de la Cédula de Identidad <b>#{estudiante.id}</b> está inscrit#{usuario.genero} el (la) <b>#{plan.upcase}</b> para el período lectivo <b>#{periodo_id}</b> con las siguientes asignaturas:", size: 10, inline_format: true, align: :justify
+			pdf.text "Quien suscribe, Director(a) de la Comisión de Estudios de Postgrado de la Facultad de HUMANIDADES Y EDUCACIÓN, de la Universidad Central de Venezuela, por medio de la presente hace constar que #{usuario.la_el} ciudadan#{usuario.genero} <b>#{estudiante.usuario.apellido_nombre}</b>, titular de la Cédula de Identidad <b>#{estudiante.id}</b> está inscrit#{usuario.genero} el (la) <b>#{plan.upcase}</b> para el período lectivo <b>#{periodo_id}</b> con las siguientes asignaturas:", size: 10, inline_format: true, align: :justify
 		else
 			pdf.text "Quien suscribe, Jefe de Control de Estudios de la Facultad de HUMANIDADES Y EDUCACIÓN, de la Universidad Central de Venezuela, por medio de la presente hace constar que #{usuario.la_el} BR. <b>#{estudiante.usuario.apellido_nombre}</b>, titular de la Cédula de Identidad <b>#{estudiante.id}</b> está inscrit#{usuario.genero} en la Escuela de <b>#{escuela.descripcion.upcase}</b> para el período <b>#{periodo_id}</b> con las siguientes asignaturas:", size: 10, inline_format: true, align: :justify
 		end
@@ -765,12 +765,6 @@ class ExportarPdf
 				pdf.move_down 5
 				pdf.text escuela.descripcion.upcase, align: :center, size: size
 			end
-		end
-
-
-		if estudiante and estudiante.usuario and estudiante.usuario.foto_perfil and estudiante.usuario.foto_perfil.attached?
-			require 'open-uri'
-			pdf.image open(estudiante.usuario.foto_perfil.service_url), at: [450, 720], height: 80 
 		end
 
 		pdf.move_down 5
