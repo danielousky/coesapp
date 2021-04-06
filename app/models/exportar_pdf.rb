@@ -242,7 +242,7 @@ class ExportarPdf
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
 		pdf.move_down 50
 
-		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/documento"
+		enlace = verificando ? nil : "#{Rails.application.routes.default_url_options[:host]}/verificar/#{bita.id}/documento"
 		if escuela.id.eql? 'POST'
 			colocar_qr_y_firmas pdf, enlace, nil, true
 		else
@@ -547,7 +547,7 @@ class ExportarPdf
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
 		pdf.move_down 40
 
-		enlace = verificando ? nil : "#{@hostname}/verificar/#{bita.id}/documento"
+		enlace = verificando ? nil : "#{Rails.application.routes.default_url_options[:host]}/verificar/#{bita.id}/documento"
 
 		colocar_qr_y_firmas pdf, enlace, 100
 	end
