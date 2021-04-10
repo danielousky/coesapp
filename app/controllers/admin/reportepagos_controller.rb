@@ -10,7 +10,7 @@ module Admin
     def index
       @escuelas = Escuela.all
       if params[:escuela_id]
-        escuela = Escuela.find session[:escuela_id]
+        escuela = Escuela.find params[:escuela_id]
         @titulo = "Reportes de Pago de #{escuela.descripcion}"
         session[:escuela_id] = params[:escuela_id]
         @reportepagos = Reportepago.inscripciones_del_periodo(current_periodo.id).inscripciones_de_la_escuela(params[:escuela_id]).order(created_at: :desc)
