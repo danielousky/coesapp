@@ -32,6 +32,7 @@
           - if false 
             %th Tipo
           %th Escuela
+          %th Estudiante
           %th Numero
           %th Monto
           %th Banco
@@ -45,6 +46,7 @@
                 - if false 
                   %td= reportepago.objeto.class.name
                 %td= reportepago.objeto.escuela.descripcion if (reportepago.objeto and reportepago.objeto.escuela)
+                %td= reportepago.objeto.estudiante.descripcion if (reportepago.objeto and reportepago.objeto.estudiante)
                 %td= link_to reportepago.numero, reportepago
                 %td= reportepago.monto_con_formato
                 %td= reportepago.banco_origen.nombre
