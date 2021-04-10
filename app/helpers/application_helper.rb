@@ -164,7 +164,7 @@ module ApplicationHelper
 
 
 	def btn_atras href
-		btn_toggle 'btn-outline-secondary', 'chevron-left', href, 'Regresar', 'Regresar'
+		btn_toggle 'btn-secondary btn-sm', 'chevron-left', href, 'Regresar', 'Regresar'
 	end
 
 	def btn_edit_primary href, title_tooltip, value

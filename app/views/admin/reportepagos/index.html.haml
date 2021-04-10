@@ -1,29 +1,145 @@
-%h1 Listing reportepagos
 
-%table
-  %thead
-    %tr
-      %th Inscripcionescuelaperiodo
-      %th Numero
-      %th Banco
-      %th Tipo transaccion
-      %th Fecha
-      %th
-      %th
-      %th
-
-  %tbody
-    - @reportepagos.each do |reportepago|
+- if false
+  %table
+    %tbody
       %tr
-        %td= link_to reportepago.inscripcionescuelaperiodo, "usuarios/#{reportepago.inscripcionescuelaperiodo.estudiante_id}"
-        %td= reportepago.numero
-        %td= reportepago.banco.nombre
-        %td= reportepago.tipo_transaccion
-        %td= reportepago.fecha_transaccion
-        %td= link_to 'Show', reportepago
-        %td= link_to 'Edit', edit_reportepago_path(reportepago)
-        %td= link_to 'Destroy', reportepago, method: :delete, data: { confirm: 'Are you sure?' }
+        - @escuelas.each do |escuela|
+          - total = Reportepago.inscripciones_del_periodo(current_periodo.id).inscripciones_de_la_escuela(escuela.id).count
+          %td
+            - activeClass = (session[:escuela_id].eql? escuela.id) ? 'disabled' : ''
+            = link_to "#{reportepagos_path()}?escuela_id=#{escuela.id}", class: "btn btn-sm btn-primary tooltip-btn mr-2 #{activeClass}", data: {toogle: :tooltip}, title: escuela.descripcion.titleize do
+              = escuela.id
+              %span.badge.badge-light= total
 
-%br
+%ul.nav.nav-tabs.mt-3
+  - @escuelas.each do |escuela|
+    - total = Reportepago.inscripciones_del_periodo(current_periodo.id).inscripciones_de_la_escuela(escuela.id).count
+    %li.nav-item.tooltip-btn{data: {toogle: :tooltip}, title: escuela.descripcion.titleize}
+      - activeClass = (session[:escuela_id].eql? escuela.id) ? 'active' : ''
+      = link_to "#{reportepagos_path()}?escuela_id=#{escuela.id}", class: "nav-link mr-2 #{activeClass}" do
+        = escuela.id
+        %span.badge.badge-light= total
 
-= link_to 'New Reportepago', new_reportepago_path
+.border.border-top-0
+  .p-3
+    %table#dataTableReportes.table.table-sm
+      = text_field_tag nil, nil, {id: :max, class: 'float-right form-control-sm ml-3', placeholder: 'Hasta', onfocus: "(this.type='date')"}
+      = text_field_tag nil, nil, {id: :min, class: 'float-right form-control-sm ml-1', placeholder: 'Desde', onfocus: "(this.type='date')"}
+      .float-right.ml-3.pt-2 Fecha:
+      %thead
+        %tr
+          %th Reportado
+          - if false 
+            %th Tipo
+          %th Escuela
+          %th Numero
+          %th Monto
+          %th Banco
+          %th Tipo transacción
+          %th Fecha transacción
+        - if false
+          %tbody
+            - @reportepagos.each_with_index do |reportepago,i| 
+              %tr
+                %td= I18n.l(reportepago.created_at, format: "%d/%m/%Y")
+                - if false 
+                  %td= reportepago.objeto.class.name
+                %td= reportepago.objeto.escuela.descripcion if (reportepago.objeto and reportepago.objeto.escuela)
+                %td= link_to reportepago.numero, reportepago
+                %td= reportepago.monto_con_formato
+                %td= reportepago.banco_origen.nombre
+                %td= reportepago.tipo_transaccion
+                %td= I18n.l(reportepago.fecha_transaccion, format: "%d/%m/%Y")
+     
+:javascript
+
+  var minDate, maxDate;
+
+  // Custom filtering function which will search data in column four between two values
+  $.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+      var min = minDate;
+      var max = maxDate;
+      var aux = data[0].split("/");
+
+      var date = new Date(aux[2], aux[1]-1, aux[0], 4);
+
+      if (
+      ( min === null && max === null ) ||
+      ( min === null && date <= max ) ||
+      ( min <= date   && max === null ) ||
+      ( min <= date   && date <= max )
+      ) {
+        return true;
+      }
+        return false;
+    }
+  );
+
+
+  $(document).ready(function() {
+
+    minDate = null;
+    maxDate = null;
+
+    let tableData =  $('#dataTableReportes').DataTable({
+      scrollY: 400,
+      ajax: {
+        "processing": true,
+        url: `/reportepagos.json?#{params}`
+      },
+      order: [[ 0, "desc" ]],
+      // pageLength: 14,
+      // lengthChange: false,
+      paging: false,
+      dom: '<"html5buttons"B>lTfgitp',
+      buttons: [
+        {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `reportepago-#{current_periodo.id}`, className: 'btn btn-sm btn-outline-info'},
+        {extend: 'pdf', text: "<span class='glyphicon glyphicon-download'></span> PDF", title: `PDF-reportepago-#{current_periodo.id}`, className: 'btn btn-sm btn-outline-info'} 
+      ],
+      language: 
+        {
+        "sProcessing":     "Procesando...",
+        "sLengthMenu":     "Mostrar _MENU_ registros",
+        "sZeroRecords":    "No se encontraron resultados",
+        "sEmptyTable":     "Ningún dato disponible en esta tabla",
+        "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+        "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+        "sInfoPostFix":    "",
+        "sSearch":         "Buscar:",
+        "sUrl":            "",
+        "sInfoThousands":  ",",
+        "sLoadingRecords": "Cargando...",
+        "oPaginate": {
+        "sFirst":    "Primero",
+        "sLast":     "Último",
+        "sNext":     "Siguiente",
+        "sPrevious": "Anterior"
+        },
+        "oAria": {
+          "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+          "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+        }
+      }
+
+    });
+
+    $('#min, #max').on('change', function () {
+
+      let aux = $('#min').val();
+      if (aux != ""){
+        aux = aux.split('-');
+        minDate = new Date(aux[0], aux[1]-1, aux[2], 4);
+      }
+      aux = $('#max').val();
+      if (aux != ""){
+        aux = aux.split('-');
+        maxDate = new Date(aux[0], aux[1]-1, aux[2], 4);
+      }
+
+      tableData.draw();
+
+    });
+
+  });

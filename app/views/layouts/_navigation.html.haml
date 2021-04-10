@@ -19,14 +19,15 @@
               - if current_admin
                 = link_to 'Periodos', periodos_path, class: 'dropdown-item'
                 = link_to 'Escuelas', escuelas_path, class: 'dropdown-item' if (current_admin.autorizado? 'Escuelas', 'index')
-                = link_to 'Noticias', comentarios_path, class: 'dropdown-item' if (current_admin.autorizado? 'Comentarios', 'index')
-                = link_to 'Cartelera', carteleras_path, class: 'dropdown-item' if (current_admin.autorizado? 'Carteleras', 'index')
-                = link_to 'Planes', planes_path, class: 'dropdown-item' if (current_admin.autorizado? 'Planes', 'index')
                 = link_to 'Departamentos', departamentos_path, class: 'dropdown-item' if (current_admin.autorizado? 'Departamentos', 'index')
                 = link_to 'Cátedras', catedras_path, class: 'dropdown-item' if (current_admin.autorizado? 'Catedras', 'index')
+                = link_to 'Asignaturas', asignaturas_path, class: 'dropdown-item' if (current_admin.autorizado? 'Asignaturas', 'index') and (current_admin.escuelas.count.eql? 1)
+                = link_to 'Cartelera', carteleras_path, class: 'dropdown-item' if (current_admin.autorizado? 'Carteleras', 'index')
+                = link_to 'Noticias', comentarios_path, class: 'dropdown-item' if (current_admin.autorizado? 'Comentarios', 'index')
+                = link_to 'Planes', planes_path, class: 'dropdown-item' if (current_admin.autorizado? 'Planes', 'index')
+                = link_to 'Reportes de Pago', reportepagos_path, class: 'dropdown-item' if (current_admin.autorizado? 'Reportepagos', 'index')
                 - if (current_admin.autorizado? 'Importador', 'importar_estudiantes') or (current_admin.autorizado? 'Importador', 'importar_profesores') or (current_admin.autorizado? 'Importador', 'importar_seccion')
                   = link_to 'Importaciones', {controller: :importador, action: :index}, class: 'dropdown-item'
-                = link_to 'Asignaturas', asignaturas_path, class: 'dropdown-item' if (current_admin.autorizado? 'Asignaturas', 'index') and (current_admin.escuelas.count.eql? 1)
 
           - if (current_admin.autorizado? 'Asignaturas', 'index') and (current_admin.escuelas.count > 1)
             %li.nav-item.dropdown{class: "#{'active' if controller_name.eql? 'asignaturas'}"}  

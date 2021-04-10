@@ -19,6 +19,17 @@ class Reportepago < ApplicationRecord
 
   has_one_attached :respaldo
 
+
+  scope :inscripciones_de_la_escuela, -> (escuela_id) {joins({inscripcionescuelaperiodo: :escuela}).where('escuelas.id = ?', escuela_id)}
+  scope :grados_de_la_escuela, -> (escuela_id) {joins({grado: :escuela}).where('escuelas.id = ?', escuela_id)}
+
+  scope :inscripciones_del_periodo, -> (periodo_id) {joins({inscripcionescuelaperiodo: {escuelaperiodo: :periodo}}).where('periodos.id = ?', periodo_id)} 
+
+
+  def toDataTable
+    {descripcion: objeto.descripcion}
+  end
+
   def monto_con_formato
     ActionController::Base.helpers.number_to_currency(self.monto, unit: 'Bs.', separator: ",", delimiter: ".")
   end

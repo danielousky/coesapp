@@ -102,7 +102,9 @@ class Grado < ApplicationRecord
 	return data #bloques
 	end
 
-
+	def method_name
+		
+	end
 
 
 	def plan_descripcion_corta

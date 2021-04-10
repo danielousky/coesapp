@@ -7,15 +7,39 @@ module Admin
     before_action :resize_image, only: [:create, :update]
 
 
+    def index
+      @escuelas = Escuela.all
+      if params[:escuela_id]
+        escuela = Escuela.find session[:escuela_id]
+        @titulo = "Reportes de Pago de #{escuela.descripcion}"
+        session[:escuela_id] = params[:escuela_id]
+        @reportepagos = Reportepago.inscripciones_del_periodo(current_periodo.id).inscripciones_de_la_escuela(params[:escuela_id]).order(created_at: :desc)
+      elsif session[:escuela_id]
+        escuela = Escuela.find session[:escuela_id]
+        @titulo = "Reportes de Pago de #{escuela.descripcion}"
+
+        @reportepagos = Reportepago.inscripciones_del_periodo(current_periodo.id).inscripciones_de_la_escuela(session[:escuela_id]).order(created_at: :desc)
+
+      else
+        @titulo = 'Reportes de Pago'
+        @reportepagos = Reportepago.inscripciones_del_periodo(current_periodo.id).limit(100).order(created_at: :desc)
+      end
+
+    end
+
     # GET /reportepagos
     # GET /reportepagos.json
-    def index
-      @reportepagos = Reportepago.all
-    end
+
+
+    # def index
+    #   @titulo = "Reportes Pago"
+    #   @reportepagos = Reportepago.limit(50)
+    # end
 
     # GET /reportepagos/1
     # GET /reportepagos/1.json
     def show
+      @titulo = 'Detalle del Reporte de Pago'
       @estudiante = @reportepago.inscripcionescuelaperiodo.estudiante
     end
 

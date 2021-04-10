@@ -1,2 +1,1 @@
-json.extract! reportepago, :id, :inscripcionescuelaperiodo_id, :numero, :tipo_transaccion, :fecha, :created_at, :updated_at
-json.url reportepago_url(reportepago, format: :json)
+json.array! [I18n.l(reportepago.created_at, format: "%d/%m/%Y"), (reportepago.objeto.escuela.descripcion if (reportepago.objeto and reportepago.objeto.escuela)), "#{link_to reportepago.numero, reportepago}", reportepago.monto_con_formato,reportepago.banco_origen.nombre,reportepago.tipo_transaccion, I18n.l(reportepago.fecha_transaccion, format: "%d/%m/%Y")]

@@ -1,1 +1,2 @@
-json.array! @reportepagos, partial: 'reportepagos/reportepago', as: :reportepago
+json.data @reportepagos, partial: 'admin/reportepagos/reportepago', as: :reportepago
+# json.data [['08/03/2021',	'NilClass', '74111615', '1.500,00 Bs.', 'Banco Provincial', 'transferencia'], ['08/03/2021',	'NilClass', '74111615', '1.500,00 Bs.', 'Banco Provincial', 'transferencia']]
