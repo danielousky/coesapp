@@ -7,7 +7,7 @@ class EstudianteMailer < ActionMailer::Base
     @nombre = estudiante.usuario.nombres
     @genero = estudiante.usuario.genero
     usuario = estudiante.usuario
-    @ratifiacadas = estudiante.inscripciones.del_periodo('2019-02A').ratificados if estudiante
+    @confirmadas = estudiante.inscripciones.del_periodo('2019-02A').en_curso if estudiante
     mail(to: usuario.email, subject: "Confirmación Proceso de Inscripción Idiomas Modernos 2019-02A")
   end
 

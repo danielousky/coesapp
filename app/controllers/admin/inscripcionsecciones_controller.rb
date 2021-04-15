@@ -1,7 +1,7 @@
 module Admin
 	class InscripcionseccionesController < ApplicationController
 		before_action :filtro_logueado
-		before_action :filtro_administrador, except: [:confirmar_inscripcion, :preinscribirse, :reservar_cupo]#, only: [:destroy]
+		before_action :filtro_administrador, except: [:confirmar_inscripcion_idiomas201902A, :preinscribirse, :reservar_cupo]#, only: [:destroy]
 		# before_action :filtro_admin_mas_altos!, except: [:destroy]
 		# before_action :filtro_ninja!, only: [:destroy]
 
@@ -225,27 +225,55 @@ module Admin
 		# end
 
 
-		def confirmar_inscripcion
-			total_ratificadas = 0
-			total_eliminadas = 0
+		def confirmar_inscripcion_idiomas201902A
+
 			# descripcion_eliminadas = []
 			@estudiante = Estudiante.find params[:estudiante_id]
-			@estudiante.inscripciones.del_periodo(params[:periodo_id]).each do |insc|
-				if params[:inscripciones].values.include? "#{insc.id}"
-					total_ratificadas += 1 if insc.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)
-				else
-					# descripcion_eliminadas << insc.seccion.descripcion
-					total_eliminadas += 1 if insc.destroy
-				end
-			end
-			begin
-				msg_email = ' Correo enviado con la información resumen.'if EstudianteMailer.ratificacionEIM201902A(@estudiante).deliver_now
-			rescue Exception => e
-				msg_email = "No se pudo enviar el email: #{e}"
-			end
-			flash[:info] = "Se ratificaron un total de #{total_ratificadas} asignaturas. Se eliminaron #{total_eliminadas} en total."
 
-			flash[:info] += msg_email 
+			inscripcion_del_periodo = Inscripcionescuelaperiodo.find_or_new('IDIO', '2019-02A', @estudiante.id)
+
+			if inscripcion_del_periodo.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)
+				flash[:success] = "Inscripción en el período 2019-02A para Idimas Modernos en la modalidad Online confirmada con éxito." 
+				inscripcionsecciones = @estudiante.inscripciones.del_periodo('2019-02A').where(inscripcionescuelaperiodo_id: nil)
+				if inscripcionsecciones.any?
+					total_confirmadas = 0
+					total_eliminadas = 0
+
+					inscripcionsecciones.each do |insc|
+						if params[:inscripciones].values.include? "#{insc.id}"
+							total_confirmadas += 1 if insc.update(inscripcionescuelaperiodo_id: inscripcion_del_periodo.id)
+						else
+							# descripcion_eliminadas << insc.seccion.descripcion
+							total_eliminadas += 1 if insc.destroy
+						end
+					end
+					
+					begin
+						msg_email = ' Correo enviado con la información resumen.'if EstudianteMailer.ratificacionEIM201902A(@estudiante).deliver_now
+					rescue Exception => e
+						msg_email = "No se pudo enviar el email: #{e}"
+					end
+					
+					if total_confirmadas.eql? 0
+						flash[:info] = "No se confirmaron asignaturas. "
+					else
+						flash[:info] = "Se confirmaron un total de #{total_confirmadas} asignaturas. "
+					end
+					if total_eliminadas.eql? 0
+						flash[:info] += "No se eliminaron asignaturas. "
+					else
+						flash[:info] += "Se eliminaron #{total_eliminadas} en total. "
+					end
+					flash[:info] += msg_email
+				else
+					flash[:danger] = "Sin inscripciones en el período 2019-02A en Idiomas Modernos por confirmar."
+				end
+
+			else
+				flash[:danger] = "No se pudo confirmar la inscripción: #{inscripcion_del_periodo.errors.full_messages.to_sentence}"
+			end
+
+
 			
 			redirect_back fallback_location: '/principal_estudiante'
 		end

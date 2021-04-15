@@ -1,0 +1,18 @@
+%p="Estimad#{@genero} #{@nombre}"
+
+- if @confirmadas.any?
+	A continuación le enviamos el resumen de las asignaturas confirmadas para el periodo indicado:
+
+	%div{style: 'background-color:#fff;margin:20px;padding:20px;'}
+		- @confirmadas.each do |insc| 
+			%p
+				%b= insc.seccion.descripcion
+
+
+%p Después de este proceso de confirmación, todos los EIMistas recibirán más información sobre el resto de los pasos a seguir.
+
+%p La fecha estimada para iniciar actividades online del 2019-02A es el lunes 03-05-2021.
+
+%p Gracias por su colaboración
+
+%p Dpto. de Control de Estudios - FHE.

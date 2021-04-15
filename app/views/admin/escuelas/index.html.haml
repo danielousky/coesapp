@@ -40,7 +40,7 @@
 
               = form_tag(set_periodo_inscripcion_escuela_path(escuela.id), class: "form-inline") do 
                 = select_tag :periodo_inscripcion_id, options_from_collection_for_select(escuela.periodos.order(inicia: :desc), :id, :id, escuela.periodo_inscripcion_id), class: 'form-control', include_blank: '---INSCRIPCIÓN CERRADA ---', style: "width: 120px;height: 25px;font-size: 9px;font-weight: bold;"
-                = submit_tag 'Enviar', class: 'ml-2 btn btn-sm btn-success', style: "height: 25px;font-size: 9px;font-weight: bold;", data: {confirm: 'Esta acción establecerá las inscripciones para los ESTUDIANTES en el periodo seleccionado, ¿Está seguro?. Para cerrar la inscripción seleccione la opción "--- Inscripción Cerrada ---"'}
+                = submit_tag 'Guardar', class: 'ml-2 btn btn-sm btn-success', style: "height: 25px;font-size: 8px;font-weight: bold;", data: {confirm: 'Esta acción establecerá las inscripciones para los ESTUDIANTES en el periodo seleccionado, ¿Está seguro?. Para cerrar la inscripción seleccione la opción "--- Inscripción Cerrada ---"'}
 
             %td= agregar_onoffswitch 'Habilitar Retiro y Eliminación Asignaturas', "retiro#{escuela.id}", set_habilitar_retiro_asignaturas_escuela_path(escuela.id), escuela.retiro_asignaturas_habilitado?
 

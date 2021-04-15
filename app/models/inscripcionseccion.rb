@@ -271,11 +271,8 @@ class Inscripcionseccion < ApplicationRecord
 		self.diferido?
 	end
 
-	def d_or_r? 
-
+	def d_or_r?
 		tipo_calificacion_id.to_s.first
-
-		
 	end
 
 	def nota_final_para_csv reparacion = false
@@ -293,10 +290,8 @@ class Inscripcionseccion < ApplicationRecord
 				return 'AP'
 			end
 		else
-
 			return self.colocar_nota_final.to_s
 		end
-
 	end
 
 

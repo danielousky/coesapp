@@ -34,14 +34,14 @@
 				- @limiteCreditos = @escupe.limite_creditos_permitidos
 				- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first
 				- if @inscripcionperiodo.nil? or (@inscripcionperiodo and @inscripcionperiodo.reservado?)
-					- if false #escuela.id.eql? 'IDIO' and periodo_id.eql? '2019-02A'
+					- if escuela.id.eql? 'IDIO' and @periodo.id.eql? '2019-02A'
 						-# inscripciones_del_periodo = @inscripciones.del_periodo(periodo.id)#.inscritos
-						- inscripciones_del_periodo = @inscripciones.del_periodo(@periodo.id).preinscritos
+						- inscripciones_del_periodo = @inscripciones.del_periodo(@periodo.id)#.preinscritos
 						- if inscripciones_del_periodo.any?
 							- titulo_modal = "Proceso de Confirmación de Inscripción"
-							- titulo_btn = "Ratificar Inscripción"
-							- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea ratificar"
-							- url = '/inscripcionsecciones/confirmar_inscripcion'
+							- titulo_btn = "Confirmación Inscripción"
+							- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea confirmar"
+							- url = '/inscripcionsecciones/confirmar_inscripcion_idiomas201902A'
 							- idModal = "ratificarInscripcion#{escuela.id}"
 							= render partial: 'admin/inscripcionsecciones/confirmar_inscripcion_form', locals: {inscripciones: inscripciones_del_periodo, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
 
@@ -72,7 +72,7 @@
 								= "El estudiante aún no  esta confirmado o reincorporado en #{escuela.descripcion.titleize}"
 								= "El estudiante no debe tener registros académicos previos (Nuevos Ingresos) o debe haber inscrito asignaturas en el período inmediatemente anterior #{periodo_anterior.id} (Regulares)."
 				- else
-					- if @inscripcionperiodo.reportepago.nil?
+					- if @inscripcionperiodo.reportepago.nil? and @periodo.es_mayor_al_anno? 2020
 						.alert.alert-warning
 							%h6
 								%b Atención: 

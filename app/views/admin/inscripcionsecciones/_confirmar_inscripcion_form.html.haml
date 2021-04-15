@@ -15,7 +15,7 @@
           %h5= "Período Académico #{current_periodo.id}"
 
       .alert.alert-warning
-        %h4.text-center= msgDanger.html_safe
+        %h6.text-center= msgDanger.html_safe
       .modal-body.border.p-2
         = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal') do
           = hidden_field_tag 'estudiante_id', @estudiante.id
@@ -25,7 +25,7 @@
               %tr
                 %th{style: 'width: 80%'} Asigantura
                 %th{style: 'width: 10%'} Sección
-                %th{style: 'width: 10%'} Ratificar
+                %th{style: 'width: 10%'} Confirmar
             %tbody
               - inscripciones.each_with_index do |inscripcion, i| 
                 %tr
@@ -48,11 +48,11 @@
         selected += '\n';
         selected += $(this).attr('titulo');
       });    
-      msg = `Asignaturas a ratificar en el período académico #{current_periodo.id} de la Escuela de #{@escuela.descripcion_filtro}:`;
+      msg = `Asignaturas a confirmar en el período académico #{current_periodo.id} en la modalidad online de la Escuela de #{@escuela.descripcion_filtro}:`;
       msg += selected;
       msg += '\n';
     }else{
-      msg = `No seleccionó ninguna asignatura. Se procederá a eliminar el total de asignaturas inscritas en el #{current_periodo.id}.`
+      msg = `No seleccionó ninguna asignatura. Se procederá a eliminar el total de asignaturas inscritas en el #{current_periodo.id} para Idiomas Modernos.`
     }
     msg += '\n';
     msg += "Recuerde que su elección es definitiva y no podrá ser cambiada. ¿Está seguro?" 
