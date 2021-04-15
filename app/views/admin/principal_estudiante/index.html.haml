@@ -49,8 +49,11 @@
 						-# periodo_anterior = escuela.periodo_anterior @periodo.id
 						- @totalCreditosReservados = @inscripcionperiodo ? @inscripcionperiodo.total_creditos : 0
 						- periodo_anterior = escuela.periodo_anterior @periodo.id
-						- periodo_anteanterior = escuela.periodo_anterior periodo_anterior.id
-						-if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
+						-# periodo_anteanterior = escuela.periodo_anterior periodo_anterior.id
+						-if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? ))
+							- # if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
+							- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
+
 							- asignaturas_ofertadas_x_escuela = escuela.asignaturas.activas(@periodo.id).order(anno: :asc )
 							-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
 							- @aprobadas = @inscripciones.aprobadas.joins(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten

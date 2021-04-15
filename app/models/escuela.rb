@@ -81,10 +81,16 @@ class Escuela < ApplicationRecord
 
 	def periodo_anterior periodo_id
 		periodo_aux = Periodo.find periodo_id
-		if periodo_aux.anual?
-			todos = periodos.anual
-		else
-			todos = periodos.semestral
+		
+		letra = periodo_aux.letra_final_de_id
+		todos = periodos.where("periodos.id LIKE '%#{letra}'")
+		unless todos.any?
+
+			if periodo_aux.anual?
+				todos = periodos.anual
+			else
+				todos = periodos.semestral
+			end
 		end
 
 		todos = todos.order(inicia: :asc).ids
