@@ -57,7 +57,7 @@ module Admin
 							ins.estudiante_id = params[:estudiante_id]
 							ins.seccion_id = sec.id
 							ins.escuela_id = grado.escuela.id 
-							ins.pci_escuela_id = sec.escuela.id if params[:pci]
+							ins.pci_escuela_id = sec.escuela.id if (params[:pci].eql? 'true')
 							
 
 							if ins.save
