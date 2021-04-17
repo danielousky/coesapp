@@ -1,0 +1,78 @@
+/*!
+ * Start Bootstrap - Simple Sidebar (https://startbootstrap.com/template/simple-sidebar)
+ * Copyright 2013-2020 Start Bootstrap
+ * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-simple-sidebar/blob/master/LICENSE)
+ */
+.navbarWidth {
+  margin-left: 10rem;
+  -webkit-transition: margin .25s ease-in-out;
+  -moz-transition: margin .25s ease-in-out;
+  -o-transition: margin .25s ease-in-out;
+  transition: margin .25s ease-in-out;
+}
+
+
+#wrapper {
+    overflow-x: hidden;
+ }
+
+#sidebar-wrapper {
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  top: 0;
+  height: 100%;
+  margin-left: -10rem;
+  -webkit-transition: margin .25s ease-out;
+  -moz-transition: margin .25s ease-out;
+  -o-transition: margin .25s ease-out;
+  transition: margin .25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+  text-align: center;
+  padding: 0.4rem;
+  font-size: 1.2rem;
+}
+
+#sidebar-wrapper .list-group {
+  width: 10rem;
+}
+
+.list-group-item-action{
+  color: '#989B9E' !important;
+}
+
+#sidebar-wrapper .list-subgroup {
+  margin-left: 10rem !important;
+  width: 20rem !important;
+  margin-top: -8rem !important;
+  -webkit-transition: margin .25s ease-in-out;
+  -moz-transition: margin .25s ease-in-out;
+  -o-transition: margin .25s ease-in-out;
+  transition: margin .25s ease-in-out;
+}
+
+#sidebar-wrapper .list-group a:hover {
+  color: #f1f1f1;
+}
+
+#page-content-wrapper.toggled {
+  margin-left: 10rem; /* Same as the width of the sidebar */
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: 0;
+}
+
+@media (min-width: 768px) {
+  #sidebar-wrapper {
+    margin-left: 0;
+  }
+
+  #page-content-wrapper {
+    min-width: 0;
+  }
+
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: -10rem;
+  }
+}

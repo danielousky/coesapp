@@ -1,70 +1,22 @@
-- main_path = root_path
-- main_path = index2_secciones_path if current_admin
--# main_path = periodos_path if current_admin and current_admin.maestros?
-- main_path = principal_estudiante_index_path if session[:estudiante_id]
-- main_path = principal_profesor_index_path if session[:profesor_id]
-.container.fixed-top
-  %nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-    %a.navbar-brand{:href => main_path} COES-FHE
-    %button.navbar-toggler{"aria-controls" => "navbarSupportedContent", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
-      %span.navbar-toggler-icon
-    #navbarSupportedContent.collapse.navbar-collapse
-      %ul.navbar-nav.mr-auto
-        - if current_admin
-          %li.nav-item.dropdown{class: "#{'active' if controller_name.eql? 'periodos'}"}
-            %a.nav-link.dropdown-toggle#ConfigGeneral{"aria-expanded": false, "aria-haspopup": true, "data-toggle": :dropdown, href: "#", role: :button}
-              Config. General
-            .dropdown-menu{"aria-labelledby" => "ConfigGeneral"}
-              .dropdown-item.text-info= current_periodo.id
-              - if current_admin
-                = link_to 'Periodos', periodos_path, class: 'dropdown-item'
-                = link_to 'Escuelas', escuelas_path, class: 'dropdown-item' if (current_admin.autorizado? 'Escuelas', 'index')
-                = link_to 'Departamentos', departamentos_path, class: 'dropdown-item' if (current_admin.autorizado? 'Departamentos', 'index')
-                = link_to 'Cátedras', catedras_path, class: 'dropdown-item' if (current_admin.autorizado? 'Catedras', 'index')
-                = link_to 'Asignaturas', asignaturas_path, class: 'dropdown-item' if (current_admin.autorizado? 'Asignaturas', 'index') and (current_admin.escuelas.count.eql? 1)
-                = link_to 'Cartelera', carteleras_path, class: 'dropdown-item' if (current_admin.autorizado? 'Carteleras', 'index')
-                = link_to 'Noticias', comentarios_path, class: 'dropdown-item' if (current_admin.autorizado? 'Comentarios', 'index')
-                = link_to 'Planes', planes_path, class: 'dropdown-item' if (current_admin.autorizado? 'Planes', 'index')
-                = link_to 'Reportes de Pago', reportepagos_path, class: 'dropdown-item' if (current_admin.autorizado? 'Reportepagos', 'index')
-                - if (current_admin.autorizado? 'Importador', 'importar_estudiantes') or (current_admin.autorizado? 'Importador', 'importar_profesores') or (current_admin.autorizado? 'Importador', 'importar_seccion')
-                  = link_to 'Importaciones', {controller: :importador, action: :index}, class: 'dropdown-item'
 
-          - if (current_admin.autorizado? 'Asignaturas', 'index') and (current_admin.escuelas.count > 1)
-            %li.nav-item.dropdown{class: "#{'active' if controller_name.eql? 'asignaturas'}"}  
-              %a.nav-link.dropdown-toggle#Reportes{"aria-expanded": false, "aria-haspopup": true, "data-toggle": :dropdown, href: "#", role: :button}
-                Asignaturas
-              .dropdown-menu{"aria-labelledby" => "Asignaturas"}
-                - current_admin.escuelas.joins(:escuelaperiodos).where('escuelaperiodos.periodo_id = ?', current_periodo.id).each do |esc| 
-                  = link_to "Asignaturas de #{esc.descripcion}", "#{asignaturas_path}?escuela_id=#{esc.id}", class: 'dropdown-item'
-          - if (current_admin.autorizado? 'Secciones', 'index') or (current_admin.autorizado? 'Grados', 'citas_horarias') or (current_admin.autorizado? 'Grados', 'index_nuevos') 
-            %li.nav-item.dropdown{class: "#{'active' if controller_name.eql? 'secciones'}"}  
-              %a.nav-link.dropdown-toggle#Reportes{"aria-expanded": false, "aria-haspopup": true, "data-toggle": :dropdown, href: "#", role: :button}
-                Reportes
-              .dropdown-menu{"aria-labelledby" => "Reportes"}
-                = link_to 'Reporte PIC', secciones_path, class: 'dropdown-item' if (current_admin.autorizado? 'Secciones', 'index')
-                = link_to 'Citas Horarias', citas_horarias_grados_path, class: 'dropdown-item' if (current_admin.autorizado? 'Grados', 'cita_horaria')
-                = link_to 'Tipos de Estudiante', index_nuevos_grados_path, class: 'dropdown-item' if (current_admin.autorizado? 'Grados', 'index_nuevo')
-
-          - if (current_admin.autorizado? 'Usuarios', 'create') and (current_admin.autorizado? 'Usuarios', 'set_estudiante') or (current_admin.autorizado? 'Usuarios', 'set_profesor')
-            %li.nav-item.dropdown{class: "#{'active' if controller_name.eql? 'usuarios'}"}
-              %a.nav-link.dropdown-toggle#usuarioDropdown{"aria-expanded": false, "aria-haspopup": true, "data-toggle": :dropdown, href: "#", role: :button}
-                Usuarios
-                - if controller_name.eql? 'usuarios'
-                  %span.sr-only (current)
-              .dropdown-menu{"aria-labelledby" => "usuarioDropdown"}
-                = link_to 'Registrar Profesor', "#{new_usuario_path}?profesor=true", class: 'dropdown-item' if (current_admin.autorizado? 'Usuarios', 'set_profesor')
-                = link_to 'Registrar Estudiante', "#{new_usuario_path}?estudiante=true", class: 'dropdown-item' if (current_admin.autorizado? 'Usuarios', 'set_estudiante')
-                - if current_admin.maestros?
-                  = link_to 'Registrar Administrador', "#{new_usuario_path}?administrador=true", class: 'dropdown-item'
-                  = link_to 'Lista de Administrador', administradores_path, class: 'dropdown-item'
-
-        - if current_admin
-          = form_tag(usuarios_path,{class: 'form-inline my-2 my-lg-0', role: :search, method: :get} ) do
-            = text_field_tag :search, params[:search],{class: 'form-control mr-sm-2 form-control-sm', required: true, "aria-label" => "Search", placeholder: "Buscar Usuario", type: "search"}
-            %button.btn.btn-outline-success.btn-sm.my-2.my-sm-0{:type => "submit"} Buscar
-      %ul.navbar-nav
-        %li.nav-item
-          %a.nav-link{:href => "mailto:controlestfheucv@gmail.com"} 
-            Contáctanos
-        = render 'layouts/nav_session_options' 
+%nav#navbar.navbar.navbar-expand-lg.navbar-dark.bg-dark.fixed-top.navbarWidth
+  = link_to '', class: 'btn btn-primary btn-sm mr-2', id: 'menu-toggle' do
+    = glyph 'chevron-left'
+    .navbar-toggler-icon
+  
+  %button.navbar-toggler{"aria-controls" => "navbarSupportedContent", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
+    %span.navbar-toggler-icon
+  #navbarSupportedContent.collapse.navbar-collapse
+    - if current_admin
+      = form_tag(usuarios_path,{class: 'form-inline my-2 my-lg-0', role: :search, method: :get} ) do
+        = text_field_tag :search, params[:search],{class: 'form-control mr-sm-2 form-control-sm', required: true, "aria-label" => "Search", placeholder: "Buscar Usuario", type: "search"}
+        %button.btn.btn-outline-success.btn-sm.m-0{:type => "submit"} Buscar
+    %ul.navbar-nav.mr-auto
+    %ul.navbar-nav
+      %li
+        %b.nav-item.text-light.nav-link
+          = raw (@titulo ? @titulo : action_name.titleize)
+      %li.nav-item
+        = link_to_if current_admin, "Periodo: #{current_periodo.id}", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link'}
+      = render 'layouts/nav_session_options' 
 = render 'admin/principal_admin/cambiar_sesion_periodo'

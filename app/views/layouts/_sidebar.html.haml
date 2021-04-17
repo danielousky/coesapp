@@ -1,0 +1,57 @@
+- main_path = root_path
+- main_path = index2_secciones_path if current_admin
+-# main_path = periodos_path if current_admin and current_admin.maestros?
+- main_path = principal_estudiante_index_path if session[:estudiante_id]
+- main_path = principal_profesor_index_path if session[:profesor_id]
+#sidebar-wrapper.bg-dark.border-right
+  .sidebar-heading
+    %a.navbar-brand{href: main_path} COES-FHE
+  .list-group.list-group-flush.nav-item
+    = sidebar_item current_admin, 'Periodos', 'index', periodos_path, 'calendar'
+    = sidebar_item current_admin, 'Escuelas', 'index', escuelas_path, 'education'
+    = sidebar_item current_admin, 'Planes', 'index', planes_path, 'book'
+    = sidebar_item current_admin, 'Carteleras', 'index', carteleras_path, 'blackboard'
+    = sidebar_item current_admin, 'Reportepagos', 'index', reportepagos_path, 'piggy-bank', 'Reportes de Pago'
+    = sidebar_item current_admin, 'Comentarios', 'index', comentarios_path, 'bullhorn', 'Noticias'
+
+    - if (current_admin.autorizado? 'Asignaturas', 'index')
+      - if (current_admin.escuelas.count.eql? 1)
+        = sidebar_item current_admin, 'Asignaturas', 'index', asignaturas_path, 'modal-window'
+        
+      - else
+        = sidebar_sub_item 'asig', 'Asignaturas', 'modal-window'
+        #asigSubMenu.list-subgroup.list-group-flush.d-none
+          - current_admin.escuelas.joins(:escuelaperiodos).where('escuelaperiodos.periodo_id = ?', current_periodo.id).each do |esc| 
+            = sidebar_link_to_item "Asignaturas de #{esc.descripcion}", "#{asignaturas_path}?escuela_id=#{esc.id}"
+
+    - if (current_admin.autorizado? 'Secciones', 'index') or (current_admin.autorizado? 'Grados', 'citas_horarias') or (current_admin.autorizado? 'Grados', 'index_nuevos') 
+      = sidebar_sub_item 'report', 'Reportes', 'stats'
+      #reportSubMenu.list-subgroup-item.list-subgroup.list-group-flush.d-none
+        = sidebar_link_to_item 'Reporte PIC', secciones_path if (current_admin.autorizado? 'Grados', 'cita_horaria') if (current_admin.autorizado? 'Secciones', 'index')
+
+        = sidebar_link_to_item 'Citas Horarias', citas_horarias_grados_path if (current_admin.autorizado? 'Grados', 'cita_horaria')
+        = sidebar_link_to_item 'Tipos de Estudiante', index_nuevos_grados_path if (current_admin.autorizado? 'Grados', 'index_nuevo')
+
+
+    - if (current_admin.autorizado? 'Importador', 'importar_estudiantes') or (current_admin.autorizado? 'Importador', 'importar_profesores') or (current_admin.autorizado? 'Importador', 'importar_seccion')      
+      = sidebar_sub_item 'import', 'Migraciones', 'import'
+      #importSubMenu.list-subgroup-item.list-subgroup.list-group-flush.d-none
+        - if (current_admin.autorizado? 'Importador', 'importar_profesores')
+          = sidebar_link_to_item 'Migrar Profesores', {controller: 'importador', action: 'seleccionar_archivo_profesores'}
+        - if (current_admin.autorizado? 'Importador', 'importar_estudiantes')
+          = sidebar_link_to_item 'Migrar Estudiantes', {controller: 'importador', action: 'seleccionar_archivo_estudiantes'}
+        - if (current_admin.autorizado? 'Importador', 'importar_seccion')
+          = sidebar_link_to_item 'Migrar Inscripciones', {controller: 'importador', action: 'seleccionar_archivo_inscripciones'}
+
+
+    - if (current_admin.autorizado? 'Usuarios', 'create') and (current_admin.autorizado? 'Usuarios', 'set_estudiante') or (current_admin.autorizado? 'Usuarios', 'set_profesor')
+      = sidebar_sub_item 'usuario', 'Usuarios', 'user'
+      #usuarioSubMenu.list-subgroup-item.list-subgroup.list-group-flush.d-none
+        - if (current_admin.autorizado? 'Usuarios', 'set_profesor')
+          = sidebar_link_to_item 'Registrar Profesor', "#{new_usuario_path}?profesor=true"
+        - if (current_admin.autorizado? 'Usuarios', 'set_estudiante')
+          = sidebar_link_to_item 'Registrar Estudiante', "#{new_usuario_path}?estudiante=true"
+
+        - if current_admin.maestros?
+          = sidebar_link_to_item 'Registrar Administrador', "#{new_usuario_path}?administrador=true"
+          = sidebar_link_to_item 'Lista de Administradores', administradores_path

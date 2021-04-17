@@ -1,5 +1,18 @@
 module ApplicationHelper
 
+	# def is_active_controller(controller_name, class_name = nil)
+	# 	if params[:controller] == controller_name
+	# 		class_name == nil ? "active" : class_name
+	# 	else
+	# 		nil
+	# 	end
+ #    end
+
+ #    def is_active_action(action_name)
+ #        params[:action] == action_name ? "active" : nil
+ #    end
+
+
 	def capitalize_all frase
 		frase.split(" ").map{|a| a.length > 2 ? a.capitalize : a}.join(" ")
 	end	
@@ -51,6 +64,25 @@ module ApplicationHelper
 		end
 	end
 
+	def sidebar_item usuario, objeto, accion, url, icon=nil, nombre=objeto
+		if (usuario.autorizado? objeto, accion)
+			link_to url, class: 'list-group-item list-group-item-action bg-dark text-light' do
+				capture_haml{"#{glyph icon if icon} #{nombre}"}
+			end
+		end
+	end
+
+
+	def sidebar_sub_item id, nombre, icon=nil
+		link_to 'javascript:void(0)', class: 'list-group-item list-group-item-action bg-dark text-light', id: "#{id}SubMenuLink" do
+			capture_haml{"#{glyph icon if icon} #{nombre} #{glyph 'chevron-right'}"}
+		end
+	end
+
+	def sidebar_link_to_item nombre, url
+		link_to nombre, url, class: 'list-group-item list-group-item-action bg-dark text-light'
+	end
+
 
 	def add_card_header tipo, titulo
 		capture_haml do
@@ -61,7 +93,7 @@ module ApplicationHelper
 					end
 				end
 			end
-		end		
+		end
 	end
 
 	def colocar_nav_tab name, objetos, contenido = nil, vertical = false

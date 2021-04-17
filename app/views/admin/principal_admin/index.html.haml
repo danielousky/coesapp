@@ -1,8 +1,7 @@
-- if current_admin.maestros?
-	.border.p-3= render '/admin/principal_admin/index_maestros'
-- else
-	.border.p-3= render '/admin/principal_admin/tabs_estructura/escuelas'
+%h1 Principal
 
-= render '/admin/usuarios/datos_modal'
-= render 'admin/secciones/modal_form'
-= render 'admin/secciones/modal_seleccionar_profesor'
+- @periodos.each do |pe| 
+	%h1= pe.id
+	%br
+	%br
+	%br

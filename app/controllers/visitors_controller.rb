@@ -150,11 +150,13 @@ class VisitorsController < ApplicationController
       
       # redirect_to periodos_path  
 
-      if current_admin.admin_departamento?
-        redirect_to index2_secciones_path
-      else
-        redirect_to periodos_path
-      end
+      # if current_admin.admin_departamento?
+      #   redirect_to index2_secciones_path
+      # else
+      #   redirect_to periodos_path
+      # end
+
+      redirect_to principal_admin_index_path
       # if current_admin.maestros?
       #   redirect_to periodos_path  
       # else
