@@ -233,7 +233,7 @@ module Admin
 			inscripcion_del_periodo = Inscripcionescuelaperiodo.find_or_new('IDIO', '2019-02A', @estudiante.id)
 
 			if inscripcion_del_periodo.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)
-				flash[:success] = "Inscripción en el período 2019-02A para Idimas Modernos en la modalidad Online confirmada con éxito." 
+				flash[:success] = "Inscripción en el período 2019-02A para Idiomas Modernos en la modalidad Online confirmada con éxito." 
 				inscripcionsecciones = @estudiante.inscripciones.del_periodo('2019-02A').where(inscripcionescuelaperiodo_id: nil)
 				if inscripcionsecciones.any?
 					total_confirmadas = 0
@@ -314,10 +314,11 @@ module Admin
 
 		def index
 			@escuela = Escuela.find params[:escuela_id]
-			# @inscripciones = escuela.inscripcionsecciones.del_periodo(params[:id]).estudiantes_inscritos_con_creditos
-			# @inscripciones = @escuela.inscripcionsecciones.del_periodo(params[:periodo_id]).estudiantes_inscritos_con_creditos#.estudiantes_inscritos
-			@inscripciones = @escuela.inscripcionsecciones.del_periodo(params[:periodo_id]).joins(:usuario).order("usuarios.apellidos ASC").joins(:asignatura).group(:estudiante_id).select('estudiante_id, usuarios.apellidos apellidos, usuarios.nombres nombres, SUM(asignaturas.creditos) total_creditos, COUNT(*) asignaturas, SUM(IF (estado = 1, asignaturas.creditos, 0)) aprobados')
+
+			@inscripciones = @escuela.inscripcionsecciones.con_totales(@escuela_id, params[:periodo_id])
+
 			@titulo = "Inscripciones para el período #{params[:periodo_id]} en la escuela #{@escuela.descripcion} (#{@inscripciones.size.count})"
+
 		end
 
 		def cambiar_calificacion

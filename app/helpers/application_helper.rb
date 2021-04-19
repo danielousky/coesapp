@@ -80,7 +80,7 @@ module ApplicationHelper
 	end
 
 	def sidebar_link_to_item nombre, url
-		link_to nombre, url, class: 'list-group-item list-group-item-action bg-dark text-light'
+		link_to nombre, url, class: 'list-group-item list-subgroup-item bg-dark text-light'
 	end
 
 

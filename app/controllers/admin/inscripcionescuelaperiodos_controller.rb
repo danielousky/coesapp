@@ -13,6 +13,8 @@ module Admin
 				else
 					@inscripciones = @escuelaperiodo.inscripcionescuelaperiodos
 				end
+				@titulo = "Inscripciones para el #{@escuelaperiodo.periodo_id} en #{@escuelaperiodo.escuela.descripcion}"
+				@titulo += " <span class='badge badge-warning'>#{@inscripciones.count}</span>"
 			else
 				flash[:danger] = 'Debe seleccionar una escuela'
 				redirect_back fallback_location: escuelas_path

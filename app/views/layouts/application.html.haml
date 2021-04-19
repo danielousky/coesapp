@@ -23,50 +23,70 @@
     = render 'layouts/nojavascript'
 
   %body
-    #wrapper
-      = render 'layouts/sidebar'
-      
-      / Page Content
-      #page-content-wrapper.toggled
+    - if current_admin
+      #wrapper
+        = render 'layouts/sidebar'
+        
+        / Page Content
+        #page-content-wrapper.toggled
+          = render 'layouts/navigation'
+          - if Rails.root.to_s.include? 'coes_dev'
+            %nav.navbar.navbar-expand-lg.navbar-dark.bg-danger.justify-content-center
+              %h5 AMBIENTE DE PRUEBAS
+          = render 'layouts/noticias' 
+          .container-fluid.pt-5
+            =# render 'layouts/titulo'
+            %br
+            = render 'layouts/messages'
+            = yield
+            = render 'layouts/cargando'
+
+      / Menu Toggle Script
+      :javascript
+        $('#importSubMenuLink, #importSubMenu').hover(function(){
+          $('#importSubMenu').toggleClass("d-none");
+        })
+        $('#reportSubMenuLink, #reportSubMenu').hover(function(){
+          $('#reportSubMenu').toggleClass("d-none");
+        })
+
+        $('#asigSubMenuLink, #asigSubMenu').hover(function(){
+          $('#asigSubMenu').toggleClass("d-none");
+        })
+
+        $('#usuarioSubMenuLink, #usuarioSubMenu').hover(function(){
+          $('#usuarioSubMenu').toggleClass("d-none");
+        })
+
+
+        $("#menu-toggle").click(function(e) {
+          e.preventDefault();
+          $('#navbar').toggleClass("navbarWidth")
+          $('#page-content-wrapper').toggleClass("toggled");
+          $("#wrapper").toggleClass("toggled");
+          let ele = $(this).children('span')
+          console.log(ele);
+          ele.toggleClass('glyphicon-chevron-left')
+          ele.toggleClass('glyphicon-chevron-right')
+          //ele.css('transform',"rotate('180deg')");
+        });
+
+    - else
+
+      %header
+        -# @noticias = Comentario.recientes.privados
+        = render 'layouts/noticias' 
         = render 'layouts/navigation'
+
+      %main{:role => "main"}
         - if Rails.root.to_s.include? 'coes_dev'
           %nav.navbar.navbar-expand-lg.navbar-dark.bg-danger.justify-content-center
             %h5 AMBIENTE DE PRUEBAS
-        = render 'layouts/noticias' 
-        .container-fluid.pt-5
-          =# render 'layouts/titulo'
-          %br
-          = render 'layouts/messages'
-          = yield
-          = render 'layouts/cargando'
-
-/ Menu Toggle Script
-:javascript
-  $('#importSubMenuLink, #importSubMenu').hover(function(){
-    $('#importSubMenu').toggleClass("d-none");
-  })
-  $('#reportSubMenuLink, #reportSubMenu').hover(function(){
-    $('#reportSubMenu').toggleClass("d-none");
-  })
-
-  $('#asigSubMenuLink, #asigSubMenu').hover(function(){
-    $('#asigSubMenu').toggleClass("d-none");
-  })
-
-  $('#usuarioSubMenuLink, #usuarioSubMenu').hover(function(){
-    $('#usuarioSubMenu').toggleClass("d-none");
-  })
-
-
-  $("#menu-toggle").click(function(e) {
-    e.preventDefault();
-    $('#navbar').toggleClass("navbarWidth")
-    $('#page-content-wrapper').toggleClass("toggled");
-    $("#wrapper").toggleClass("toggled");
-    let ele = $(this).children('span')
-    console.log(ele);
-    ele.toggleClass('glyphicon-chevron-left')
-    ele.toggleClass('glyphicon-chevron-right')
-    //ele.css('transform',"rotate('180deg')");
-  });
+        = render 'layouts/messages'
+        = yield
+      %br
+      %br
+      %br
+      %br
+      = render 'layouts/cargando'    
 

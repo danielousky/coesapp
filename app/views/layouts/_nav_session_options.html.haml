@@ -1,7 +1,7 @@
 - if session[:usuario_ci]
   
   %li.nav-item
-    = image_tag main_app.url_for(current_usuario.foto_perfil), width: '30px' if (current_usuario and current_usuario.foto_perfil and current_usuario.foto_perfil.attached?)
+    = image_tag main_app.url_for(current_usuario.foto_perfil), class: 'imagen-perfil' if (current_usuario and current_usuario.foto_perfil and current_usuario.foto_perfil.attached?)
   %li.nav-item.dropdown
     %a.nav-link.dropdown-toggle.btn-link#SesionDropdown{"aria-expanded" => :false, "aria-haspopup" => :true, "data-toggle" => :dropdown, href: "#", role: :button}
       = current_usuario.nombres

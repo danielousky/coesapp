@@ -1,8 +1,9 @@
-
-%nav#navbar.navbar.navbar-expand-lg.navbar-dark.bg-dark.fixed-top.navbarWidth
-  = link_to '', class: 'btn btn-primary btn-sm mr-2', id: 'menu-toggle' do
-    = glyph 'chevron-left'
-    .navbar-toggler-icon
+- width = current_admin ? 'navbarWidth' : ''
+%nav#navbar.navbar.navbar-expand-lg.navbar-dark.bg-dark.fixed-top{class: width}
+  - if current_admin
+    = link_to '', class: 'btn btn-primary btn-sm mr-2', id: 'menu-toggle' do
+      = glyph 'chevron-left'
+      .navbar-toggler-icon
   
   %button.navbar-toggler{"aria-controls" => "navbarSupportedContent", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
     %span.navbar-toggler-icon
@@ -14,9 +15,14 @@
     %ul.navbar-nav.mr-auto
     %ul.navbar-nav
       %li
-        %b.nav-item.text-light.nav-link
+        %b.nav-item.text-light.nav-link.text-nowrap
           = raw (@titulo ? @titulo : action_name.titleize)
       %li.nav-item
-        = link_to_if current_admin, "Periodo: #{current_periodo.id}", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link'}
+        - if current_admin
+          = link_to "Periodo: #{current_periodo.id}", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold'}
+        - else
+          %b.text-info.nav-link
+            = "Periodo: #{current_periodo.id}"
       = render 'layouts/nav_session_options' 
-= render 'admin/principal_admin/cambiar_sesion_periodo'
+
+= render 'admin/principal_admin/cambiar_sesion_periodo' if current_admin

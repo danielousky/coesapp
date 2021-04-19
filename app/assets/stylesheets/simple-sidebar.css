@@ -21,6 +21,7 @@
   top: 0;
   height: 100%;
   margin-left: -10rem;
+  z-index: 1035;
   -webkit-transition: margin .25s ease-out;
   -moz-transition: margin .25s ease-out;
   -o-transition: margin .25s ease-out;
@@ -44,7 +45,7 @@
 #sidebar-wrapper .list-subgroup {
   margin-left: 10rem !important;
   width: 20rem !important;
-  margin-top: -8rem !important;
+  margin-top: -45px !important;
   -webkit-transition: margin .25s ease-in-out;
   -moz-transition: margin .25s ease-in-out;
   -o-transition: margin .25s ease-in-out;
