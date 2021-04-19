@@ -234,13 +234,16 @@ module Admin
 
 			if inscripcion_del_periodo.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)
 				flash[:success] = "Inscripción en el período 2019-02A para Idiomas Modernos en la modalidad Online confirmada con éxito." 
+
+				info_bitacora "Estudiante #{inscripcion_del_periodo.estudiante_id} Confirmado en el periodo #{inscripcion_del_periodo.periodo.id} en #{inscripcion_del_periodo.escuela.descripcion}.", Bitacora::CREACION, inscripcion_del_periodo
+
 				inscripcionsecciones = @estudiante.inscripciones.del_periodo('2019-02A').where(inscripcionescuelaperiodo_id: nil)
 				if inscripcionsecciones.any?
 					total_confirmadas = 0
 					total_eliminadas = 0
 
 					inscripcionsecciones.each do |insc|
-						if params[:inscripciones].values.include? "#{insc.id}"
+						if params[:inscripciones] and params[:inscripciones].values.include? "#{insc.id}"
 							total_confirmadas += 1 if insc.update(inscripcionescuelaperiodo_id: inscripcion_del_periodo.id)
 						else
 							# descripcion_eliminadas << insc.seccion.descripcion
@@ -249,7 +252,10 @@ module Admin
 					end
 					
 					begin
-						msg_email = ' Correo enviado con la información resumen.'if EstudianteMailer.ratificacionEIM201902A(@estudiante).deliver_now
+						EstudianteMailer.ratificacionEIM201902A(@estudiante).deliver_now
+						info_bitacora "Envío de correo de Confirmación de Inscripción de #{inscripcion_del_periodo.estudiante_id} en el periodo #{inscripcion_del_periodo.periodo.id} en #{inscripcion_del_periodo.escuela.descripcion}.", Bitacora::CREACION, inscripcion_del_periodo
+						msg_email = ' Correo enviado con la información resumen.'
+						
 					rescue Exception => e
 						msg_email = "No se pudo enviar el email: #{e}"
 					end
