@@ -83,14 +83,13 @@ class Escuela < ApplicationRecord
 		periodo_aux = Periodo.find periodo_id
 		
 		letra = periodo_aux.letra_final_de_id
-		todos = periodos.where("periodos.id LIKE '%#{letra}'")
-		unless todos.any?
 
-			if periodo_aux.anual?
-				todos = periodos.anual
-			else
-				todos = periodos.semestral
-			end
+		if letra.eql? 'C'
+			todos = periodos.where("periodos.id LIKE '%C'")
+		elsif periodo_aux.semestral?
+			todos = periodos.semestral.where("periodos.id NOT LIKE '%C'")
+		else
+			todos = periodos.anual
 		end
 
 		todos = todos.order(inicia: :asc).ids
