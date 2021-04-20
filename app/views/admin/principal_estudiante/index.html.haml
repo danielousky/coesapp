@@ -28,11 +28,12 @@
 					= glyph 'plus'
 					= "Reportar Pago Ingreso a #{escuela.descripcion}"
 			
+			- @periodo = escuela.periodo_inscripcion
+			- @periodo ||= current_periodo
+			- @escupe = escuela.escuelaperiodos.where(periodo_id: @periodo.id).first
+			- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first
 			- if escuela.periodo_inscripcion
-				- @periodo = escuela.periodo_inscripcion
-				- @escupe = escuela.escuelaperiodos.where(periodo_id: @periodo.id).first
 				- @limiteCreditos = @escupe.limite_creditos_permitidos
-				- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first
 				- if @inscripcionperiodo.nil? or (@inscripcionperiodo and @inscripcionperiodo.reservado?)
 					- if escuela.id.eql? 'IDIO' and @periodo.id.eql? '2019-02A'
 						-# inscripciones_del_periodo = @inscripciones.del_periodo(periodo.id)#.inscritos
