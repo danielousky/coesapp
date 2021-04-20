@@ -17,10 +17,12 @@
  }
 
 #sidebar-wrapper {
+  margin-left: 0;
+
   position: fixed; /* Fixed Sidebar (stay in place on scroll) */
   top: 0;
   height: 100%;
-  margin-left: -10rem;
+  margin-left: 0;
   z-index: 1035;
   -webkit-transition: margin .25s ease-out;
   -moz-transition: margin .25s ease-out;
@@ -52,6 +54,10 @@
   transition: margin .25s ease-in-out;
 }
 
+#page-content-wrapper {
+  min-width: 0;
+}
+
 #sidebar-wrapper .list-group a:hover {
   color: #f1f1f1;
 }
@@ -61,19 +67,5 @@
 }
 
 #wrapper.toggled #sidebar-wrapper {
-  margin-left: 0;
-}
-
-@media (min-width: 768px) {
-  #sidebar-wrapper {
-    margin-left: 0;
-  }
-
-  #page-content-wrapper {
-    min-width: 0;
-  }
-
-  #wrapper.toggled #sidebar-wrapper {
-    margin-left: -10rem;
-  }
+  margin-left: -10rem;
 }
