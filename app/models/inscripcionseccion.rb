@@ -142,10 +142,6 @@ class Inscripcionseccion < ApplicationRecord
 
 	# scope :pcis_pendientes_por_asociar, -> {joins(:escuela).where("pci_escuela_id IS NULL and (escuela.id ON ( SELECT escuelas.id FROM escuelas INNER JOIN grados ON escuelas.id = grados.escuela_id WHERE grados.estudiante_id = ? ) )", self.estudiante_id)}
 
-
-
-
-
 	# Funciones de Estilo
 	def tr_class_style_qualify
 		valor = ''
