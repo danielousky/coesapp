@@ -242,7 +242,10 @@ class ExportarPdf
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
 		pdf.move_down 50
 
-		enlace = verificando ? nil : "#{Rails.application.routes.default_url_options[:host]}/verificar/#{bita.id}/documento"
+		# enlace = verificando ? nil : "#{Rails.application.routes.default_url_options[:host]}/verificar/#{bita.id}/documento"
+		enlace = verificando ? nil : "https://coesfhe.com/verificar/#{bita.id}/documento"
+
+
 		if escuela.id.eql? 'POST'
 			colocar_qr_y_firmas pdf, enlace, nil, true
 		else
@@ -453,7 +456,6 @@ class ExportarPdf
 
 			
 		else
-			# pdf.image "app/assets/images/foto-perfil.png", at: [430, 395], height: 100
 
 			pdf.move_down 20
 			pdf.text "Prof. Pedro Coronado", size: 11, align: :center
@@ -547,7 +549,8 @@ class ExportarPdf
 		pdf.text "<b> --Válida para el período actual--</b>", size: 11, inline_format: true, align: :center
 		pdf.move_down 40
 
-		enlace = verificando ? nil : "#{Rails.application.routes.default_url_options[:host]}/verificar/#{bita.id}/documento"
+		# enlace = verificando ? nil : "#{Rails.application.routes.default_url_options[:host]}/verificar/#{bita.id}/documento"
+		enlace = verificando ? nil : "https://coesfhe.com/verificar/#{bita.id}/documento"
 
 		colocar_qr_y_firmas pdf, enlace, 100
 	end
@@ -768,7 +771,7 @@ class ExportarPdf
 		end
 		if estudiante and estudiante.usuario and estudiante.usuario.foto_perfil and estudiante.usuario.foto_perfil.attached?
 			require 'open-uri'
-			pdf.image open(estudiante.usuario.foto_perfil.service_url), at: [450, 720], height: 80 
+			pdf.image open(estudiante.usuario.foto_perfil.service_url.variant(80)), at: [450, 720], height: 80 
 		end
 
 		pdf.move_down 5
