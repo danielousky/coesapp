@@ -771,7 +771,7 @@ class ExportarPdf
 		end
 		if estudiante and estudiante.usuario and estudiante.usuario.foto_perfil and estudiante.usuario.foto_perfil.attached?
 			require 'open-uri'
-			pdf.image open(estudiante.usuario.foto_perfil.service_url.variant(80)), at: [450, 720], height: 80 
+			pdf.image open(estudiante.usuario.foto_perfil.variant(80).service_url), at: [450, 720], height: 80 
 		end
 
 		pdf.move_down 5
