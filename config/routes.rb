@@ -1,5 +1,7 @@
+
 Rails.application.routes.draw do
-  default_url_options host: "coesfhe.com"
+  # default_url_options host: 'https://coes.nyc3.digitaloceanspaces.com'
+
   resources :visitors, only: [:index] do
     collection do
       post :validar
@@ -129,7 +131,7 @@ Rails.application.routes.draw do
         get 'acta_examen_excel'
         get 'acta_examen'
         get 'constancia_inscripcion'
-        get 'constancia_preinscripcion'
+        get 'constancia_preinscripcion_facultad'
         get 'constancia_estudio'
         get 'listado_seccion'
         get 'listado_seccion_excel'

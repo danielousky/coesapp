@@ -10,7 +10,7 @@ class ImportCsv
 	# 	return CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
 	# end
 
-	def self.importar_estudiantes file, escuela_id, plan_id, periodo_id, grado
+	def self.importar_estudiantes file, escuela_id, plan_id, periodo_id, grado, usuario_id, ip
 		require 'csv'
 
 		csv_text = File.read(file)
@@ -21,8 +21,8 @@ class ImportCsv
 		estudiantescuelas_existentes = []
 		usuarios_no_agregados = []
 		estudiantes_no_agregados = []
-		total_planes_agregados = 0
-		total_planes_no_agregados = 0
+		total_correos_enviados = 0
+		total_correos_no_enviados = 0
 
 		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
 		# csv.each do |row|
@@ -34,19 +34,19 @@ class ImportCsv
 				row = row[0]
 				row['ci'].strip!
 				row['ci'].delete! '^0-9'
-				plan_id = row['plan_id'] #if plan_id.nil?
-				# tipo_ingreso = row['tipo_ingreso'] ? row['tipo_ingreso'] : Grado::TIPO_INGRESOS[0]
+				plan_id ||= row['plan_id']
 
 				if usuario = Usuario.where(ci: row['ci']).limit(1).first
 					usuarios_existentes << usuario.ci
 					hay_usuario = true
 				else
+					p "NUEVO ESTUDIANTE"
 					usuario = Usuario.new
 					usuario.ci = row['ci']
 					usuario.password = usuario.ci
 
 					if row['nombres_apellidos'] 
-						nombres_apellidos = separar_cadena row['nombres y apellidos']
+						nombres_apellidos = separar_cadena row['nombres_apellidos']
 						usuario.apellidos = nombres_apellidos[0]
 						usuario.email = nombres_apellidos[1]
 					else
@@ -73,7 +73,6 @@ class ImportCsv
 					else
 						estudiante = Estudiante.new
 						estudiante.usuario_id = usuario.ci
-						# estudiante.escuela_id = escuela_id
 						if estudiante.save
 							hay_estudiante = true
 						else
@@ -85,29 +84,82 @@ class ImportCsv
 						p "GRADO: #{grado['estado_inscripcion']}, #{grado['tipo_ingreso']}, #{grado[:estado]}"
 						p "HAY ESTUDIANTE"
 
-						if estudiante.grados.where(escuela_id: escuela_id).first
-							estudiantescuelas_existentes << estudiante.id
+						escuela_id = row['escuela_id'] unless row['escuela_id'].blank?
+						grado['plan_id'] = row['plan_id']
+						grado['plan_id'] = plan_id if grado['plan_id'].blank?
+						grado['tipo_ingreso'] = row['tipo_ingreso'] unless row['tipo_ingreso'].blank?
+						grado['iniciado_periodo_id'] = row['periodo_id'].blank? ? periodo_id : row['periodo_id']
+						grado['estudiante_id'] = estudiante.id
+						grado['escuela_id'] = escuela_id
+						grado['region'] = row['region'].downcase if !row['region'].blank?
+
+						p "    #{grado}  ".center(200, "€")
+						if grado_aux = estudiante.grados.where(escuela_id: escuela_id).first
+							# grado_aux.update(grado)
+							if grado_aux.update(plan_id: grado['plan_id'], tipo_ingreso: grado['tipo_ingreso'], iniciado_periodo_id: grado['iniciado_periodo_id'], estudiante_id: grado['estudiante_id'], escuela_id: grado['escuela_id'], region: grado['region'])
+								estudiantescuelas_existentes << estudiante.id
+
+								Bitacora.create!(
+									descripcion: "Actualizada carrera de #{estudiante.id} en #{grado_aux.escuela.descripcion}", 
+									tipo: Bitacora::ACTUALIZACION,
+									usuario_id: usuario_id,
+									comentario: nil,
+									id_objeto: grado_aux.id,
+									tipo_objeto: 'Grado',
+									ip_origen: ip
+								)								
+							end
+
 						else
-							p "ESCUELA ESTUDIANTE AGREGADO"
-							total_agregados += 1 if estudiante.grados.create!(escuela_id: escuela_id, tipo_ingreso: grado['tipo_ingreso'], estado_inscripcion: grado['estado_inscripcion'], estado: grado[:estado])
-						end
-						estudiante.historialplanes.destroy_all
-						if plan_id and !estudiante.historialplanes.where(plan_id: plan_id, periodo_id: periodo_id).any?
-							hp = Historialplan.new
-							grado = estudiante.grados.where(escuela_id: escuela_id).first
-							p "ESTUDIANTE CI: #{estudiante.id}"
-							hp.plan_id = plan_id
-							hp.periodo_id = periodo_id
-							# hp.estudiante_id = estudiante.id
-							# hp.escuela_id = escuela_id
-							hp.grado = grado
-							if hp.save
-								total_planes_agregados += 1
-							else
-								total_planes_no_agregados += 1
+							grado_aux = Grado.new#(grado)
+							grado_aux.plan_id = grado['plan_id']
+							grado_aux.tipo_ingreso = grado['tipo_ingreso']
+							grado_aux.iniciado_periodo_id = grado['iniciado_periodo_id']
+							grado_aux.estudiante_id = grado['estudiante_id']
+							grado_aux.escuela_id = grado['escuela_id']
+							grado_aux.region = grado['region']
+
+							if grado_aux.save
+								total_agregados += 1 
+								# info_bitacora "Estudiante #{estudiante.id} registrado en #{grado_aux.escuela.descripcion}", Bitacora::CREACION, grado_aux
+							
+								Bitacora.create!(
+									descripcion: "Estudiante #{estudiante.id} registrado en #{grado_aux.escuela.descripcion}", 
+									tipo: Bitacora::CREACION,
+									usuario_id: usuario_id,
+									comentario: nil,
+									id_objeto: grado_aux.id,
+									tipo_objeto: 'Grado',
+									ip_origen: ip
+								)
+
+
+							end
+
+							begin
+								grado_aux.enviar_correo_bienvenida(usuario_id, ip)
+								total_correos_enviados += 1
+							rescue Exception => e
+								total_correos_no_enviados += 1
 							end
 						end
 
+						# estudiante.historialplanes.destroy_all
+
+						# if plan_id and !estudiante.historialplanes.where(plan_id: plan_id, periodo_id: periodo_id).any?
+						# 	hp = Historialplan.new
+						# 	p "ESTUDIANTE CI: #{estudiante.id}"
+						# 	hp.plan_id = plan_id
+						# 	hp.periodo_id = periodo_id
+						# 	# hp.estudiante_id = estudiante.id
+						# 	# hp.escuela_id = escuela_id
+						# 	hp.grado = grado_aux
+						# 	if hp.save
+						# 		total_planes_agregados += 1
+						# 	else
+						# 		total_planes_no_agregados += 1
+						# 	end
+						# end
 					end
 				end
 
@@ -126,8 +178,9 @@ class ImportCsv
 
 			Total Usuarios No Agregados: <b>#{usuarios_no_agregados.size}</b>
 			</br><i>Detalle:</i></br> #{usuarios_no_agregados.to_sentence}
-			</br>Total Planes Agregados: <b>#{total_planes_agregados}</b>
-			</br>Total Planes No Agregados o Existentes: <b>#{total_planes_no_agregados}</b>"
+			</br>
+			</hr>
+			</br>Total Correos: <b>Enviados: #{total_correos_enviados}, No Enviados: #{total_correos_no_enviados}</b>"
 
 		return "Proceso de importación completado. #{resumen}"
 	end
@@ -248,9 +301,6 @@ class ImportCsv
 								estudiantes_inexistentes << row.field(0)
 							else
 								
-
-
-
 								inscrip = s.inscripcionsecciones.where(estudiante_id: row.field(0)).first
 								unless inscrip
 									inscrip = Inscripcionseccion.new

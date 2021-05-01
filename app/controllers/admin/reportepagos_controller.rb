@@ -73,11 +73,14 @@ module Admin
         else
           if obj.reportepago
             flash[:danger] = "Ya posee un reporte de pago. "
-          elsif obj.periodo and (obj.periodo.reportepagos.map{|rp| rp.numero}.include? @reportepago.numero)
+          elsif (clazz.eql? Inscripcionescuelaperiodo) and obj.periodo and (obj.periodo.reportepagos.map{|rp| rp.numero}.include? @reportepago.numero)
             flash[:danger] = "Número de transacción #{@reportepago.numero} ya fue usado en otra inscripción en el período #{obj.periodo.id}. "
 
           elsif @reportepago.save
+
             obj.reportepago_id = @reportepago.id
+            obj.estado_inscripcion = 'preinscrito' if clazz.eql? Grado
+
             if obj.save
               flash[:success] = 'Reporte de Pago guardado con éxito. '
             else

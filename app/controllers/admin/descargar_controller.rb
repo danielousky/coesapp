@@ -4,7 +4,7 @@ module Admin
 		before_action :filtro_logueado
 		before_action :filtro_admin_profe, only: [:listado_seccion, :notas_seccion, :listado_seccion_excel]
 		before_action :filtro_estudiante, only: [:programaciones, :cita_horaria]
-		before_action :filtro_administrador, except: [:programaciones, :cita_horaria, :kardex, :constancia_inscripcion, :constancia_preinscripcion, :constancia_estudio, :listado_seccion, :notas_seccion, :listado_seccion_excel, :verificar_constancia_estudio]
+		before_action :filtro_administrador, except: [:programaciones, :cita_horaria, :kardex, :constancia_inscripcion, :constancia_preinscripcion_facultad, :constancia_estudio, :listado_seccion, :notas_seccion, :listado_seccion_excel, :verificar_constancia_estudio]
 
 		def listado_completo_estudiante
 			# file = ExportarExcel.listado_estudiantes current_periodo.id, params[:estado]
@@ -84,79 +84,96 @@ module Admin
 			unless send_data pdf.render, filename: "kardex_#{params[:id]}.pdf", type: "application/pdf", disposition: "attachment"
 				flash[:error] = "En estos momentos no se pueden descargar el kardex, intentelo luego."
 			end
-			
 		end
 
-		def constancia_preinscripcion
-			info_bitacora 'Descarga de constancia de Preinscripción', Bitacora::DESCARGA
-			pdf = ExportarPdf.hacer_constancia_preinscripcion params[:id], params[:escuela_id]
-			unless send_data pdf.render, filename: "constancia_inscripcion_#{params[:id].to_s}.pdf", type: "application/pdf", disposition: "attachment"
-				flash[:error] = "En estos momentos no se pueden descargar el acta, intentelo más tarde."
-			end
-			return
-			
-		end
+		def constancia_preinscripcion_facultad
 
-		def constancia_inscripcion_sin_horario
-
-			if current_estudiante
-				periodo_id = current_estudiante.ultimo_periodo_inscrito_en params[:escuela_id]
-			else
-				periodo_id = current_periodo.id
-			end
-			if periodo_id.nil?
-				flash[:error] = "Usted no posse inscripciones en la escuela solicidata"
+			grado = Grado.find params[:id].split("-")
+			if grado.nil?
+				flash[:danger] = "No se encontró la inscripción en la facultad solicitada"
 				redirect_back fallback_location: root_path
 			else
-				pdf = ExportarPdf.hacer_constancia_inscripcion_primera params[:id], periodo_id, params[:escuela_id]
+				bita = Bitacora.new
+				bita.descripcion = "Descarga Constancia Preinscripción por facultad ##{grado.descripcion}"
+				bita.tipo = Bitacora::DESCARGA
+				bita.usuario_id = current_usuario.id
+				bita.id_objeto = grado.id
+				bita.tipo_objeto = 'Grado'
+				bita.ip_origen = request.remote_ip
+				bita.save
+
+				pdf = ExportarPdf.hacer_constancia_preinscripcion_facultad bita.id
+				
 				respond_to do |format|
 					format.pdf do
 						send_data pdf.render,
-						filename: "export.pdf",
 						type: 'application/pdf',
-						disposition: 'inline'
+						disposition: 'inline',
+						filename: "constancia_inscripcion_#{params[:id].to_s}.pdf"
 					end
 				end
 			end
 			
 		end
 
+		# def constancia_inscripcion_sin_horario
+
+		# 	if current_estudiante
+		# 		periodo_id = current_estudiante.ultimo_periodo_inscrito_en params[:escuela_id]
+		# 	else
+		# 		periodo_id = current_periodo.id
+		# 	end
+		# 	if periodo_id.nil?
+		# 		flash[:error] = "Usted no posse inscripciones en la escuela solicidata"
+		# 		redirect_back fallback_location: root_path
+		# 	else
+		# 		pdf = ExportarPdf.hacer_constancia_inscripcion_primera params[:id], periodo_id, params[:escuela_id]
+		# 		respond_to do |format|
+		# 			format.pdf do
+		# 				send_data pdf.render,
+		# 				filename: "export.pdf",
+		# 				type: 'application/pdf',
+		# 				disposition: 'inline'
+		# 			end
+		# 		end
+		# 	end
+			
+		# end
 
 
 
+		# def constancia_inscripcion_antigua
+		# 	if current_estudiante
+		# 		periodo_id = current_estudiante.ultimo_periodo_inscrito_en params[:escuela_id]
+		# 	else
+		# 		periodo_id = current_periodo.id
+		# 	end
+		# 	@estudiante = Estudiante.find params[:id]
 
-		def constancia_inscripcion_antigua
-			if current_estudiante
-				periodo_id = current_estudiante.ultimo_periodo_inscrito_en params[:escuela_id]
-			else
-				periodo_id = current_periodo.id
-			end
-			@estudiante = Estudiante.find params[:id]
+		# 	if periodo_id.nil?
+		# 		flash[:error] = "Usted no posse inscripciones en la escuela solicidata"
+		# 		redirect_back fallback_location: root_path
+		# 	else
 
-			if periodo_id.nil?
-				flash[:error] = "Usted no posse inscripciones en la escuela solicidata"
-				redirect_back fallback_location: root_path
-			else
+		# 		if @estudiante.grados.where(escuela_id: params[:escuela_id]).first.secciones.del_periodo(periodo_id).map{|s| s.horario}.compact.any?
+		# 			pdf = ExportarPdf.hacer_constancia_inscripcion params[:id], periodo_id, params[:escuela_id]
+		# 		else
+		# 			pdf = ExportarPdf.hacer_constancia_inscripcion_sin_horario params[:id], periodo_id, params[:escuela_id]
+		# 		end
 
-				if @estudiante.grados.where(escuela_id: params[:escuela_id]).first.secciones.del_periodo(periodo_id).map{|s| s.horario}.compact.any?
-					pdf = ExportarPdf.hacer_constancia_inscripcion params[:id], periodo_id, params[:escuela_id]
-				else
-					pdf = ExportarPdf.hacer_constancia_inscripcion_sin_horario params[:id], periodo_id, params[:escuela_id]
-				end
+		# 		# send_data pdf.render, filename: "constancia_estudio_#{params[:id].to_s}.pdf", type: "application/pdf", disposition: "inline"
+		# 		# 	flash[:error] = "En estos momentos no se pueden descargar el acta, intentelo más tarde."
 
-				# send_data pdf.render, filename: "constancia_estudio_#{params[:id].to_s}.pdf", type: "application/pdf", disposition: "inline"
-				# 	flash[:error] = "En estos momentos no se pueden descargar el acta, intentelo más tarde."
-
-				respond_to do |format|
-					format.pdf do
-						send_data pdf.render,
-						filename: "export.pdf",
-						type: 'application/pdf',
-						disposition: 'inline'
-					end
-				end
-			end
-		end
+		# 		respond_to do |format|
+		# 			format.pdf do
+		# 				send_data pdf.render,
+		# 				filename: "export.pdf",
+		# 				type: 'application/pdf',
+		# 				disposition: 'inline'
+		# 			end
+		# 		end
+		# 	end
+		# end
 
 		def constancia_inscripcion
 			ins = Inscripcionescuelaperiodo.find params[:id]
@@ -179,7 +196,6 @@ module Admin
 					pdf = ExportarPdf.hacer_constancia_inscripcion_sin_horario bita.id
 				end
 				
-
 				respond_to do |format|
 					format.pdf do
 						send_data pdf.render,
@@ -188,7 +204,7 @@ module Admin
 						filename: "constancia_inscripcion_#{params[:id].to_s}.pdf"
 					end
 				end
-			end			
+			end
 		end
 
 

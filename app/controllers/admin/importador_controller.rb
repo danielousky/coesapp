@@ -54,7 +54,7 @@ module Admin
 		end
 
 		def importar_estudiantes
-			flash[:info] = ImportCsv.importar_estudiantes params[:datafile].tempfile, params[:escuela_id], params[:plan_id], params[:periodo_id], params[:grado]
+			flash[:info] = ImportCsv.importar_estudiantes params[:datafile].tempfile, params[:escuela_id], params[:plan_id], params[:periodo_id], params[:grado], current_admin.id,request.remote_ip
 			redirect_to action: 'seleccionar_archivo_estudiantes'
 		end
 

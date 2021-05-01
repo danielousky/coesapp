@@ -1,17 +1,18 @@
 
 %table.mb-3.flex-column
 	%tr
-		- if @estudiante and (current_admin and current_admin.autorizado? 'Inscripcionsecciones', 'inscribir') #and @estudiante.valido_para_inscribir? current_periodo.id
+		- if @estudiante and (current_admin and current_admin.autorizado? 'Inscripcionsecciones', 'inscribir') and @grado.escuela.periodo_inscripcion.eql? current_periodo #and @estudiante.valido_para_inscribir? current_periodo.id
 			%td
 				-if @inscripcionperiodo and @inscripcionperiodo.preinscrito?
 					= link_to "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", class: "btn btn-sm btn-warning tooltip-btn", 'data_toggle': :tooltip,  title: 'Confirmar Inscripción del período Actual' do
 						= glyph 'education'
 						¡Confirmar Inscripción!
 				- else
-
 					= btn_inscribir "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", 'Inscripción en el periodo actual', 'Inscribir'
-
-		%td= btn_success 'download-alt', "#{kardex_descargar_path(@grado.id.join("-"))}", "Descargar Kardex de #{@nickname}", 'Kardex'
+		- if !(@grado.escuela_id.eql? 'POST') and @grado.reportepago and @grado.preinscrito? and !@grado.inscripciones.any?
+			%td= btn_success 'download-alt', "#{constancia_preinscripcion_facultad_descargar_path(@grado.id.join("-"), :pdf)}", "Descargar Constancia de Preinscripción por Facultad", 'Constancia de Preinscripción'
+		- if @grado.inscripciones.any?
+			%td= btn_success 'download-alt', "#{kardex_descargar_path(@grado.id.join("-"))}", "Descargar Kardex de #{@nickname}", 'Kardex'
 		- if @inscripcionperiodo and @inscripcionperiodo.inscrito?
 			%td= btn_success 'download-alt', "#{constancia_inscripcion_descargar_path(@inscripcionperiodo.id, :pdf)}", "Constancia de Inscripción de #{@nickname}", 'Constancia Inscripción'
 			- if false 

@@ -137,35 +137,29 @@ class ExportarPdf
 
 
 
-	def self.hacer_constancia_preinscripcion estudiante_id, escuela_id
+	def self.hacer_constancia_preinscripcion_facultad bita_id, verificando = false
 
-		grado = Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).first
+		bita = Bitacora.find bita_id
+		grado = Grado.find bita.id_objeto
+		estudiante = grado.estudiante
+		usuario = estudiante.usuario
+		escuela = grado.escuela
+		pdf = Prawn::Document.new(top_margin: 20, background: "app/assets/images/bg_validacion.png")
 
-		pdf = Prawn::Document.new(top_margin: 20)
-		insertar_contenido_constancia_preinscripcion pdf, grado
-		pdf.move_down 10
+		encabezado_central_con_logo pdf, "CONSTANCIA DE PREINSCRIPCIÓN POR FACULTAD", escuela, nil, estudiante
 
-		data = [["------------ COPIA DEL ESTUDIANTE ------------"]]
-		t = pdf.make_table(data, header: false, width: 540, position: :center, cell_style: { inline_format: true, size: 9, align: :center, padding: 1, border_color: 'FFFFFF'})
-		t.draw
+		pdf.move_down 5
+
+
+		pdf.text "Quien suscribe, Jefe de Control de Estudios de la Facultad de HUMANIDADES Y EDUCACIÓN, de la Universidad Central de Venezuela, por medio de la presente hace constar que #{usuario.la_el} BR. <b>#{usuario.apellido_nombre}</b>, titular de la Cédula de Identidad <b>#{usuario.id}</b> realizó su proceso de preinscripción en la facultad de Humanidades y Educación para insgresar en la escuela de <b>#{escuela.descripcion.upcase}</b>.", size: 10, inline_format: true, align: :justify
+
 		pdf.move_down 20
-		pdf.text "---------------------------------------------------------------------------------------------------------------------------------------", size: 12, inline_format: true, align: :justify
-		pdf.move_down 20
 
-		insertar_contenido_constancia_preinscripcion pdf, grado
-		pdf.move_down 10
-		data = [["------------ COPIA DEL ADMINISTRACIÓN ------------"]]
-		t = pdf.make_table(data, header: false, width: 270, position: :center, cell_style: { inline_format: true, size: 9, align: :center, padding: 1, border_color: 'FFFFFF'})
-		t.draw
-		pdf.move_down 20
-		pdf.text "---------------------------------------------------------------------------------------------------------------------------------------", size: 12, inline_format: true, align: :justify
-		pdf.move_down 10
+		pdf.text "Constancia que se expide a solicitud de la parte interesada en la Ciudad Universitaria en Caracas, el día #{I18n.l(bita.created_at, format: "%d de %B de %Y")}.", size: 10
 
-		data = [["<b>#{grado.estudiante.usuario.apellido_nombre} - #{grado.estudiante_id} - #{grado.escuela.descripcion}</b>"]]
-
-		t = pdf.make_table(data, header: false, width: 500, position: :center, cell_style: { inline_format: true, size: 9, align: :center, padding: 1, border_color: 'FFFFFF'})
-		t.draw
-
+		pdf.move_down 80
+		enlace = verificando ? nil : "https://coesfhe.com/verificar/#{bita.id}/documento"
+		colocar_qr_y_firmas pdf, enlace
 		return pdf
 	end
 

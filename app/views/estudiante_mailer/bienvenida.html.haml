@@ -1,10 +1,15 @@
 - link_coes = link_to 'COESFHE.COM', 'https://coesfhe.com/'
 
-= "Estimad#{@genero}: <b>#{@nombre}</b>, la Facultad de Humanidades y Educación le da la bienvenida al sistema de Control de Estudios COES-FHE.".html_safe
-	
-%p= "Lo primero que debe hacer es ingresar a #{link_coes} y colocar su número de cédula en ambos campos del inicio de sesión para actualizar sus datos.".html_safe
+%p= "Estimad#{@genero}: <b>#{@nombre}</b>, la Facultad de Humanidades y Educación le da la bienvenida al sistema de Control de Estudios COES-FHE.".html_safe
+%p= "Su registro en la escuela de #{@escuela.descripcion} ha sido completado con éxito.".html_safe
+-if @asignado
+	%p= "A partir de este momento deberá ingresar a #{link_coes} y colocar su número de cédula en ambos campos del inicio de sesión, actualizar sus datos, subir una foto tipo carnet de frente con el fondo blanco y una foto legible de su cédula de identidad.".html_safe
 
-=# "Realice una transferencia únicamente desde los Bancos: <b> #{Banco.all.map { |e| e.nombre }.to_sentence(last_word_connector: ' o ')}</b> por el monto de <b>#{@monto}</b> en la cuenta corriente N°<b> 0102-0491-7100 0938-5674 </b> del <b> Banco de Venezuela</b> a nombre de <b>Ingresos Propios de la Facultad de Humanidades y Educación RIF, G-20000062-7</b>. ".html_safe
-=# "Después, ingrese #{link_coes} con su número de cédula en ambos campos del inicio de la sesión y siga las instrucciones:".html_safe
+	%p= "Luego de actualizar sus datos, deberá reportar el pago del arancel de preinscripción por Facultad, en el cual indicará el banco del cual realizó el pago, el número de la operación, el día, entre otros datos y deberá subir una foto legible del depósito, transferencia o comprobante de pago."
 
-%p Recibirá más información posteriormente.
+	%p= "Al finalizar el sistema le permitirá generar la <b>Constancia de Preinscripción por Facultad.</b>".html_safe
+
+- else
+	%p= "Lo primero que debe hacer es ingresar a #{link_coes} y colocar su número de cédula en ambos campos del inicio de sesión para actualizar sus datos.".html_safe
+
+	%p Recibirá más información posteriormente.

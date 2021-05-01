@@ -30,7 +30,16 @@
     - Grado.tipos_ingreso.map do |k,v| 
       %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
         = radio_button_tag '[grado]tipo_ingreso', k, false, required: true, class: ''
-        = "#{k.upcase}"
+        = "#{k.titleize}"
+
+.form-group.row
+  %label.col-form-label.col-md-2.text-right Regiones:
+  .col-md-10
+    - Grado.regiones.map do |k,v| 
+      %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
+        - value = v.eql? 0
+        = radio_button_tag '[grado]region', k, value, required: true, class: ''
+        = "#{k.titleize}"
 
 .form-group.row
   %label.col-form.label.col-md-2.text-right Reincorporado:

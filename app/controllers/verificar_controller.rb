@@ -4,11 +4,19 @@ class VerificarController < ApplicationController
 		bita = Bitacora.find params[:id]
 
 		if bita.nil? and bita.objeto.nil?
-			flash[:danger] = "No se puede verificar la Constancia de Estudio: No se encontró el recurso solicitado."
+			flash[:danger] = "No se puede verificar el documento: No se encontró el recurso solicitado."
 			redirect_back fallback_location: root_path
 		else
-			info_bitacora "Verificada Constancia Estudio ##{bita.objeto.descripcion}", Bitacora::DESCARGA, bita.objeto
-			@titulo = 'Validación de documentos'
+			Bitacora.create!(
+				descripcion: "Verificación de Documento ##{bita.objeto.descripcion}", 
+				tipo: Bitacora::DESCARGA,
+				usuario_id: bita.usuario_id,
+				comentario: nil,
+				id_objeto: bita.objeto.id,
+				tipo_objeto: bita.objeto.class.name,
+				ip_origen: request.remote_ip
+			)
+			@titulo = 'Validación de Documentos'
 			@bitacora = bita
 		end
 	end
@@ -19,7 +27,7 @@ class VerificarController < ApplicationController
 			flash[:danger] = "No se puede encontrar la bitácora del documento."
 			redirect_back fallback_location: root_path
 
-		elsif !((bita.descripcion.include? "Descarga Constancia Inscripción") or (bita.descripcion.include? "Descarga Constancia Estudio"))
+		elsif !((bita.descripcion.include? "Descarga Constancia Inscripción") or (bita.descripcion.include? "Descarga Constancia Estudio") or (bita.descripcion.include? 'Descarga Constancia Preinscripción por facultad'))
 			flash[:danger] = "El documento al cual hace referencia es inválido para verificar."
 			redirect_back fallback_location: root_path
 		else
@@ -33,9 +41,9 @@ class VerificarController < ApplicationController
 				end
 
 			elsif bita.descripcion.include? 'Descarga Constancia Estudio'
-
 				pdf = ExportarPdf.hacer_constancia_estudio bita.id
-				
+			elsif bita.descripcion.include? 'Descarga Constancia Preinscripción por facultad'
+				pdf = ExportarPdf.hacer_constancia_preinscripcion_facultad bita.id
 			end
 
 			respond_to do |format|

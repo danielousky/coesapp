@@ -158,7 +158,7 @@ module Admin
     private
 
       def grado_params
-        params.require(:grado).permit(:escuela_id, :estudiante_id, :estado, :culminacion_periodo_id, :tipo_ingreso, :inscrito_ucv, :estado_inscripcion, :iniciado_periodo_id, :plan_id, :autorizar_inscripcion_en_periodo_id)
+        params.require(:grado).permit(:escuela_id, :estudiante_id, :estado, :culminacion_periodo_id, :tipo_ingreso, :inscrito_ucv, :estado_inscripcion, :iniciado_periodo_id, :plan_id, :autorizar_inscripcion_en_periodo_id, :region)
       end
 
   end

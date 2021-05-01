@@ -310,7 +310,7 @@ module Admin
                   flash[:success] = 'Estudiante creado con éxito.' 
                 end
                 begin
-                  EstudianteMailer.bienvenida(e.usuario).deliver
+                  grado.enviar_correo_bienvenida(current_usuario.id, request.remote_ip)
                 rescue Exception => e
                   flash[:danger] = "No se pudo enviar el correo de bienvenida: #{e} "
                 end

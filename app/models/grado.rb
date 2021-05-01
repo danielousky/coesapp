@@ -47,11 +47,14 @@ class Grado < ApplicationRecord
 
 	enum estado: [:pregrado, :tesista, :posible_graduando, :graduando, :graduado, :postgrado]
 
-	enum estado_inscripcion: [:preinscrito, :confirmado, :reincorporado]
+	enum estado_inscripcion: [:preinscrito, :confirmado, :reincorporado, :asignado]
+	enum region: [:no_aplica, :amazonas, :barcelona, :barquisimeto, :bolivar, :capital]
 
 	enum tipo_ingreso: TIPO_INGRESOS
 
 	before_save :set_autorizar_inscripcion_en_periodo_id
+
+	# after_create :enviar_correo_bienvenida
 
 	# def inscripciones
 	# 	Inscripcionseccion.joins(:escuela).where("estudiante_id = ? and escuelas.id = ?", estudiante_id, escuela_id)
@@ -102,8 +105,8 @@ class Grado < ApplicationRecord
 	return data #bloques
 	end
 
-	def method_name
-		
+	def descripcion
+		"#{estudiante.id}-#{escuela.id}"
 	end
 
 
@@ -191,11 +194,23 @@ class Grado < ApplicationRecord
 		end
 	end
 
+	def enviar_correo_bienvenida(usuario_id, ip)
+		Bitacora.create!(
+			descripcion: "Correo de registro de carrera de estudiante: #{self.estudiante_id} enviado.", 
+			tipo: Bitacora::CREACION,
+			usuario_id: usuario_id,
+			comentario: nil,
+			id_objeto: self.id,
+			tipo_objeto: self.class.name,
+			ip_origen: ip
+		) if EstudianteMailer.bienvenida(self).deliver
+	end
 	private
 
 	def set_autorizar_inscripcion_en_periodo_id
 		self.autorizar_inscripcion_en_periodo_id = nil if self.autorizar_inscripcion_en_periodo_id.eql? ''
 	end
+
 
 	# def actualizar_estado_inscripciones
 	# 	if asignatura.tipoasignatura_id.eql? Tipoasignatura::PROYECTO

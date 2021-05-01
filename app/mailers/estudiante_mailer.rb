@@ -1,4 +1,3 @@
-
 class EstudianteMailer < ActionMailer::Base
     
   default from: "COES-FHE <controlestfheucv@gmail.com>"#, authentication: 'plain'
@@ -33,13 +32,12 @@ class EstudianteMailer < ActionMailer::Base
     mail(to: usuario.email, subject: "¡Confirmación de Asignaturas en #{@escuela_desc} para el Período #{@periodo_id} COES-FHE!")
   end
 
-  def bienvenida(usuario)
-    @monto = "Bs. 1.500.000."
-    
-
-    @nombre = usuario.primer_nombre_apellido
-    @genero = usuario.genero
-    mail(to: usuario.email, subject: "¡Bienvenidos a COES-FHE!")
+  def bienvenida(grado)
+    @nombre = grado.estudiante.usuario.primer_nombre_apellido
+    @genero = grado.estudiante.usuario.genero
+    @escuela = grado.escuela
+    @asignado = grado.asignado?
+    mail(to: grado.estudiante.usuario.email, subject: "¡Bienvenidos a COES-FHE!")
   end
 
 
