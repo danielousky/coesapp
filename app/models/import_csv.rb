@@ -184,7 +184,7 @@ class ImportCsv
 												ip_origen: ip
 											)
 										else
-											grados_no_agregados << grado_aux.id.join("-")
+											grados_no_agregados << "#{grado_aux.id.join("-")} Error: (#{grado_aux.errors.full_messages.to_sentence})"
 										end
 
 										# begin
