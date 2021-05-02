@@ -230,7 +230,7 @@ class ImportCsv
 		resumen += "</br>Total Grados(Carreras) Actualizados: <b>#{total_grados_actualizados}</b><hr></hr>"
 		resumen += "</hr></br>"
 
-		return ["Proceso de importación completado. #{resumen}", [estudiates_con_plan_errado,estudiates_con_tipo_ingreso_errado, estudiates_con_iniciado_periodo_id_errado, estudiates_con_region_errada, estudiantes_no_agregados, usuarios_no_agregados, grados_no_agregados]]
+		return ["Proceso de importación completado. #{resumen}", [estudiantes_no_agregados, usuarios_no_agregados, grados_no_agregados, estudiates_con_plan_errado,estudiates_con_tipo_ingreso_errado, estudiates_con_iniciado_periodo_id_errado, estudiates_con_region_errada]]
 	end
 
 	def self.importar_profesores file

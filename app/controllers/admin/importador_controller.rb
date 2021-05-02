@@ -61,10 +61,13 @@ module Admin
 			errores = resultado[1]
 			if errores.sum.count > 0
 				flash[:danger] = "<h4>Algunos inconvenientes en el archivo. Por favor corrija los registros y cargue nuevamente el archivo </h4></br>"
-				flash[:danger] += "</br><b>Estudiates Con plan_id Errado en total (#{errores[0].count})</b>: #{errores[0].to_sentence}" if errores[0].count > 0
-				flash[:danger] += "</br><b>Estudiates Con tipo_ingreso Errado (#{errores[1].count})</b>: #{errores[1].to_sentence}" if errores[1].count > 0
-				flash[:danger] += "</br><b>Estudiates Con iniciado_periodo_id Errado (#{errores[2].count})</b>: #{errores[2].to_sentence}" if errores[2].count > 0
-				flash[:danger] += "</br><b>Estudiates Con region Errado (#{errores[3].count})</b>: #{errores[3].to_sentence}" if errores[3].count > 0
+				flash[:danger] += "</br><b>Usuarios No Agregados (#{errores[0].count})</b>: #{errores[0].to_sentence}" if errores[0].count > 0
+				flash[:danger] += "</br><b>Estudiantes No Agregados (#{errores[1].count})</b>: #{errores[1].to_sentence}" if errores[1].count > 0
+				flash[:danger] += "</br><b>Carreras No Agregadas (#{errores[3].count})</b>: #{errores[3].to_sentence}" if errores[3].count > 0
+				flash[:danger] += "</br><b>Estudiates Con plan_id Errado en total (#{errores[4].count})</b>: #{errores[4].to_sentence}" if errores[4].count > 0
+				flash[:danger] += "</br><b>Estudiates Con tipo_ingreso Errado (#{errores[5].count})</b>: #{errores[5].to_sentence}" if errores[5].count > 0
+				flash[:danger] += "</br><b>Estudiates Con iniciado_periodo_id Errado (#{errores[6].count})</b>: #{errores[6].to_sentence}" if errores[6].count > 0
+				flash[:danger] += "</br><b>Estudiates Con region Errado (#{errores[7].count})</b>: #{errores[7].to_sentence}" if errores[7].count > 0
 
 			end
 
