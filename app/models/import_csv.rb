@@ -101,7 +101,7 @@ class ImportCsv
 					hay_estudiante = false
 
 					estudiante = Estudiante.where(usuario_id: usuario.ci).first
-					estudiante ||= Estudiante.new(usuario_id usuario.ci)
+					estudiante ||= Estudiante.new(usuario_id: usuario.ci)
 
 					nuevo_estudiante = estudiante.new_record?
 
