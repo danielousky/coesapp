@@ -31,6 +31,7 @@ class ImportCsv
 		grados_no_agregados = []
 
 		#Errores
+		errores_generales = []
 		estudiates_con_plan_errado = []
 		estudiates_con_tipo_ingreso_errado = []
 		estudiates_con_iniciado_periodo_id_errado = []
@@ -42,7 +43,6 @@ class ImportCsv
 		# total_correos_no_enviados = 0
 
 		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
-		# csv.each do |row|
 		csv.group_by{|row| row['ci']}.values.each do |row|
 
 			begin
@@ -221,7 +221,9 @@ class ImportCsv
 						# end
 					end
 				end
-
+				
+			rescue Exception => e
+				errores_generales << "#{row} #{e}" 
 			end
 		end
 		resumen = "</br><b>Resumen:</b>"
@@ -234,7 +236,7 @@ class ImportCsv
 		resumen += "</br>Total Grados(Carreras) Actualizados: <b>#{total_grados_actualizados}</b><hr></hr>"
 		resumen += "</hr></br>"
 
-		return ["Proceso de importación completado. #{resumen}", [estudiantes_no_agregados, usuarios_no_agregados, grados_no_agregados, estudiates_con_plan_errado,estudiates_con_tipo_ingreso_errado, estudiates_con_iniciado_periodo_id_errado, estudiates_con_region_errada]]
+		return ["Proceso de importación completado. #{resumen}", [estudiantes_no_agregados, usuarios_no_agregados, grados_no_agregados, estudiates_con_plan_errado,estudiates_con_tipo_ingreso_errado, estudiates_con_iniciado_periodo_id_errado, estudiates_con_region_errada, errores_generales]]
 	end
 
 	def self.importar_profesores file

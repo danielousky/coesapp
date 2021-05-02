@@ -68,6 +68,7 @@ module Admin
 				flash[:danger] += "</br><b>Estudiates Con tipo_ingreso Errado (#{errores[4].count})</b>: #{errores[4].to_sentence}" if errores[4].count > 0
 				flash[:danger] += "</br><b>Estudiates Con iniciado_periodo_id Errado (#{errores[5].count})</b>: #{errores[5].to_sentence}" if errores[5].count > 0
 				flash[:danger] += "</br><b>Estudiates Con region Errado (#{errores[6].count})</b>: #{errores[6].to_sentence}" if errores[6].count > 0
+				flash[:danger] += "</br><b>Error General (#{errores[7].count})</b>: #{errores[7].to_sentence}" if errores[7].count > 0
 
 			end
 
