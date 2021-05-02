@@ -139,11 +139,15 @@ class ImportCsv
 								unless Periodo.all.ids.include? grado['iniciado_periodo_id']
 									estudiates_con_iniciado_periodo_id_errado << estudiante.id
 								else
+
+									grado['region'] = ""
 									grado['region'] = row['region'].downcase.gsub(/[^a-z]/, '') if row['region']
-									p "  #{grado['region']}  ".center(220, '#')
 
 									grado['region'] = 'no_aplica' if grado['region'].blank?
 
+									
+									p "  Row.Region: #{row['region']}  ".center(220, '#')
+									p "  Grado.Region: #{grado['region']}  ".center(220, '#')
 									unless (Grado.regiones.keys.include? grado['region'] )
 										estudiates_con_region_errada << estudiante.id
 									else
