@@ -9,6 +9,7 @@
       %th Escuela
       %th Plan
       %th Ingreso
+      %th Region
   %tbody
     - grados.each do |grado|
       %tr
@@ -16,6 +17,7 @@
         %td= grado.escuela.descripcion
         %td= grado.plan_id # ? grado.ultimo_plan.id : grado.plan_id
         %td= grado.tipo_ingreso
+        %td= grado.region
 
 
 :javascript

@@ -2,7 +2,8 @@
 =# render partial: '/admin/grados/lista_nuevos', locals: {grados: @grados, estado: 'Preinscritos'}
 %nav
   .nav.nav-tabs
-    = link_to "Preinscritos (#{@preinscritos.count})", "#tab1", "data-toggle": "tab", class: 'nav-item nav-link active show'
+    = link_to "Asignados (#{@asignados.count})", "#asignados", "data-toggle": "tab", class: 'nav-item nav-link active show'
+    = link_to "Preinscritos (#{@preinscritos.count})", "#tab1", "data-toggle": "tab", class: 'nav-item nav-link'
     = link_to "Confirmados FHE (#{@confirmados.count})", "#tab2", "data-toggle": "tab", class: 'nav-item nav-link'
     = link_to "Inscritos Sec (#{@inscritos_ucv.count})", "#tab3", "data-toggle": "tab", class: 'nav-item nav-link'
     = link_to "Nuevos(#{@nuevos.count})", "#tab4", "data-toggle": "tab", class: 'nav-item nav-link'
@@ -10,7 +11,10 @@
     = link_to "Reincorporados (#{@reincorporados.count})", "#tab6", "data-toggle": "tab", class: 'nav-item nav-link'
       
 .tab-content
-  .tab-pane.active.show#tab1
+  .tab-pane.active.show#asignados
+    .border.mt-3.p-3
+      = render partial: '/admin/grados/lista_nuevos', locals: {grados: @asignados, estado: 'Asignados'}
+  .tab-pane#tab1
     .border.mt-3.p-3
       = render partial: '/admin/grados/lista_nuevos', locals: {grados: @preinscritos, estado: 'Preinscritos'}
   .tab-pane#tab2

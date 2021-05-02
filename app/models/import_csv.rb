@@ -14,19 +14,32 @@ class ImportCsv
 		require 'csv'
 
 		csv_text = File.read(file)
+		# Totales
+		# Usuarios
+		total_usuarios_nuevos = 0
+		total_usuarios_actualizados = 0
+		#Estudiantes
+		total_estudiantes_nuevos = 0
+		total_estudiantes_actualizados = 0
+		#Grados
+		total_grados_nuevos = 0
+		total_grados_actualizados = 0
 
-		total_agregados = 0
-		usuarios_existentes = []
-		estudiantes_existentes = []
-		estudiantescuelas_existentes = []
+		#No agregados
 		usuarios_no_agregados = []
 		estudiantes_no_agregados = []
+		grados_no_agregados = []
+
+		#Errores
 		estudiates_con_plan_errado = []
 		estudiates_con_tipo_ingreso_errado = []
 		estudiates_con_iniciado_periodo_id_errado = []
 		estudiates_con_region_errada = []
-		total_correos_enviados = 0
-		total_correos_no_enviados = 0
+
+		# Emails
+
+		# total_correos_enviados = 0
+		# total_correos_no_enviados = 0
 
 		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
 		# csv.each do |row|
@@ -39,11 +52,8 @@ class ImportCsv
 				row['ci'].strip!
 				row['ci'].delete! '^0-9'
 
-				if usuario = Usuario.where(ci: row['ci']).limit(1).first
-					usuarios_existentes << usuario.ci
-				else
+				unless usuario = Usuario.where(ci: row['ci']).limit(1).first
 					usuario = Usuario.new
-					p "NUEVO ESTUDIANTE"
 					usuario.ci = row['ci']
 					usuario.password = usuario.ci
 				end
@@ -61,54 +71,78 @@ class ImportCsv
 				usuario.email = row['email']
 				usuario.telefono_habitacion = row['telefono_habitacion']
 				
+				nuevo_usuario = usuario.new_record?
 				if usuario.save
+					if nuevo_usuario
+						total_usuarios_nuevos += 1
+						desc_us = "Creacion de Usuario vía migración con CI: #{usuario.ci}"
+						tipo_us = Bitacora::CREACION
+					else
+						total_usuarios_actualizados += 1
+						desc_us = "Actualizacion de Usuario vía migración con CI: #{usuario.ci}"
+						tipo_us = Bitacora::ACTUALIZACION
+					end
+					Bitacora.create!(
+						descripcion: desc_us, 
+						tipo: tipo_us,
+						usuario_id: usuario_id,
+						comentario: nil,
+						id_objeto: usuario.id,
+						tipo_objeto: 'Usuario',
+						ip_origen: ip
+					)						
 					hay_usuario = true
-					p usuario.to_json
 				else
 					hay_usuario = false
 					usuarios_no_agregados << row['ci']
 				end
 
 				if hay_usuario
-					p "HAY USUARIO"
 					hay_estudiante = false
-					if estudiante = Estudiante.where(usuario_id: usuario.ci ).first
-						estudiantes_existentes << estudiante.usuario_id
+
+					estudiante = Estudiante.where(usuario_id: usuario.ci).first
+					estudiante ||= Estudiante.new(usuario_id usuario.ci)
+
+					nuevo_estudiante = estudiante.new_record?
+
+					if estudiante.save
+						nuevo_estudiante ? (total_estudiantes_nuevos += 1) : (total_estudiantes_actualizados += 1)
+						Bitacora.create!(
+							descripcion: "Asociación de Usuario como Estudiante vía migración con CI: #{estudiante.id}", 
+							tipo: Bitacora::CREACION,
+							usuario_id: usuario_id,
+							comentario: nil,
+							id_objeto: usuario.id,
+							tipo_objeto: 'Usuario',
+							ip_origen: ip
+						)
+
 						hay_estudiante = true
 					else
-						estudiante = Estudiante.new
-						estudiante.usuario_id = usuario.ci
-						if estudiante.save
-							hay_estudiante = true
-						else
-							estudiantes_no_agregados << usuario.ci
-						end
+						estudiantes_no_agregados << estudiante.ci
 					end
 
 					if hay_estudiante
-						p "HAY ESTUDIANTE"
-
 						escuela_id = row['escuela_id'] unless row['escuela_id'].blank?
 						grado['plan_id'] = row['plan_id'].upcase.gsub(/[^0-9A-Z]/, '')
 						grado['plan_id'] = plan_id if grado['plan_id'].blank?
-
 
 						unless Plan.all.ids.include? grado['plan_id']
 							estudiates_con_plan_errado << estudiante.id
 						else
 							grado['tipo_ingreso'] = row['tipo_ingreso'].upcase.strip unless row['tipo_ingreso'].blank?
-
-							p "  #{grado['tipo_ingreso']}  ".center(220, "#")
 							unless Grado.tipos_ingreso.keys.include? grado['tipo_ingreso']
 								estudiates_con_tipo_ingreso_errado << estudiante.id
 							else
-
 								grado['iniciado_periodo_id'] = row['periodo_id'].upcase.gsub(/[^0-9A-Z]/, '').blank? ? periodo_id : row['periodo_id']
 
 								unless Periodo.all.ids.include? grado['iniciado_periodo_id']
 									estudiates_con_iniciado_periodo_id_errado << estudiante.id
 								else
-									grado['region'] = row['region'].downcase.gsub(/[^A-Za-z]/, '') unless row['region'].blank?
+									grado['region'] = row['region'].downcase.gsub(/[^a-z]/, '') if row['region']
+									p "  #{grado['region']}  ".center(220, '#')
+
+									grado['region'] = 'no_aplica' if grado['region'].blank?
 
 									unless (Grado.regiones.keys.include? grado['region'] )
 										estudiates_con_region_errada << estudiante.id
@@ -117,11 +151,9 @@ class ImportCsv
 										grado['escuela_id'] = escuela_id
 
 										p "    #{grado}  ".center(200, "€")
-										if grado_aux = estudiante.grados.where(escuela_id: escuela_id).first
-											estudiantescuelas_existentes << estudiante.id
-										else
-											grado_aux = Grado.new
-										end
+										grado_aux = estudiante.grados.where(escuela_id: escuela_id).first
+										grado_aux ||= Grado.new
+										
 										grado_aux.plan_id = grado['plan_id']
 										grado_aux.tipo_ingreso = grado['tipo_ingreso']
 										grado_aux.iniciado_periodo_id = grado['iniciado_periodo_id']
@@ -129,15 +161,17 @@ class ImportCsv
 										grado_aux.escuela_id = grado['escuela_id']
 										grado_aux.region = grado['region']
 										grado_aux.estado_inscripcion = grado['estado_inscripcion']
-
+										
+										nuevo_grado = grado_aux.new_record?
 										if grado_aux.save
-											total_agregados += 1 
-											if grado_aux.new_record?
+											if nuevo_grado
 												desc = "Estudiante #{estudiante.id} registrado en #{grado_aux.escuela.descripcion}"
 												tipo = Bitacora::CREACION
+												total_grados_nuevos += 1
 											else
 												desc = "Actualizada carrera de #{estudiante.id} en #{grado_aux.escuela.descripcion}"
 												tipo = Bitacora::ACTUALIZACION
+												total_grados_actualizados += 1
 											end
 
 											Bitacora.create!(
@@ -149,7 +183,8 @@ class ImportCsv
 												tipo_objeto: 'Grado',
 												ip_origen: ip
 											)
-
+										else
+											grados_no_agregados << grado_aux.id.join("-")
 										end
 
 										# begin
@@ -185,24 +220,17 @@ class ImportCsv
 
 			end
 		end
-		resumen = "</br><b>Resumen:</b> 
-			</br></br>Total de registros a procesar: <b>#{csv.count}</b>
-			</br></br>Total Estudiantes Agregados: <b>#{total_agregados}</b><hr></hr>
-			Total Usuarios Existentes: <b>#{usuarios_existentes.size}</b><hr></hr>
-			Total Estudiantes Existentes: <b>#{estudiantes_existentes.size}</b><hr></hr>
+		resumen = "</br><b>Resumen:</b>"
+		resumen +=  "</br>Total de registros a procesar: <b>#{csv.count}</b>"
+		resumen += "</br>Total Usuarios Nuevos: <b>#{total_usuarios_nuevos}</b><hr></hr>"
+		resumen += "</br>Total Usuarios Actualizados: <b>#{total_usuarios_actualizados}</b><hr></hr>"
+		resumen += "</br>Total Estudiantes Nuevos: <b>#{total_estudiantes_nuevos}</b><hr></hr>"
+		resumen += "</br>Total Estudiantes Actualizados: <b>#{total_estudiantes_actualizados}</b><hr></hr>"
+		resumen += "</br>Total Grados(Carreras) Nuevos: <b>#{total_grados_nuevos}</b><hr></hr>"
+		resumen += "</br>Total Grados(Carreras) Actualizados: <b>#{total_grados_actualizados}</b><hr></hr>"
+		resumen += "</hr></br>"
 
-			Total Estudiantes No Agregados: <b>#{estudiantes_no_agregados.size}</b>
-			</br><i>Detalle:</i></br> #{estudiantes_no_agregados.to_sentence}<hr></hr>
-
-			Total Carreras Existentes: <b>#{estudiantescuelas_existentes.size}</b><hr></hr>
-
-			Total Usuarios No Agregados: <b>#{usuarios_no_agregados.size}</b>
-			</br><i>Detalle:</i></br> #{usuarios_no_agregados.to_sentence}
-			</br>
-			</hr>"
-			# </br>Total Correos: <b>Enviados: #{total_correos_enviados}, No Enviados: #{total_correos_no_enviados}</b>
-
-		return ["Proceso de importación completado. #{resumen}", [estudiates_con_plan_errado,estudiates_con_tipo_ingreso_errado, estudiates_con_iniciado_periodo_id_errado, estudiates_con_region_errada]]
+		return ["Proceso de importación completado. #{resumen}", [estudiates_con_plan_errado,estudiates_con_tipo_ingreso_errado, estudiates_con_iniciado_periodo_id_errado, estudiates_con_region_errada, estudiantes_no_agregados, usuarios_no_agregados, grados_no_agregados]]
 	end
 
 	def self.importar_profesores file
