@@ -1,6 +1,6 @@
 desc "Envio de correos a estudiantes Asignados 2020-02S y 2020-02A"
 task :send_email_asignados => :environment do
-	Grado.asignado.limit(10).each do |grado|
+	Grado.asignado.each do |grado|
 		if grado.enviar_correo_bienvenida('15573230', '0.0.0.0')
 			p "  <#{grado.descripcion}> ".center(200, "#")
 		else
