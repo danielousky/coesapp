@@ -11,6 +11,12 @@
         
       - elsif group.eql? 'periodos'
         = select(:grado, :iniciado_periodo_id, grade.escuela.periodos.order(inicia: :desc).collect{|o| [ o.id, o.id ] }, { include_blank: '--- Seleccione Periodo ---'}, {class: "form-control", required: true})
+      - elsif (group.keys and group.keys[0].eql? 'no_aplica')
+        - group.map do |k,v| 
+          %label.btn.btn-secondary.btn-sm
+            - setValue = (grade and grade.region.eql? k)
+            = radio_button_tag "[grado]#{field_name}", k, setValue, required: true
+            = k.upcase
       - else
         - group.map do |k,v| 
           %label.btn.btn-secondary.btn-sm

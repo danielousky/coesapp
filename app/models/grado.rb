@@ -18,6 +18,8 @@ class Grado < ApplicationRecord
 
 	has_many :secciones, through: :inscripciones, source: :seccion
 
+	# CALLBACKS
+	before_validation :set_default
 	# VALIDACIONES
 
 	validates :tipo_ingreso, presence: true 
@@ -205,8 +207,13 @@ class Grado < ApplicationRecord
 			ip_origen: ip
 		) if EstudianteMailer.bienvenida(self).deliver
 	end
+
 	private
 
+	def set_default
+		self.region ||= :no_aplica
+		self.estado_inscripcion ||= :asignado
+	end
 	def set_autorizar_inscripcion_en_periodo_id
 		self.autorizar_inscripcion_en_periodo_id = nil if self.autorizar_inscripcion_en_periodo_id.eql? ''
 	end

@@ -1,3 +1,16 @@
+desc "Envio de correos a estudiantes Asignados 2020-02S y 2020-02A"
+task :send_email_asignados => :environment do
+	Grado.asignado.limit(10).each do |grado|
+		if grado.enviar_correo_bienvenida('15573230', '0.0.0.0')
+			p "  <#{grado.descripcion}> ".center(200, "#")
+		else
+			p "  <NO AGREGADO: #{grado.error.full_messages.to_sentence}> ".center(200, "#")
+		end
+	end
+end
+
+
+
 desc "Actualización de inscripciones_secciones a nil en caso errado de 2021-01S"
 task :update_inscripcionsecciones_no_202101S => :environment do
 	begin

@@ -42,6 +42,15 @@
             = link_to 'javascript:void(0)', onclick: "$('#cambiarTipoIngreso#{grado.id_flat}').modal()" do
               = glyph 'pencil'
       %tr
+        %th Región:
+        %td= grado.region.titleize
+        - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
+          %td
+            = link_to 'javascript:void(0)', onclick: "$('#cambiarRegion#{grado.id_flat}').modal()" do
+              = glyph 'pencil'
+
+
+      %tr
         %th Inscrito en la UCV:
         %td
           - if grado.inscrito_ucv
@@ -52,6 +61,9 @@
           %td
             = link_to "#{cambiar_inscripcion_grado_path}?estudiante_id=#{@estudiante.id}&escuela_id=#{@escuela.id}&[grado]inscrito_ucv=#{!grado.inscrito_ucv}", method: 'post'  do
               = glyph 'pencil'
+
+
+
 %br
 - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
   - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Autorizar Inscripción en el Período:', group: 'autorizar_inscripcion_periodo', field_name: 'autorizar_inscripcion_en_periodo_id', grade: grado}
@@ -59,7 +71,6 @@
   = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "autorizarInscripcion#{grado.id_flat}", title: 'Autorizar Inscripción', content: content, width: nil}
 
   - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Estado de Inscripción:', group: Grado.estado_inscripciones, field_name: 'estado_inscripcion', grade: grado}
-  - url = cambiar_inscripcion_grado_path
   = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarEstadoInscripcion#{grado.id_flat}", title: 'Cambiar Inscripción', content: content, width: nil}
 
   - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Tipo Inscripción:', group: Grado.tipos_ingreso, field_name: 'tipo_ingreso', grade: grado}
@@ -67,6 +78,12 @@
   
   - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Período de Inicio:', group: 'periodos', field_name: '', grade: grado}
   = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarPeriodoInscripcion#{grado.id_flat}", title: 'Cambiar Periodo', content: content, width: nil}
+
+  - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Región:', group: Grado.regiones, field_name: 'region', grade: grado}
+  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarRegion#{grado.id_flat}", title: 'Cambiar Región', content: content, width: nil}
+
+
+
   - if grado.reportepago
     = # Agregar model para el detalle de pago: Puede der un partial del show 
     - if false

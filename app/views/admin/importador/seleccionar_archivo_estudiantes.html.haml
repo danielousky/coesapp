@@ -26,6 +26,7 @@
       
       %h6.m-3.alert.alert-danger
         !Atención! Los valores seleccionados a continuación se aplicarán a todos los registros que no incluyan la información (por defecto)
+        Si el registro ya existe en el sistema, los datos suministrado serán sobreescritos.
       .col-md-12
         = select(nil, :escuela_id, @escuelas.collect{|o| [ o.descripcion, o.id ] }, { include_blank: 'Selecciona Escuela...'}, {class: "form-control", required: true, onchange: 'set_escuela()'})
 

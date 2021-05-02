@@ -54,7 +54,20 @@ module Admin
 		end
 
 		def importar_estudiantes
-			flash[:info] = ImportCsv.importar_estudiantes params[:datafile].tempfile, params[:escuela_id], params[:plan_id], params[:periodo_id], params[:grado], current_admin.id,request.remote_ip
+
+			resultado = ImportCsv.importar_estudiantes params[:datafile].tempfile, params[:escuela_id], params[:plan_id], params[:periodo_id], params[:grado], current_admin.id,request.remote_ip
+
+			flash[:info] = resultado[0]
+			errores = resultado[1]
+			if errores.sum.count > 0
+				flash[:danger] = "<h4>Algunos inconvenientes en el archivo. Por favor corrija los registros y cargue nuevamente el archivo </h4></br>"
+				flash[:danger] += "</br><b>Estudiates Con plan_id Errado en total (#{errores[0].count})</b>: #{errores[0].to_sentence}" if errores[0].count > 0
+				flash[:danger] += "</br><b>Estudiates Con tipo_ingreso Errado (#{errores[1].count})</b>: #{errores[1].to_sentence}" if errores[1].count > 0
+				flash[:danger] += "</br><b>Estudiates Con iniciado_periodo_id Errado (#{errores[2].count})</b>: #{errores[2].to_sentence}" if errores[2].count > 0
+				flash[:danger] += "</br><b>Estudiates Con region Errado (#{errores[3].count})</b>: #{errores[3].to_sentence}" if errores[3].count > 0
+
+			end
+
 			redirect_to action: 'seleccionar_archivo_estudiantes'
 		end
 
