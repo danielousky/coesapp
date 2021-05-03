@@ -1,5 +1,5 @@
-
-= btn_atras @back
+- atras = params[:back] ? params[:back] : reportepagos_path
+= btn_atras atras
 .border.m-3.p-3{style: 'font-size: 14px;'}
   .float-right.badge.badge-dark
     %b Fecha:
