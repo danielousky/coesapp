@@ -40,7 +40,8 @@ module Admin
     # GET /reportepagos/1.json
     def show
       @titulo = 'Detalle del Reporte de Pago'
-      @estudiante = @reportepago.inscripcionescuelaperiodo.estudiante
+      @estudiante = @reportepago.objeto.estudiante
+      @back = params[:back] ? params[:back] : reportepagos_path
     end
 
     # GET /reportepagos/new

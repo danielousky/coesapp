@@ -19,7 +19,7 @@
 			
 			- periodo_ids = @inscripciones.joins(:seccion).group("secciones.periodo_id").count.keys
 			- @periodos = Periodo.where(id: periodo_ids).order(inicia: :desc)
-			- if current_usuario.eql? @estudiante.usuario and @grado and (!escuela.id.eql? 'POST') and @grado.reportepago.nil? and @grado.preinscrito? and !@grado.inscripciones.any? 
+			- if current_usuario.eql? @estudiante.usuario and @grado and (!escuela.id.eql? 'POST') and @grado.reportepago.nil? and @grado.asignado? and !@grado.inscripciones.any? 
 				- @reportable = @grado
 				- @reportepago = Reportepago.new
 				- content = render partial: "/admin/reportepagos/form"

@@ -7,6 +7,8 @@
           %th Reporte Pago: 
           %td= grado.reportepago.descripcion
           %td
+            = link_to "#{reportepago_path(grado.reportepago)}?back=#{usuario_path(@estudiante.id)}" do
+              = glyph 'search'
 
       %tr
         %th 
