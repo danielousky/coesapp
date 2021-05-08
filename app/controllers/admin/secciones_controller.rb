@@ -567,7 +567,8 @@ module Admin
 
       # Use callbacks to share common setup or constraints between actions.
       def profesor_no_es_el_titular?
-        if (session[:administrador_id].nil?) and (@seccion.profesor_id.nil? or session[:profesor_id].nil? or @seccion.profesor_id != session[:profesor_id] or (@seccion.profesores.any? and !@seccion.profesores.ids.include? session[:profesor_id]))
+
+        if session[:administrador_id].nil? and (@seccion.profesor_id.nil? or session[:profesor_id].nil? or @seccion.profesor_id != session[:profesor_id] or (@seccion.profesor_id.nil? and @seccion.profesores.any? and !@seccion.profesores.ids.include? session[:profesor_id]))
           flash[:error] = 'Intenta realizar una acción sobre una sección no asignada a usted. Por favor, solicite apoyo al personal administrativo.'
           redirect_back fallback_location: root_path
         end
