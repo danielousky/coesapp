@@ -19,6 +19,8 @@
 	- classes = 'btn-outline-success float-right mr-md-2'
 	= btn_toggle_download classes, acta_examen_excel_descargar_path(@seccion.id), 'Acta de Notas (Excel)', "#{glyph 'file'}"
 
+
+= render 'lista_correos'
 - classes = 'btn-outline-success float-right mr-md-2'
 = btn_toggle_download classes, listado_seccion_excel_descargar_path(@seccion.id), 'Listado (Excel)', "#{glyph 'list'}"
 

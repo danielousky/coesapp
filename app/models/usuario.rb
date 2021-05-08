@@ -52,6 +52,10 @@ class Usuario < ApplicationRecord
 	def resize_image
 	end
 
+	def correo_descripcion
+		"#{apellidos.titleize} #{nombres.titleize} <#{email}>"
+	end
+
 	def datos_incompletos?
 		((self.attributes.values.reject{|e| !e.blank?}.any?) or (self.ci.eql? self.password) or (self.foto_perfil.nil? or (self.foto_perfil and !self.foto_perfil.attached?))) ? true : false
 	end

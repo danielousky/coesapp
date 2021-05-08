@@ -23,9 +23,8 @@
 					.border.mt-3.p-3= render '/admin/secciones/detalle_seccion'
 				- if @bitacoras.any? and (current_admin.autorizado? 'Bitacoras', 'index')
 					.tab-pane#bitacora
-
 						.text-center.titulo De la Sección:
-						= render file: '/admin/bitacoras/index' 
+						= render file: '/admin/bitacoras/index'
 		
 	- else
 		%br	
