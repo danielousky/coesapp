@@ -1,0 +1,41 @@
+- link_coes = link_to 'COESFHE.COM', 'https://coesfhe.com/'
+- nombre = @grado.estudiante.usuario.primer_nombre_apellido
+- genero = @grado.estudiante.usuario.genero
+- escuela = @grado.escuela
+- asignado = @grado.asignado?
+- periodo = @grado.periodo_ingreso.present? ? "en el año #{@grado.periodo_ingreso.anno}" : ''
+
+%h2= "PREINSCRIPCIONES ASIGNADOS #{@grado.iniciado_periodo_id}"
+%p= "Estimad#{genero} bachiller: <b>#{nombre}</b>, seleccionad#{genero} para ingresar a la escuela de #{escuela.descripcion} de la Facultad de Humanidades y Educación #{periodo}, hacemos de su conocimiento los pasos a seguir para iniciar su ingreso en la Universidad Central de Venezuela: Paso 1.- Preinscripción por Facultad; Paso 2.- Inscripción por Secretaria UCV y Paso 3.- Inscripción por Escuela.".html_safe
+
+%p
+	%b Preinscripción por Facultad:
+%p= "para realizar la preinscripción por Facultad debe ingresar desde ya al sistema #{link_coes}; actualizar sus datos, subir una foto tipo carnet de frente con el fondo blanco y una foto legible de su cédula de identidad. Seguidamente debe generar el reporte de pago del arancel de preinscripción por Facultad, en el cual deberá indicar el banco del cual realizó el pago del arancel, el número de la operación, el día, entre otros y deberá subir una foto legible del depósito, transferencia o comprobante de pago. Al finalizar el sistema le permitirá imprimir la constancia de Preinscripción por Facultad.".html_safe
+
+%p Arancel de Preinscripción por Facultad:
+
+%p= "Realice un depósito o transferencia únicamente de los Bancos: <b>#{Banco.all.map{|b| b.nombre}.to_sentence(last_word_connector: ' ó ')}</b> en la <b>#{ParametroGeneral.cuenta_facultad_tipo_valor}</b> del banco <b>#{ParametroGeneral.cuenta_facultad_banco_valor}</b>  Nº <b>#{ParametroGeneral.cuenta_facultad_numero_valor}</b>, a nombre de <b>'#{ParametroGeneral.cuenta_facultad_titular_valor}'</b>, RIF:. <b>#{ParametroGeneral.rif_facultad_valor}</b>, por el monto de <b>#{ParametroGeneral.arancel_ingreso_facultad_valor}</b>".html_safe
+
+%p 
+	%b Tiene hasta el día VIERNES 14/05/2021 para realizar este proceso.  
+
+%b 
+	%b NO HABRÁ PRORROGA
+
+%p Nota: A los bachilleres asignados por OPSU, les informamos que a través del Sistema Nacional de Ingreso la OPSU supero de manera significativa el número de cupos estimados por la Facultad para cada una de nuestras escuelas; de tal manera que sólo serán convocados los que estaban previstos. Si no le llega un correo electrónico del Departamento de Control de Estudios de nuestra Facultad no podrá ingresar al Sistema COES. No insista...
+
+%br
+%br
+%br
+
+%table{style: 'width: 100%'}
+	%tbody
+		%tr{style: 'text-align: center'}
+			%td= ParametroGeneral.jefe_control_estudio_valor
+			%td= ParametroGeneral.director_academico_estudio_valor
+		%tr{style: 'text-align: center'}
+			%td Coordinador Académico
+			%td Jefe del Dpto. Control de Estudio
+
+%br
+%br

@@ -40,5 +40,9 @@ class EstudianteMailer < ActionMailer::Base
     mail(to: grado.estudiante.usuario.email, subject: "¡Bienvenidos a COES-FHE!")
   end
 
+  def asignados_opsu_2020(grado)
+    @grado = grado
+    mail(to: grado.estudiante.usuario.email, subject: "PREINSCRIPCIONES ASIGNADOS #{@grado.iniciado_periodo_id}")
+  end
 
 end
