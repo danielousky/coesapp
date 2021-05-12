@@ -1,3 +1,16 @@
+
+desc "Envio de correos a estudiantes Asignados 2020 por Opsu"
+task :send_email_asignados => :environment do
+	Grado.asignado.where("created_at > ?", Date.yesterday).each do |grado|
+		if grado.enviar_correo_asignados_opsu_2020('15573230', '0.0.0.0')
+			p "  <#{grado.descripcion}> ".center(200, "#")
+		else
+			p "  <NO AGREGADO: #{grado.error.full_messages.to_sentence}> ".center(200, "#")
+		end
+	end
+end
+
+
 desc "Envio de correos a estudiantes Asignados 2020-02S y 2020-02A"
 task :send_email_asignados => :environment do
 	Grado.asignado.each do |grado|

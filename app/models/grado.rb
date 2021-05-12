@@ -200,6 +200,17 @@ class Grado < ApplicationRecord
 		end
 	end
 
+	def enviar_correo_asignados_opsu_2020(usuario_id, ip)
+		Bitacora.create!(
+			descripcion: "Correo de registro de carrera de estudiante: #{self.estudiante_id} enviado.", 
+			tipo: Bitacora::CREACION,
+			usuario_id: usuario_id,
+			comentario: nil,
+			id_objeto: self.id,
+			tipo_objeto: self.class.name,
+			ip_origen: ip
+		) if EstudianteMailer.bienvenida(self).deliver
+	end
 	def enviar_correo_bienvenida(usuario_id, ip)
 		Bitacora.create!(
 			descripcion: "Correo de registro de carrera de estudiante: #{self.estudiante_id} enviado.", 
