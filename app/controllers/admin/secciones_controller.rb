@@ -18,6 +18,8 @@ module Admin
     before_action :set_seccion, except: [:index, :index2, :get_secciones, :get_tab_objects, :new, :create, :habilitar_calificar, :get_profesores]
 
     before_action :profesor_no_es_el_titular?, only: [:show, :calificar]
+    # GET /secciones
+    # GET /secciones.json
 
     def get_profesores
       if escuela = current_admin.pertenece_a_escuela
@@ -564,7 +566,9 @@ module Admin
 
       # Use callbacks to share common setup or constraints between actions.
       def profesor_no_es_el_titular?
-       personal administrativo.'
+      
+        if session[:administrador_id].nil? and !@seccion.todos_profes.ids.include? session[:profesor_id]
+          flash[:error] = 'Intenta realizar una acción sobre una sección no asignada a usted. Por favor, solicite apoyo al personal administrativo.'
           redirect_back fallback_location: root_path
         end
       end
