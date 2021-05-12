@@ -39,8 +39,8 @@ class ImportCsv
 
 		# Emails
 
-		# total_correos_enviados = 0
-		# total_correos_no_enviados = 0
+		total_correos_enviados = 0
+		total_correos_no_enviados = 0
 
 		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
 		csv.group_by{|row| row['ci']}.values.each do |row|
@@ -191,12 +191,13 @@ class ImportCsv
 											grados_no_agregados << "#{grado_aux.id.join("-")} Error: (#{grado_aux.errors.full_messages.to_sentence})"
 										end
 
-										# begin
-										# 	# grado_aux.enviar_correo_bienvenida(usuario_id, ip)
-										# 	total_correos_enviados += 1
-										# rescue Exception => e
-										# 	total_correos_no_enviados += 1
-										# end
+										begin
+											grado_aux.enviar_correo_asignados_opsu_2020(usuario_id, ip)
+											# grado_aux.enviar_correo_bienvenida(usuario_id, ip)
+											total_correos_enviados += 1
+										rescue Exception => e
+											total_correos_no_enviados += 1
+										end
 									end
 								end
 							end
@@ -234,6 +235,7 @@ class ImportCsv
 		resumen += "</br>Total Estudiantes Actualizados: <b>#{total_estudiantes_actualizados}</b><hr></hr>"
 		resumen += "</br>Total Grados(Carreras) Nuevos: <b>#{total_grados_nuevos}</b><hr></hr>"
 		resumen += "</br>Total Grados(Carreras) Actualizados: <b>#{total_grados_actualizados}</b><hr></hr>"
+		resumen += "</br>Total Correos Procesados: <b>#{total_correos_enviados}</b><hr></hr>"
 		resumen += "</hr></br>"
 
 		return ["Proceso de importación completado. #{resumen}", [estudiantes_no_agregados, usuarios_no_agregados, grados_no_agregados, estudiates_con_plan_errado,estudiates_con_tipo_ingreso_errado, estudiates_con_iniciado_periodo_id_errado, estudiates_con_region_errada, errores_generales]]

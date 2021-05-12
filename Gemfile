@@ -21,6 +21,11 @@ gem 'toastr-rails'
 
 gem 'rqrcode'
 
+# Delajed Job
+gem 'delayed_job_active_record'
+gem "daemons"
+
+
 gem 'mini_magick'
 gem "jquery-fileupload-rails"
 

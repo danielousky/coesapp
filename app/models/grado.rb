@@ -209,7 +209,7 @@ class Grado < ApplicationRecord
 			id_objeto: self.id,
 			tipo_objeto: self.class.name,
 			ip_origen: ip
-		) if EstudianteMailer.bienvenida(self).deliver
+		) if EstudianteMailer.delay.asignados_opsu_2020(self).deliver
 	end
 	def enviar_correo_bienvenida(usuario_id, ip)
 		Bitacora.create!(
@@ -220,7 +220,7 @@ class Grado < ApplicationRecord
 			id_objeto: self.id,
 			tipo_objeto: self.class.name,
 			ip_origen: ip
-		) if EstudianteMailer.bienvenida(self).deliver
+		) if EstudianteMailer.delay.bienvenida(self).deliver
 	end
 
 	private

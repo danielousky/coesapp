@@ -45,4 +45,6 @@ class EstudianteMailer < ActionMailer::Base
     mail(to: grado.estudiante.usuario.email, subject: "PREINSCRIPCIONES ASIGNADOS #{@grado.iniciado_periodo_id}")
   end
 
+  # handle_asynchronously :bienvenida
+  # handle_asynchronously :asignados_opsu_2020
 end
