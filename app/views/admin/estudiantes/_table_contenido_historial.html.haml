@@ -19,6 +19,8 @@
 				%th.align-middle TRIM II
 				%th.align-middle TRIM III
 			%th.align-middle Definitiva
+			%th.align-middle.text-center Orden
+
 			- if current_admin and controller_name.eql? 'usuarios'
 				%th.align-middle{colspan: 4} Opciones
 	%tbody
@@ -50,6 +52,7 @@
 					%td.align-middle= inscripcion.segunda_calificacion
 					%td.align-middle= inscripcion.tercera_calificacion
 				%td.align-middle= inscripcion.valor_calificacion true
+				%td.align-middle.text-center= inscripcion.asignatura.orden if inscripcion.asignatura
 				- if current_admin and controller_name.eql? 'usuarios'
 
 					- if inscripcion.foranea? 
