@@ -16,7 +16,7 @@
           %div{id: "edit#{parametro_general.id}", class: 'd-none'}
             = form_tag("parametros_generales/#{parametro_general.id}", {class: "form-inline", method: :update}) do
               = hidden_field_tag '[parametro_general]id', parametro_general.id, id: "[parametro_general]id#{parametro_general.id}"
-              = text_field_tag '[parametro_general]valor', parametro_general.valor, id: "[parametro_general]valor#{parametro_general.id}", class: 'form-control form-control-sm noSpecialCharacter upcase'
+              = text_field_tag '[parametro_general]valor', parametro_general.valor, id: "[parametro_general]valor#{parametro_general.id}", class: 'form-control form-control-sm'
               = submit_tag 'Guardar', class: 'btn btn-sm btn-success'
         %td
           = link_to 'javascript:void(0)', onclick: "toggleValores('#{parametro_general.id}')", id: "toggleBtn#{parametro_general.id}" do
