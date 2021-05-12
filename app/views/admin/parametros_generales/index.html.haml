@@ -19,8 +19,9 @@
               = text_field_tag '[parametro_general]valor', parametro_general.valor, id: "[parametro_general]valor#{parametro_general.id}", class: 'form-control form-control-sm'
               = submit_tag 'Guardar', class: 'btn btn-sm btn-success'
         %td
-          = link_to 'javascript:void(0)', onclick: "toggleValores('#{parametro_general.id}')", id: "toggleBtn#{parametro_general.id}" do
-            = glyph 'pencil'
+          - if (current_admin.autorizado? 'ParametroGeneral', 'update')
+            = link_to 'javascript:void(0)', onclick: "toggleValores('#{parametro_general.id}')", id: "toggleBtn#{parametro_general.id}" do
+              = glyph 'pencil'
 
 
 :javascript

@@ -19,9 +19,6 @@ module Admin
 
     before_action :profesor_no_es_el_titular?, only: [:show, :calificar]
 
-    # GET /secciones
-    # GET /secciones.json
-
     def get_profesores
       if escuela = current_admin.pertenece_a_escuela
         @profesores = escuela.profesores.joins(:usuario).all.order('usuarios.apellidos')
@@ -567,9 +564,7 @@ module Admin
 
       # Use callbacks to share common setup or constraints between actions.
       def profesor_no_es_el_titular?
-
-        if session[:administrador_id].nil? and (@seccion.profesor_id.nil? or session[:profesor_id].nil? or @seccion.profesor_id != session[:profesor_id] or (@seccion.profesor_id.nil? and @seccion.profesores.any? and !@seccion.profesores.ids.include? session[:profesor_id]))
-          flash[:error] = 'Intenta realizar una acción sobre una sección no asignada a usted. Por favor, solicite apoyo al personal administrativo.'
+       personal administrativo.'
           redirect_back fallback_location: root_path
         end
       end
