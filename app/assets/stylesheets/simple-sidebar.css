@@ -3,6 +3,7 @@
  * Copyright 2013-2020 Start Bootstrap
  * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-simple-sidebar/blob/master/LICENSE)
  */
+
 .navbarWidth {
   margin-left: 10rem;
   -webkit-transition: margin .25s ease-in-out;
@@ -43,6 +44,11 @@
 .list-group-item-action{
   color: '#989B9E' !important;
 }
+
+.activeNavbar {
+  border-left: white solid !important;
+  background-color: black !important;
+} 
 
 #sidebar-wrapper .list-subgroup {
   margin-left: 10rem !important;

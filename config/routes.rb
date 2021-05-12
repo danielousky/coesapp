@@ -27,12 +27,19 @@ Rails.application.routes.draw do
   scope module: :admin do
     resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas, :bitacoras, :reportepagos, :bancos
 
+
+
     resources :perfiles do
       member do
         post 'autorizar_usuario'
       end
     end
     resources :inscripcionescuelaperiodos, only: :index
+    resources :parametros_generales, only: :index do 
+      member do
+        post :update
+      end
+    end
 
     resources :escuelaperiodos, only: :show
 

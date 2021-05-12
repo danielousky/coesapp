@@ -1,0 +1,44 @@
+
+%table.table-striped.table-sm.table-hover.table-bordered
+  %thead
+    %tr
+      %th.text-center Clave
+      %th.text-center Valor
+      %th.text-center Opciones
+
+  %tbody
+    - @parametros_generales.each do |parametro_general|
+      %tr
+        %td= parametro_general.id.titleize
+        %td
+          = text_field_tag "valor#{parametro_general.id}", parametro_general.valor, class: 'form-control form-control-sm disabled', disabled: true, readonly: true, style: 'width: 233px;'
+
+          %div{id: "edit#{parametro_general.id}", class: 'd-none'}
+            = form_tag("parametros_generales/#{parametro_general.id}", {class: "form-inline", method: :update}) do
+              = hidden_field_tag '[parametro_general]id', parametro_general.id, id: "[parametro_general]id#{parametro_general.id}"
+              = text_field_tag '[parametro_general]valor', parametro_general.valor, id: "[parametro_general]valor#{parametro_general.id}", class: 'form-control form-control-sm noSpecialCharacter upcase'
+              = submit_tag 'Guardar', class: 'btn btn-sm btn-success'
+        %td
+          = link_to 'javascript:void(0)', onclick: "toggleValores('#{parametro_general.id}')", id: "toggleBtn#{parametro_general.id}" do
+            = glyph 'pencil'
+
+
+:javascript
+  function toggleValores(obj_id) {
+    $(`#edit${obj_id}`).toggleClass('d-none')
+    $(`#valor${obj_id}`).toggleClass('d-none')
+    $('span', `#toggleBtn${obj_id}`).toggleClass('glyphicon-pencil');
+    $('span', `#toggleBtn${obj_id}`).toggleClass('glyphicon-remove');
+    $('span', `#toggleBtn${obj_id}`).toggleClass('text-danger');
+
+  } 
+
+  $('.noSpecialCharacter').on('input',function(evt){ 
+    var node = $(this);
+    node.val(node.val().replace(/[^A-Za-z0-9]/g,'') );
+    }); 
+
+  $('.upcase').on('input',function(evt){ 
+    var node = $(this);
+    node.val(node.val().toUpperCase());
+  });

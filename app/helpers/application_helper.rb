@@ -66,7 +66,13 @@ module ApplicationHelper
 
 	def sidebar_item usuario, objeto, accion, url, icon=nil, nombre=objeto
 		if (usuario.autorizado? objeto, accion)
-			link_to url, class: 'list-group-item list-group-item-action bg-dark text-light' do
+			if objeto.eql? controller_name.camelize
+				active = 'activeNavbar'
+				url = 'javascript:void(0)'
+			else
+				active = ''
+			end
+			link_to url, class: "list-group-item list-group-item-action bg-dark text-light #{active}" do
 				capture_haml{"#{glyph icon if icon} #{nombre}"}
 			end
 		end
@@ -74,7 +80,9 @@ module ApplicationHelper
 
 
 	def sidebar_sub_item id, nombre, icon=nil
-		link_to 'javascript:void(0)', class: 'list-group-item list-group-item-action bg-dark text-light', id: "#{id}SubMenuLink" do
+
+		active = (nombre.eql? controller_name.camelize) ? 'activeNavbar' : ''
+		link_to 'javascript:void(0)', class: "list-group-item list-group-item-action bg-dark text-light #{active}", id: "#{id}SubMenuLink" do
 			capture_haml{"#{glyph icon if icon} #{nombre} #{glyph 'chevron-right'}"}
 		end
 	end

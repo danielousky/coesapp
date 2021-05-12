@@ -10,6 +10,10 @@ class Grado < ApplicationRecord
 	belongs_to :estudiante
 	belongs_to :plan, optional: true
 	belongs_to :autorizar_inscripcion_en_periodo, optional: true, class_name: 'Periodo', foreign_key: :autorizar_inscripcion_en_periodo_id
+
+	belongs_to :periodo_ingreso, optional: true, class_name: 'Periodo', foreign_key: :iniciado_periodo_id
+
+	
 	belongs_to :reportepago, optional: true, dependent: :destroy
 
 	has_many :historialplanes, foreign_key: [:escuela_id, :estudiante_id]
