@@ -191,13 +191,13 @@ class ImportCsv
 											grados_no_agregados << "#{grado_aux.id.join("-")} Error: (#{grado_aux.errors.full_messages.to_sentence})"
 										end
 
-										begin
-											grado_aux.enviar_correo_asignados_opsu_2020(usuario_id, ip)
-											# grado_aux.enviar_correo_bienvenida(usuario_id, ip)
-											total_correos_enviados += 1
-										rescue Exception => e
-											total_correos_no_enviados += 1
-										end
+										# begin
+										# 	grado_aux.enviar_correo_asignados_opsu_2020(usuario_id, ip)
+										# 	# grado_aux.enviar_correo_bienvenida(usuario_id, ip)
+										# 	total_correos_enviados += 1
+										# rescue Exception => e
+										# 	total_correos_no_enviados += 1
+										# end
 									end
 								end
 							end
