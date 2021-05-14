@@ -31,8 +31,9 @@
 			- @periodo = escuela.periodo_inscripcion
 			- @periodo ||= escuela.periodos.order(:inicia).last 
 			- @escupe = escuela.escuelaperiodos.where(periodo_id: @periodo.id).first
-
-			- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first if @escupe.nil?
+			%h1= @escupe.periodo_id
+			%h1= @escupe.escuela_id
+			- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first unless @escupe.nil?
 			- if escuela.periodo_inscripcion
 				- @limiteCreditos = @escupe.limite_creditos_permitidos
 				- if @inscripcionperiodo.nil? or (@inscripcionperiodo and @inscripcionperiodo.reservado?)
