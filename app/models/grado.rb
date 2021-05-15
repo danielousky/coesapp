@@ -24,8 +24,10 @@ class Grado < ApplicationRecord
 
 	# CALLBACKS
 	before_validation :set_default
-	# VALIDACIONES
+	before_save :set_autorizar_inscripcion_en_periodo_id
+	after_destroy :destroy_all
 
+	# VALIDACIONES
 	validates :tipo_ingreso, presence: true 
 	validates :estado_inscripcion, presence: true 
 	# validates :inscrito_ucv, presence: true 
@@ -57,8 +59,6 @@ class Grado < ApplicationRecord
 	enum region: [:no_aplica, :amazonas, :barcelona, :barquisimeto, :bolivar, :capital]
 
 	enum tipo_ingreso: TIPO_INGRESOS
-
-	before_save :set_autorizar_inscripcion_en_periodo_id
 
 	# after_create :enviar_correo_bienvenida
 
@@ -234,7 +234,18 @@ class Grado < ApplicationRecord
 		self.autorizar_inscripcion_en_periodo_id = nil if self.autorizar_inscripcion_en_periodo_id.eql? ''
 	end
 
+	def destroy_all
+		destroy_estudiante
+		destroy_inscripciones
+	end
 
+	def destroy_estudiante
+		self.estudiante.destroy unless self.estudiante.grados.any?
+	end
+
+	def destroy_inscripciones
+		inscripciones.destroy_all
+	end
 	# def actualizar_estado_inscripciones
 	# 	if asignatura.tipoasignatura_id.eql? Tipoasignatura::PROYECTO
 	# 		if self.sin_calificar?

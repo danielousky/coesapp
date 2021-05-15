@@ -30,6 +30,7 @@ class Estudiante < ApplicationRecord
 
 	# TRIGGERS
 	# after_initialize :set_default, :if => :new_record?
+	after_destroy :destroy_all
 
 	# VALIDACIONES:
 	validates :usuario_id, presence: true, uniqueness: true
@@ -291,6 +292,14 @@ class Estudiante < ApplicationRecord
 
 	def set_default
 		self.tipo_estado_inscripcion_id ||= 'NUEVO'	
-	end	
+	end
+
+	private
+
+	def destroy_all
+		inscripcionescuelaperiodos.destroy_all
+		usuario.destroy if (usuario.administrador.nil? and usuario.profesor.nil?)
+		
+	end
 
 end
