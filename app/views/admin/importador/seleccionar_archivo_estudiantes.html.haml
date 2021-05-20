@@ -1,15 +1,14 @@
 
 .border.p-md-3
-  .alert.alert-info
-    %b Formato de las cabeceras: ci, apellidos, nombres, email, telefono, telefono_habitacion (en minúscula y sin espacios):
+  .titulo
+    %b Formato de las cabeceras: ci, apellidos, nombres, plan_id, email, telefono, telefono_habitacion (en minúscula y sin espacios):
 
   .text-center
-    %p Ejemplo:
     = image_tag image_url('ejem_csv_importar_estudiantes.png')
     %p 
-      .float-right.text-success #CAMPOS OPCIONALES
-      .float-right.text-danger #CAMPOS OBLIGATORIOS
-      .float-right.text-info #NOMBRES DE LAS CABECERAS
+      .float-right.text-success.ml-2 #campos opcionales
+      .float-right.text-danger.ml-2 #campos obligatorios
+      .float-right.text-info.ml-2 #nombres de la cabecera
     %br
 
 .border.p-md-3.my-md-3  

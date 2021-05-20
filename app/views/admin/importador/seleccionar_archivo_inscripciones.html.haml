@@ -24,15 +24,15 @@
             %a{href: 'https://support.office.com/es-es/article/importar-o-exportar-archivos-de-texto-txt-o-csv-5250ac4c-663c-47ce-937b-339e391393ba', target: '_blank'} aquí
         = file_field_tag :datafile, required: true, class: 'form-control', accept: ".csv"
       .col-md-12
-        = check_box_tag :periodo_en_archivo, nil, false, onChange: "togglePeriodo($(this))" 
-        El periodo está incluido en una columna del archivo
-      .col-md-12
-        = select(nil, :periodo_id, Periodo.all.order("id DESC").collect{|o| [ o.id, o.id ] }, { include_blank: 'Selecciona Periodo...'}, {class: "form-control", required: true})
-    .form-group
-
-      .col-md-12
-        = select(nil, :escuela_id, current_admin.escuelas.order("id ASC").collect{|o| [ o.descripcion, o.id ] }, { include_blank: 'Selecciona Escuela...'}, {class: "form-control", required: true})
+        = select(nil, :escuela_id, current_admin.escuelas.order("id ASC").collect{|o| [ o.descripcion, o.id ] }, { include_blank: 'Selecciona Escuela...'}, {class: "form-control", required: true, onchange: 'set_escuela()'})
       %b.col-md-12.text-muted Las inscripciones del archivo serán cargadas en la escuela seleccionada
+    .form-group
+      #periodo.d-none
+
+        .col-md-12
+          = check_box_tag :periodo_en_archivo, nil, false, onChange: "togglePeriodo($(this))" 
+          El periodo está incluido en una columna del archivo
+          = grouped_collection_select nil, :periodo_id, current_admin.escuelas.order("id ASC"), :periodos, :descripcion, :id, :id, {:prompt => "Selecciona el período de ingreso a la facultad..."}, { class: 'form-control mt-md-3', required: true}
 
     .form-group
       .col-md-offset-2.col-md-10
@@ -47,3 +47,13 @@
       $('#periodo_id').attr('disabled', false)
     }
   }
+
+
+  function set_escuela(){
+    $("#periodo_id optgroup").hide();
+    var escuela = $("#escuela_id option:selected").text();
+
+    $("#periodo_id optgroup[label='" + escuela + "']").show();
+    $("#periodo_id").val('');
+    $('#periodo').removeClass('d-none');
+  }  

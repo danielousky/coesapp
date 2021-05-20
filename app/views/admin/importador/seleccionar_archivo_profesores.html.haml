@@ -3,19 +3,19 @@
   .alert.alert-info
     %b Formato de las cabeceras: ci, apellidos, nombres, email, telefono_movil, departamento_id (en minúscula y sin espacios):
     .text-muted 
-      Recuerde que debe existir la estructura. En particular el identificador de cada departamento (departamento_id). 
-      En el ejemplo: "ADEDU" es el id de "ADMINISTRACIÓN EDUCATIVA". Encuentre el Id en la lista de
-      %a{href: departamentos_path, target: '_blank'} departamentos
+      Recuerde que debe existir la estructura. En particular el departamento (departamento_id). Puede ser el id o la descripcion.
+      En el ejemplo: "ADEDU" es el id de "ADMINISTRACIÓN EDUCATIVA". Para detalles de los departamentos haga clic 
+      %a{href: departamentos_path, target: '_blank'} aquí
 
   .text-center
     %p Ejemplo:
     =# image_tag 'ejem_csv_importar_profesores'
     = image_tag image_url('ejem_csv_importar_profesores.png')
 
-    %p 
-      .float-right.text-success #CAMPOS OPCIONALES
-      .float-right.text-danger #CAMPOS OBLIGATORIOS
-      .float-right.text-info #NOMBRES DE LAS CABECERAS
+    %p
+      .float-right.text-success #campos opcionales
+      .float-right.text-danger #campos obligatorios
+      .float-right.text-info #nombres de las cabeceras
 .border.p-md-3.mt-md-3
   = form_tag({controller: :importador, action: :importar_profesores}, multipart: true, class: 'form-horizontal') do
     .form-group

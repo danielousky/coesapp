@@ -1,19 +1,11 @@
 
 class ImportCsv
 
-	# def self.preview url
-		
-	# 	require 'csv'    
-
-	# 	csv_text = File.read(url)
-		
-	# 	return CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
-	# end
-
 	def self.importar_estudiantes file, escuela_id, plan_id, periodo_id, grado, usuario_id, ip
 		require 'csv'
-
 		csv_text = File.read(file)
+		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
+
 		# Totales
 		# Usuarios
 		total_usuarios_nuevos = 0
@@ -32,213 +24,217 @@ class ImportCsv
 
 		#Errores
 		errores_generales = []
+		errores_cabeceras = []
 		estudiates_con_plan_errado = []
 		estudiates_con_tipo_ingreso_errado = []
 		estudiates_con_iniciado_periodo_id_errado = []
 		estudiates_con_region_errada = []
+
+		errores_cabeceras << "'ci' no existe" unless (csv.headers.include? 'ci')
+		if !(csv.headers.include? 'nombres_apellidos')
+			errores_cabeceras << "'nombres' no existe" unless (csv.headers.include? 'nombres')
+			errores_cabeceras << "'apellidos' no existe" unless (csv.headers.include? 'apellidos')
+		end
 
 		# Emails
 
 		total_correos_enviados = 0
 		total_correos_no_enviados = 0
 
-		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
-		csv.group_by{|row| row['ci']}.values.each do |row|
+		unless errores_cabeceras.any?
 
-			begin
-				# if profe = Profesor.where(usuario_id: row.field(0))
-				hay_usuario = false
-				row = row[0]
-				row['ci'].strip!
-				row['ci'].delete! '^0-9'
+			csv.group_by{|row| row['ci']}.values.each do |row|
 
-				unless usuario = Usuario.where(ci: row['ci']).limit(1).first
-					usuario = Usuario.new
-					usuario.ci = row['ci']
-					usuario.password = usuario.ci
-				end
-
-				if row['nombres_apellidos'] 
-					nombres_apellidos = separar_cadena row['nombres_apellidos']
-					usuario.apellidos = nombres_apellidos[0]
-					usuario.email = nombres_apellidos[1]
-				else
-					usuario.apellidos = limpiar_cadena row['apellidos']
-					usuario.nombres = limpiar_cadena row['nombres']
-				end
-				
-				usuario.telefono_movil = row['telefono']
-				usuario.email = row['email']
-				usuario.telefono_habitacion = row['telefono_habitacion']
-				
-				nuevo_usuario = usuario.new_record?
-				if usuario.save
-					if nuevo_usuario
-						total_usuarios_nuevos += 1
-						desc_us = "Creacion de Usuario vía migración con CI: #{usuario.ci}"
-						tipo_us = Bitacora::CREACION
-					else
-						total_usuarios_actualizados += 1
-						desc_us = "Actualizacion de Usuario vía migración con CI: #{usuario.ci}"
-						tipo_us = Bitacora::ACTUALIZACION
-					end
-					Bitacora.create!(
-						descripcion: desc_us, 
-						tipo: tipo_us,
-						usuario_id: usuario_id,
-						comentario: nil,
-						id_objeto: usuario.id,
-						tipo_objeto: 'Usuario',
-						ip_origen: ip
-					)						
-					hay_usuario = true
-				else
+				begin
+					# if profe = Profesor.where(usuario_id: row.field(0))
 					hay_usuario = false
-					usuarios_no_agregados << row['ci']
-				end
+					row = row[0]
+					row['ci'].strip!
+					row['ci'].delete! '^0-9'
 
-				if hay_usuario
-					hay_estudiante = false
+					unless usuario = Usuario.where(ci: row['ci']).limit(1).first
+						usuario = Usuario.new
+						usuario.ci = row['ci']
+						usuario.password = usuario.ci
+					end
 
-					estudiante = Estudiante.where(usuario_id: usuario.ci).first
-					estudiante ||= Estudiante.new(usuario_id: usuario.ci)
-
-					nuevo_estudiante = estudiante.new_record?
-
-					if estudiante.save
-						nuevo_estudiante ? (total_estudiantes_nuevos += 1) : (total_estudiantes_actualizados += 1)
+					if row['nombres_apellidos'] 
+						nombres_apellidos = separar_cadena row['nombres_apellidos']
+						usuario.apellidos = nombres_apellidos[0]
+						usuario.email = nombres_apellidos[1]
+					else
+						usuario.apellidos = limpiar_cadena row['apellidos']
+						usuario.nombres = limpiar_cadena row['nombres']
+					end
+					
+					usuario.telefono_movil = row['telefono']
+					usuario.email = row['email']
+					usuario.telefono_habitacion = row['telefono_habitacion']
+					
+					nuevo_usuario = usuario.new_record?
+					if usuario.save
+						if nuevo_usuario
+							total_usuarios_nuevos += 1
+							desc_us = "Creacion de Usuario vía migración con CI: #{usuario.ci}"
+							tipo_us = Bitacora::CREACION
+						else
+							total_usuarios_actualizados += 1
+							desc_us = "Actualizacion de Usuario vía migración con CI: #{usuario.ci}"
+							tipo_us = Bitacora::ACTUALIZACION
+						end
 						Bitacora.create!(
-							descripcion: "Asociación de Usuario como Estudiante vía migración con CI: #{estudiante.id}", 
-							tipo: Bitacora::CREACION,
+							descripcion: desc_us, 
+							tipo: tipo_us,
 							usuario_id: usuario_id,
 							comentario: nil,
 							id_objeto: usuario.id,
 							tipo_objeto: 'Usuario',
 							ip_origen: ip
-						)
-
-						hay_estudiante = true
+						)						
+						hay_usuario = true
 					else
-						estudiantes_no_agregados << estudiante.ci
+						hay_usuario = false
+						usuarios_no_agregados << row['ci']
 					end
 
-					if hay_estudiante
-						escuela_id = row['escuela_id'] unless row['escuela_id'].blank?
-						grado['plan_id'] = row['plan_id'].upcase.gsub(/[^0-9A-Z]/, '')
-						grado['plan_id'] = plan_id if grado['plan_id'].blank?
+					if hay_usuario
+						hay_estudiante = false
 
-						unless Plan.all.ids.include? grado['plan_id']
-							estudiates_con_plan_errado << estudiante.id
+						estudiante = Estudiante.where(usuario_id: usuario.ci).first
+						estudiante ||= Estudiante.new(usuario_id: usuario.ci)
+
+						nuevo_estudiante = estudiante.new_record?
+
+						if estudiante.save
+							nuevo_estudiante ? (total_estudiantes_nuevos += 1) : (total_estudiantes_actualizados += 1)
+							Bitacora.create!(
+								descripcion: "Asociación de Usuario como Estudiante vía migración con CI: #{estudiante.id}", 
+								tipo: Bitacora::CREACION,
+								usuario_id: usuario_id,
+								comentario: nil,
+								id_objeto: usuario.id,
+								tipo_objeto: 'Usuario',
+								ip_origen: ip
+							)
+
+							hay_estudiante = true
 						else
-							grado['tipo_ingreso'] = row['tipo_ingreso'].upcase.strip unless row['tipo_ingreso'].blank?
-							unless Grado.tipos_ingreso.keys.include? grado['tipo_ingreso']
-								estudiates_con_tipo_ingreso_errado << estudiante.id
-							else
-								grado['iniciado_periodo_id'] = row['periodo_id'].upcase.gsub(/[^0-9A-Z]/, '').blank? ? periodo_id : row['periodo_id']
-
-								unless Periodo.all.ids.include? grado['iniciado_periodo_id']
-									estudiates_con_iniciado_periodo_id_errado << estudiante.id
-								else
-
-									grado['region'] = ""
-									grado['region'] = row['region'].downcase.gsub(/[^a-z]/, '') if row['region']
-
-									grado['region'] = 'no_aplica' if grado['region'].blank?
-
-									
-									p "  Row.Region: #{row['region']}  ".center(220, '#')
-									p "  Grado.Region: #{grado['region']}  ".center(220, '#')
-									unless (Grado.regiones.keys.include? grado['region'] )
-										estudiates_con_region_errada << estudiante.id
-									else
-										grado['estudiante_id'] = estudiante.id
-										grado['escuela_id'] = escuela_id
-
-										p "    #{grado}  ".center(200, "€")
-										grado_aux = estudiante.grados.where(escuela_id: escuela_id).first
-										grado_aux ||= Grado.new
-										
-										grado_aux.plan_id = grado['plan_id']
-										grado_aux.tipo_ingreso = grado['tipo_ingreso']
-										grado_aux.iniciado_periodo_id = grado['iniciado_periodo_id']
-										grado_aux.estudiante_id = grado['estudiante_id']
-										grado_aux.escuela_id = grado['escuela_id']
-										grado_aux.region = grado['region']
-										grado_aux.estado_inscripcion = grado['estado_inscripcion']
-										
-										nuevo_grado = grado_aux.new_record?
-										if grado_aux.save
-											if nuevo_grado
-												desc = "Estudiante #{estudiante.id} registrado en #{grado_aux.escuela.descripcion}"
-												tipo = Bitacora::CREACION
-												total_grados_nuevos += 1
-											else
-												desc = "Actualizada carrera de #{estudiante.id} en #{grado_aux.escuela.descripcion}"
-												tipo = Bitacora::ACTUALIZACION
-												total_grados_actualizados += 1
-											end
-
-											Bitacora.create!(
-												descripcion: desc, 
-												tipo: tipo,
-												usuario_id: usuario_id,
-												comentario: nil,
-												id_objeto: grado_aux.id,
-												tipo_objeto: 'Grado',
-												ip_origen: ip
-											)
-										else
-											grados_no_agregados << "#{grado_aux.id.join("-")} Error: (#{grado_aux.errors.full_messages.to_sentence})"
-										end
-
-										# begin
-										# 	grado_aux.enviar_correo_asignados_opsu_2020(usuario_id, ip)
-										# 	# grado_aux.enviar_correo_bienvenida(usuario_id, ip)
-										# 	total_correos_enviados += 1
-										# rescue Exception => e
-										# 	total_correos_no_enviados += 1
-										# end
-									end
-								end
-							end
-
+							estudiantes_no_agregados << estudiante.ci
 						end
 
-						# estudiante.historialplanes.destroy_all
+						if hay_estudiante
+							escuela_id = row['escuela_id'] unless row['escuela_id'].blank?
 
-						# if plan_id and !estudiante.historialplanes.where(plan_id: plan_id, periodo_id: periodo_id).any?
-						# 	hp = Historialplan.new
-						# 	p "ESTUDIANTE CI: #{estudiante.id}"
-						# 	hp.plan_id = plan_id
-						# 	hp.periodo_id = periodo_id
-						# 	# hp.estudiante_id = estudiante.id
-						# 	# hp.escuela_id = escuela_id
-						# 	hp.grado = grado_aux
-						# 	if hp.save
-						# 		total_planes_agregados += 1
-						# 	else
-						# 		total_planes_no_agregados += 1
-						# 	end
-						# end
+							grado['plan_id'] = row['plan_id'] ? row['plan_id'].upcase.strip : plan_id
+
+							unless Plan.all.ids.include? grado['plan_id']
+								estudiates_con_plan_errado << estudiante.id
+							else
+								grado['tipo_ingreso'] = row['tipo_ingreso'].upcase.strip if row['tipo_ingreso']
+
+								unless Grado.tipos_ingreso.keys.include? grado['tipo_ingreso']
+									estudiates_con_tipo_ingreso_errado << estudiante.id
+								else
+									
+									grado['iniciado_periodo_id'] = row['periodo_id'] ? row['periodo_id'] : periodo_id
+
+									unless Periodo.all.ids.include? grado['iniciado_periodo_id']
+										estudiates_con_iniciado_periodo_id_errado << estudiante.id
+									else
+
+										grado['region'] = row['region'] ? row['region'].downcase : 'no_aplica'
+
+										unless (Grado.regiones.keys.include? grado['region'] )
+											estudiates_con_region_errada << estudiante.id
+										else
+											grado['estudiante_id'] = estudiante.id
+											grado['escuela_id'] = escuela_id
+
+											p "    #{grado}  ".center(200, "€")
+											grado_aux = estudiante.grados.where(escuela_id: escuela_id).first
+											grado_aux ||= Grado.new
+											
+											grado_aux.plan_id = grado['plan_id']
+											grado_aux.tipo_ingreso = grado['tipo_ingreso']
+											grado_aux.iniciado_periodo_id = grado['iniciado_periodo_id']
+											grado_aux.estudiante_id = grado['estudiante_id']
+											grado_aux.escuela_id = grado['escuela_id']
+											grado_aux.region = grado['region']
+											grado_aux.estado_inscripcion = grado['estado_inscripcion']
+											
+											nuevo_grado = grado_aux.new_record?
+											if grado_aux.save
+												if nuevo_grado
+													desc = "Estudiante #{estudiante.id} registrado en #{grado_aux.escuela.descripcion}"
+													tipo = Bitacora::CREACION
+													total_grados_nuevos += 1
+												else
+													desc = "Actualizada carrera de #{estudiante.id} en #{grado_aux.escuela.descripcion}"
+													tipo = Bitacora::ACTUALIZACION
+													total_grados_actualizados += 1
+												end
+
+												Bitacora.create!(
+													descripcion: desc, 
+													tipo: tipo,
+													usuario_id: usuario_id,
+													comentario: nil,
+													id_objeto: grado_aux.id,
+													tipo_objeto: 'Grado',
+													ip_origen: ip
+												)
+											else
+												grados_no_agregados << "#{grado_aux.id.join("-")} Error: (#{grado_aux.errors.full_messages.to_sentence})"
+											end
+
+											# begin
+											# 	grado_aux.enviar_correo_asignados_opsu_2020(usuario_id, ip)
+											# 	# grado_aux.enviar_correo_bienvenida(usuario_id, ip)
+											# 	total_correos_enviados += 1
+											# rescue Exception => e
+											# 	total_correos_no_enviados += 1
+											# end
+										end
+									end
+								end
+
+							end
+
+							# estudiante.historialplanes.destroy_all
+
+							# if plan_id and !estudiante.historialplanes.where(plan_id: plan_id, periodo_id: periodo_id).any?
+							# 	hp = Historialplan.new
+							# 	p "ESTUDIANTE CI: #{estudiante.id}"
+							# 	hp.plan_id = plan_id
+							# 	hp.periodo_id = periodo_id
+							# 	# hp.estudiante_id = estudiante.id
+							# 	# hp.escuela_id = escuela_id
+							# 	hp.grado = grado_aux
+							# 	if hp.save
+							# 		total_planes_agregados += 1
+							# 	else
+							# 		total_planes_no_agregados += 1
+							# 	end
+							# end
+						end
 					end
+					
+				rescue Exception => e
+					errores_generales << "#{row} #{e}" 
 				end
-				
-			rescue Exception => e
-				errores_generales << "#{row} #{e}" 
 			end
 		end
-		resumen = "</br><b>Resumen:</b>"
-		resumen +=  "</br>Total de registros a procesar: <b>#{csv.count}</b>"
-		resumen += "</br>Total Usuarios Nuevos: <b>#{total_usuarios_nuevos}</b><hr></hr>"
-		resumen += "</br>Total Usuarios Actualizados: <b>#{total_usuarios_actualizados}</b><hr></hr>"
-		resumen += "</br>Total Estudiantes Nuevos: <b>#{total_estudiantes_nuevos}</b><hr></hr>"
-		resumen += "</br>Total Estudiantes Actualizados: <b>#{total_estudiantes_actualizados}</b><hr></hr>"
-		resumen += "</br>Total Grados(Carreras) Nuevos: <b>#{total_grados_nuevos}</b><hr></hr>"
-		resumen += "</br>Total Grados(Carreras) Actualizados: <b>#{total_grados_actualizados}</b><hr></hr>"
-		resumen += "</br>Total Correos Procesados: <b>#{total_correos_enviados}</b><hr></hr>"
-		resumen += "</hr></br>"
+		resumen = "<h6>Resumen de Migración de Datos:</h6>"
+		resumen +=  "</br>Total de registros a procesar: <b>#{csv.group_by{|row| row['ci']}.count}</b><hr></hr>"
+		resumen += "Total Usuarios Nuevos: <b>#{total_usuarios_nuevos}</b><hr></hr>"
+		resumen += "Total Usuarios Actualizados: <b>#{total_usuarios_actualizados}</b><hr></hr>"
+		resumen += "Total Estudiantes Nuevos: <b>#{total_estudiantes_nuevos}</b><hr></hr>"
+		resumen += "Total Estudiantes Actualizados: <b>#{total_estudiantes_actualizados}</b><hr></hr>"
+		resumen += "Total Grados(Carreras) Nuevos: <b>#{total_grados_nuevos}</b><hr></hr>"
+		resumen += "Total Grados(Carreras) Actualizados: <b>#{total_grados_actualizados}</b><hr></hr>"
+		resumen += "Total Correos Procesados: <b>#{total_correos_enviados}</b>"
 
-		return ["Proceso de importación completado. #{resumen}", [estudiantes_no_agregados, usuarios_no_agregados, grados_no_agregados, estudiates_con_plan_errado,estudiates_con_tipo_ingreso_errado, estudiates_con_iniciado_periodo_id_errado, estudiates_con_region_errada, errores_generales]]
+		return [resumen, [estudiantes_no_agregados, usuarios_no_agregados, grados_no_agregados, estudiates_con_plan_errado,estudiates_con_tipo_ingreso_errado, estudiates_con_iniciado_periodo_id_errado, estudiates_con_region_errada, errores_generales, errores_cabeceras]]
 	end
 
 	def self.importar_profesores file
@@ -246,62 +242,81 @@ class ImportCsv
 
 		csv_text = File.read(file)
 
-		total_agregados = 0
-		usuarios_existentes = []
-		profesores_existentes = []
-		usuarios_no_agregados = []
-		profes_no_agregados = []
+		errores_cabeceras = []
 
 		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
-		csv.each do |row|
-			begin
-				row['ci'].delete! '^0-9'
-				row['ci'].strip!
-				# if profe = Profesor.where(usuario_id: row.field(0))
-				if profe = Profesor.where(usuario_id: row['ci']).first
-					profesores_existentes << profe.usuario_id
-				elsif usuario = Usuario.where(ci: row['ci']).first
-					usuarios_existentes << usuario.ci
-					profe = Profesor.new
-					profe.departamento_id = row['departamento_id']
-					profe.usuario_id = usuario.ci
-					total_agregados += 1 if profe.save
-				else
-					usuario = Usuario.new
-					usuario.ci = row['ci']
-					usuario.password = usuario.ci
-					usuario.nombres = row['nombres']
-					usuario.apellidos = row['apellidos']
-					usuario.email = row['email']
-					usuario.telefono_movil = row['telefono']
-					if usuario.save
-						profe = Profesor.new
-						profe.departamento_id = row['departamento_id']
-						profe.usuario_id = usuario.ci
-						if profe.save
-							total_agregados += 1
-						else
-							profes_no_agregados << profe.usuario_id
-						end
+
+		errores_cabeceras << "Falta la cabecera 'ci' en el archivo" unless csv.headers.include? 'ci'
+		errores_cabeceras << "Falta la cabecera 'nombres' en el archivo" unless csv.headers.include? 'nombres'
+		errores_cabeceras << "Falta la cabecera 'apellidos' en el archivo" unless csv.headers.include? 'apellidos'
+		errores_cabeceras << "Falta la cabecera 'departamento_id' en el archivo" unless csv.headers.include? 'departamento_id'
+
+		if errores_cabeceras.count > 0
+			return [0, "Error en las cabaceras del archivo: #{errores_cabeceras.to_sentence}"]
+		else		
+			total_agregados = 0
+			usuarios_existentes = []
+			profesores_existentes = []
+			usuarios_no_agregados = []
+			profes_no_agregados = []
+			departamentos_no_encontrados = []
+			csv.each do |row|
+				begin
+					row['ci'].delete! '^0-9'
+					row['ci'].strip!
+					# if profe = Profesor.where(usuario_id: row.field(0))
+					dpto = Departamento.where("id = '#{row['departamento_id']}' OR descripcion = '#{row['departamento_id']}'").first
+					if dpto.nil? 
+						departamentos_no_encontrados << row['departamento_id']
 					else
-						usuarios_no_agregados << row['ci']
+						if profe = Profesor.where(usuario_id: row['ci']).first
+							profesores_existentes << profe.usuario_id
+						elsif usuario = Usuario.where(ci: row['ci']).first
+							usuarios_existentes << usuario.ci
+							profe = Profesor.new
+							profe.departamento_id = dpto.id
+							profe.usuario_id = usuario.ci
+							total_agregados += 1 if profe.save
+						else
+							usuario = Usuario.new
+							usuario.ci = row['ci']
+							usuario.password = usuario.ci
+							usuario.nombres = row['nombres']
+							usuario.apellidos = row['apellidos']
+							usuario.email = row['email']
+							usuario.telefono_movil = row['telefono']
+							if usuario.save
+								profe = Profesor.new
+								profe.departamento_id = dpto.id
+								profe.usuario_id = usuario.ci
+								if profe.save
+									total_agregados += 1
+								else
+									profes_no_agregados << profe.usuario_id
+								end
+							else
+								usuarios_no_agregados << row['ci']
+							end
+						end
 					end
 				end
 			end
+
+			resumen = "</br><b>Resumen:</b></br>"
+			resumen += "Total Profesores Agregados: <b>#{total_agregados}</b>"
+			resumen += "</br>Detalle: #{profesores_existentes.to_sentence.truncate(200)}<hr></hr>"
+			resumen += "Total Usuarios Existentes (Se les creó el rol de profesor): <b>#{usuarios_existentes.size}</b>"
+			resumen += "</br>Detalle: #{usuarios_existentes.to_sentence.truncate(200)}<hr></hr>"
+			resumen += "Total Profesores No Agregados (Se creó el usuario pero no el profesor): <b>#{profes_no_agregados.count}</b>"
+			resumen += "</br>Detalle: #{profes_no_agregados.to_sentence.truncate(200)}<hr></hr>"
+			resumen += "Total Usuarios No Agregados: <b>#{usuarios_no_agregados.count}</b>"
+			resumen += "</br>Detalle: #{usuarios_no_agregados.to_sentence.truncate(200)}<hr></hr>"
+			resumen += "Total Departmanetos no enconrtados: <b>#{departamentos_no_encontrados.count}</b>"
+			resumen += "</br>Detalle: #{usuarios_no_agregados.to_sentence.truncate(200)}"
+				
+			return [1, "Proceso de importación completado. #{resumen}"]
 		end
 
-		resumen = "</br><b>Resumen:</b> 
-			</br></br>Total Profesores Agregados: <b>#{total_agregados}</b><hr></hr>
-			Total Profesores Existentes: <b>#{profesores_existentes.size}</b>
-			</br><i>Detalle:</i></br>#{profesores_existentes.to_sentence}<hr></hr>
-			Total Usuarios Existentes (Se les creó el rol de profesor): <b>#{usuarios_existentes.size}</b>
-			</br><i>Detalle:</i></br>#{usuarios_existentes.to_sentence}<hr></hr>
-			Total Profesores No Agregados (Se creó el usuario pero no el profesor): <b>#{profes_no_agregados.count}</b>
-			</br><i>Detalle:</i></br> #{profes_no_agregados.to_sentence}<hr></hr>
-			Total Usuarios No Agregados: <b>#{usuarios_no_agregados.count}</b>
-			</br><i>Detalle:</i></br> #{usuarios_no_agregados.to_sentence}"
-
-		return "Proceso de importación completado. #{resumen}"
 	end
 
 	def self.importar_inscripciones file, escuela_id, periodo_id
@@ -322,49 +337,63 @@ class ImportCsv
 		total_no_calificados = 0
 
 		estudiantes_sin_grado = []
+		errores_cabeceras = []
 
 		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
-			csv.each do |row|
+
+		errores_cabeceras << "Falta la cabecera 'ci' en el archivo" unless csv.headers.include? 'ci'
+		errores_cabeceras << "Falta la cabecera 'id_uxxi' en el archivo" unless csv.headers.include? 'id_uxxi'
+		errores_cabeceras << "Falta la cabecera 'numero' en el archivo" unless csv.headers.include? 'numero'
+
+		if errores_cabeceras.count > 0
+			return [0, "Error en las cabeceras: #{errores_cabeceras.to_sentence}. Corrija el nombre e intente cargar el archivo nuevamente."]
+		else
+
+			csv.each_with_index do |row, i|
 				begin
-					row.field(0).delete! '^0-9'
-					row.field(0).strip!
-					row.field(1).strip!
-					row.field(2).strip! if row.field(2)
-					if a = Asignatura.where(id_uxxi: row.field(1)).first
+					# row = row[0]
+					row['ci'].strip!
+					row['ci'].delete! '^0-9'
+
+					row['id_uxxi'].strip!
+					row['numero'].strip! if row['numero']
+
+
+					if a = Asignatura.where(id_uxxi: row['id_uxxi']).first
 						if periodo_id.nil?
-							if row.field(4)
+							if row['periodo_id']
  
-								row.field(4).strip!
-								row.field(4).upcase!
+								row['periodo_id'].strip!
+								row['periodo_id'].upcase!
 								
-								unless Periodo.where(id: row.field(4)).any?
-									return "Error: Periodo '#{row.field(4)}' es inválida. fila: [#{row}]. Revise el archivo e inténtelo nuevamente."
+								unless Periodo.where(id: row['periodo_id']).any?
+									return [0, "Error: Periodo '#{row['periodo_id']}' es inválido. fila (#{i}): [#{row}]. Revise el archivo e inténtelo nuevamente."]
 								end
 
 							else
-								return 'Error en el periodo_id. Por favor revise el archivo e inténtelo nuevamente.'
+								return [0, "Sin período para la inscripción: #{row}. Por favor revise el archivo e inténtelo nuevamente."]
 							end
-							periodo_id = row.field(4)
+							periodo_id = row['periodo_id']
 						end
 
-						unless s = Seccion.where(numero: row.field(2), periodo_id: periodo_id, asignatura_id: a.id).limit(1).first
-							total_nuevas_secciones += 1 if s = Seccion.create!(numero: row.field(2), periodo_id: periodo_id, asignatura_id: a.id, tipo_seccion_id: 'NF')
+						unless s = Seccion.where(numero: row['numero'], periodo_id: periodo_id, asignatura_id: a.id).limit(1).first
+							total_nuevas_secciones += 1 if s = Seccion.create!(numero: row['numero'], periodo_id: periodo_id, asignatura_id: a.id, tipo_seccion_id: 'NF')
 						end
 
 						if s
-							estu = Estudiante.where(usuario_id: row.field(0)).first
+							estu = Estudiante.where(usuario_id: row['ci']).first
 							unless estu
-								estudiantes_inexistentes << row.field(0)
+								estudiantes_inexistentes << row['ci']
 							else
 								
-								inscrip = s.inscripcionsecciones.where(estudiante_id: row.field(0)).first
+								inscrip = s.inscripcionsecciones.where(estudiante_id: row['ci']).first
 								unless inscrip
 									inscrip = Inscripcionseccion.new
 									escuelaperiodo = Escuelaperiodo.where(periodo_id: periodo_id, escuela_id: a.escuela.id).first
 
 									unless inscrip_escuela_period = estu.inscripcionescuelaperiodos.where(escuelaperiodo_id: escuelaperiodo.id).first
 
-										inscrip_escuela_period = Inscripcionescuelaperiodo.create!(estudiante_id: row.field(0), escuelaperiodo_id: escuelaperiodo.id, tipo_estado_inscripcion_id: 'INS')
+										inscrip_escuela_period = Inscripcionescuelaperiodo.create!(estudiante_id: row['ci'], escuelaperiodo_id: escuelaperiodo.id, tipo_estado_inscripcion_id: 'INS')
 									end
 
 									inscrip.inscripcionescuelaperiodo_id = inscrip_escuela_period.id
@@ -384,7 +413,7 @@ class ImportCsv
 										if inscrip.save!
 											total_inscritos += 1
 										else
-											estudiantes_no_inscritos << row.field(0)
+											estudiantes_no_inscritos << row['ci']
 										end
 									end
 								else
@@ -392,20 +421,20 @@ class ImportCsv
 								end
 
 								# CALIFICAR:
-								if row.field(3) and ! row.field(3).blank?
-									row.field(3).strip!
-									if row.field(3).eql? 'RT'
+								if row['nota'] and !row['nota'].blank?
+									row['nota'].strip!
+									if row['nota'].eql? 'RT'
 										inscrip.estado = :retirado
 										inscrip.tipo_calificacion_id = TipoCalificacion::FINAL 
 									elsif inscrip.asignatura and inscrip.asignatura.absoluta?
-										if row.field(3).eql? 'A'
+										if row['nota'].eql? 'A'
 											inscrip.estado = :aprobado
 										else
 											inscrip.estado = :aplazado
 										end
 										inscrip.tipo_calificacion_id = TipoCalificacion::FINAL
 									else
-										inscrip.calificacion_final = row.field(3)
+										inscrip.calificacion_final = row['nota']
 										
 										if inscrip.calificacion_final >= 10
 											inscrip.estado = :aprobado
@@ -438,13 +467,15 @@ class ImportCsv
 							secciones_no_creadas << row.to_hash
 						end
 					else
-						asignaturas_inexistentes << row.field(1)
+						asignaturas_inexistentes << row['id_uxxi']
 					end
 				rescue Exception => e
-					return "Error excepcional: #{e.to_sentence}. #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados, periodo_id, estudiantes_sin_grado }"
+					return [0, "Error excepcional: #{e.to_sentence}. #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados, periodo_id, estudiantes_sin_grado }"]
 				end
 			end
-		return "Proceso de importación completado con éxito. #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados,periodo_id, estudiantes_sin_grado}"
+			return [1, "Resumen procesos de migración: #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados,periodo_id, estudiantes_sin_grado}"]
+		end
+
 	end
 
 
