@@ -2,6 +2,15 @@ class ParametroGeneral < ApplicationRecord
   # SET GLOBALES:
   self.table_name = 'parametros_generales'
 
+  # FECHA TOPE INGRESO
+  def self.max_fecha_ingreso_nuevos
+    ParametroGeneral.where(id: "MAX_FECHA_INGRESO_NUEVOS").first
+  end
+
+  def self.max_fecha_ingreso_nuevos_valor
+    max_fecha_ingreso_nuevos.present? ? max_fecha_ingreso_nuevos.valor : 'POR DEFINIR'
+  end
+
   # JEFE CONTROL ESTUDIO
   def self.jefe_control_estudio
     ParametroGeneral.where(id: "JEFE_CONTROL_ESTUDIO").first

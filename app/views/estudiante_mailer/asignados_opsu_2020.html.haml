@@ -17,7 +17,7 @@
 %p= "Realice un depósito o transferencia únicamente de los Bancos: <b>#{Banco.all.map{|b| b.nombre}.to_sentence(last_word_connector: ' ó ')}</b> en la <b>#{ParametroGeneral.cuenta_facultad_tipo_valor}</b> del banco <b>#{ParametroGeneral.cuenta_facultad_banco_valor}</b>  Nº <b>#{ParametroGeneral.cuenta_facultad_numero_valor}</b>, a nombre de <b>'#{ParametroGeneral.cuenta_facultad_titular_valor}'</b>, RIF:. <b>#{ParametroGeneral.rif_facultad_valor}</b>, por el monto de <b>#{ParametroGeneral.arancel_ingreso_facultad_valor}</b>".html_safe
 
 %p 
-	%b Tiene hasta el día VIERNES 14/05/2021 para realizar este proceso.  
+	%b= "Tiene hasta el día #{ParametroGeneral.max_fecha_ingreso_nuevos_valor} para realizar este proceso."
 
 %b 
 	%b NO HABRÁ PRORROGA
