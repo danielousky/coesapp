@@ -24,7 +24,7 @@
 				%th Monto
 			%th Plan
 			%th Asig. Inscritas
-			%th Asig. Descripción
+			%th Región
 			%th Créditos
 			%th C. Aprobados
 			%th Total Créditos Plan
@@ -32,6 +32,7 @@
 	%tbody
 
 		- @inscripciones.each do |ins|
+			- grado = ins.grado
 			%tr
 				- usuario = ins.estudiante.usuario
 				- if params[:status].eql? 'reported' and ins.reportepago
@@ -49,7 +50,7 @@
 				- if params[:status].eql? 'reported' and ins.reportepago
 					%td= ins.reportepago.numero
 					%td= ins.reportepago.monto_con_formato
-				- plan = ins.grado.plan if ins.grado
+				- plan = grado.plan if grado
 				- if plan.nil?
 					- hplan = ins.estudiante.historialplanes.joins(:plan).where("planes.escuela_id = ?", @escuelaperiodo.escuela_id).order('periodo_id DESC').first#.plan_id
 					- plan = hplan.plan if plan
@@ -57,7 +58,9 @@
 				-# hplan = est.ultimo_plan_de_escuela(@escuelaperiodo.escuela_id)
 				%td= plan ? plan.id : "--"
 				%td= ins.inscripcionsecciones.count
-				%td
+				
+				%td= grado.region.titleize if grado and grado.region
+				- if false
 					%table
 						%tbody
 							- ins.inscripcionsecciones.each do |aux| 
