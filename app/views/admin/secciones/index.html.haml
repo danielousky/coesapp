@@ -17,6 +17,7 @@
           %th{style: 'width:10px;'} PI
           %th.tooltip-btn{style: 'width:10px;', 'data_toggle': :tooltip, title: 'Retirados'} Ret
           %th.tooltip-btn{style: 'width:20px;', 'data_toggle': :tooltip, title: 'Promedio de Calificaciones'} Prom
+          %th
       %tbody
         - @secciones.each do |seccion| 
           %tr{class: seccion.tr_estilo_estado, id: "tr#{seccion.id}"}
@@ -45,6 +46,9 @@
               %td
               %td
               %td
+
+            %td
+              = btn_toggle_download 'btn-success', "descargar/#{seccion.id}/notas_seccion", 'Descargar Acta', nil
 
             - if false
               %td= colocar_estado_seccion seccion

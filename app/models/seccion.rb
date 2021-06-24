@@ -33,6 +33,8 @@ class Seccion < ApplicationRecord
 	before_create :default_values
 
     # SCOPES:
+    scope :con_inscripciones, -> {joins(:inscripcionsecciones).group('secciones.id').having('count(inscripcionsecciones.id) > 0')}
+    scope :sin_inscripciones, -> {joins(:inscripcionsecciones).group('secciones.id').having('count(inscripcionsecciones.id) < 1')}
     scope :trimestrales, -> {joins(:inscripcionsecciones).where("inscripcionsecciones.estado = 4 or inscripcionsecciones.estado = 5")}
     scope :trimestrales1, -> {joins(:inscripcionsecciones).where("inscripcionsecciones.estado = 4")}
     scope :trimestrales2, -> {joins(:inscripcionsecciones).where("inscripcionsecciones.estado = 5")}

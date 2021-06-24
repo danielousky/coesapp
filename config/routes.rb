@@ -144,6 +144,7 @@ Rails.application.routes.draw do
         get 'listado_seccion_excel'
         get 'notas_seccion'
         get 'notas_seccion_online'
+        get 'total_actas_secciones_periodo'
         get 'inscritos_escuela_periodo'
         get 'listado_completo_estudiante'
       end
