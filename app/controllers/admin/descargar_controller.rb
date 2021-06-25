@@ -6,46 +6,20 @@ module Admin
 		before_action :filtro_estudiante, only: [:programaciones, :cita_horaria]
 		before_action :filtro_administrador, except: [:programaciones, :cita_horaria, :kardex, :constancia_inscripcion, :constancia_preinscripcion_facultad, :constancia_estudio, :listado_seccion, :notas_seccion, :listado_seccion_excel, :verificar_constancia_estudio]
 
-		def total_actas_secciones_periodo 
-			periodo = Periodo.find params[:id]
-			file_name = 'tmp/actas_secciones_periodo.pdf'
+		def actas_secciones_escuelaperiodo 
+			ep = Escuelaperiodo.find params[:id]
 
-			# Prawn::Document.new(page_size: 'letter', skip_page_creation: true) do |pdf|
+			secciones = ep.secciones.con_inscripciones
 
-			Prawn::Document.generate(file_name, {:top_margin => 275, :bottom_margin => 100, :skip_page_creation => true}) do |pdf|
-				periodo.secciones.con_inscripciones.limit(3).each do |seccion|
-					pdf_aux = ExportarPdf.acta_seccion seccion.id
-					(1..pdf_aux.page_count).each do |i|
-						pdf.start_new_page(:template => pdf_aux, :template_page => i)
-					end
-				end
+			pdf = CombinePDF.new
+			secciones.each do |seccion|
+				pdf_aux = ExportarPdf.acta_seccion seccion.id
 
-				send_data pdf.render, filename: "actas_secciones_periodo_#{params[:id]}.pdf", type: "application/pdf", disposition: "attachment"
+				pdf_data = pdf_aux.render # Import PDF data from Prawn
+				pdf << CombinePDF.parse(pdf_data)
 			end
 
-
-			# pdf = Prawn::Document.new(top_margin: 275, bottom_margin: 100)
-			# periodo.secciones.con_inscripciones.each do |seccion|
-			# 	pdf += ExportarPdf.acta_seccion seccion.id
-				
-			# end
-
-
-
-			# File.open(file_name, "w") do |f| 
-			# 	periodo.secciones.each do |seccion|
-			# 	# pdf = ExportarPdf.acta_seccion seccion.id
-			# 	# info_bitacora "Descarga de acta pdf seccion ##{seccion.id}", Bitacora::DESCARGA
-
-			# 		f.write "#{Time.now} - x\n"
-			# 	end
-			# 	f.close
-			# end
-			
-			# File.open(file_name, "r") do |f| 
-			# 	send_data f.read, type: "application/pdf", filename: "actas_periodo_#{params[:id].delete("-")}.pdf", disposition: "attachment"
-			# end
-			# File.delete(file_name) if File.exist?(file_name)
+			send_data pdf.to_pdf, filename: "actas_secciones_periodo_#{ep.descripcion_id}.pdf", type: "application/pdf", disposition: "attachment"
 		end
 
 

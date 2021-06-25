@@ -32,6 +32,7 @@ gem "jquery-fileupload-rails"
 
 gem 'prawn'
 gem 'prawn-table'
+gem 'combine_pdf'
 
 gem 'pdf-reader'
 gem 'pdf-reader-html'

@@ -1,3 +1,18 @@
+- if false
+  .pull-right
+    - if @escuela
+      - if ep = @escuela.escuelaperiodos.where(periodo_id: current_periodo.id).first
+        = btn_toggle_download 'btn-success', "descargar/#{ep.id}/actas_secciones_escuelaperiodo", "Todas las Actas de #{@escuela.descripcion} (#{ep.total_secciones})", "Actas #{@escuela.descripcion} (#{ep.total_secciones})"
+
+    - elsif @escuelas
+      - eps = Escuelaperiodo.where("escuela_id IN (?) and periodo_id = ?", @escuelas.ids, current_periodo.id)
+      - eps.each do |ep|
+        - total_secciones = ep.total_secciones
+        = btn_toggle_download 'btn-success m-2', "descargar/#{ep.id}/actas_secciones_escuelaperiodo", "Todas las Actas de #{ep.escuela.descripcion} (#{ep.total_secciones})", "Actas de #{ep.escuela.descripcion} (#{ep.total_secciones})"
+
+
+
+  
 .border.p-3
   %seccion
     .alert#message{role: :alert, style: 'display:none;position:absolute;left:190px; padding:5px'} 
@@ -48,7 +63,7 @@
               %td
 
             %td
-              = btn_toggle_download 'btn-success', "descargar/#{seccion.id}/notas_seccion", 'Descargar Acta', nil
+              = btn_toggle_download 'btn-success', "descargar/#{seccion.id}/notas_seccion", 'Acta', nil
 
             - if false
               %td= colocar_estado_seccion seccion

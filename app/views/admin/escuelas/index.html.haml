@@ -14,6 +14,7 @@
         %th{style: 'width:190px'} Inscripción
         %th Retiros
         %th Cambio Secciones
+        %th= "Actas del #{current_periodo.id}"
   %tbody
     - @escuelas.each do |escuela|
       %tr
@@ -35,6 +36,7 @@
           = link_to escuela_path(escuela), class: 'btn btn-sm float-right', title: "#{ t('.show', default: t('helpers.links.show')) }" do
             = glyph 'search'
 
+
           - if current_admin.maestros?
             %td
 
@@ -45,3 +47,7 @@
             %td= agregar_onoffswitch 'Habilitar Retiro y Eliminación Asignaturas', "retiro#{escuela.id}", set_habilitar_retiro_asignaturas_escuela_path(escuela.id), escuela.retiro_asignaturas_habilitado?
 
             %td= agregar_onoffswitch 'Habilitar Cambio de Sección', "cambioSeccion#{escuela.id}", set_habilitar_cambio_seccion_escuela_path(escuela.id), escuela.cambio_seccion_habilitado?
+
+            %td.text-center
+              - if ep = escuela.escuelaperiodos.where(periodo_id: current_periodo.id).first
+                = btn_toggle_download 'btn-success', "descargar/#{ep.id}/actas_secciones_escuelaperiodo", "Todas las Actas de #{escuela.descripcion} (#{ep.total_secciones})", "Acta #{escuela.id}"

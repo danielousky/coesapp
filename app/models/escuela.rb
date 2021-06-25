@@ -39,6 +39,9 @@ class Escuela < ApplicationRecord
 
 	#FUNCTIONS
 
+	def desc_actas
+		"Actas de #{self.descripcion} (#{self.secciones.count})"
+	end
 	def inscripciones
 		inscripcionsecciones
 	end

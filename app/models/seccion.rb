@@ -41,8 +41,9 @@ class Seccion < ApplicationRecord
 	scope :calificadas, -> {where "calificada IS TRUE"}
 	scope :sin_calificar, -> {where "calificada IS NOT TRUE"}
 	scope :del_departamento, lambda {|dpto_id| joins(:asignatura).where('asignaturas.departamento_id = ?', dpto_id)}
-	scope :del_periodo, lambda { |periodo_id| where "periodo_id = ?", periodo_id}
-	scope :de_la_escuela, lambda { |escuela_id| joins(:asignatura).joins(:departamento).where("departamentos.escuela_id = ?", escuela_id)}
+	scope :del_periodo, -> (periodo_id) {where "periodo_id = ?", periodo_id}
+	scope :de_la_escuela, -> (escuela_id) {joins({asignatura: :departamento}).where("departamentos.escuela_id = ?", escuela_id)}
+
 	# scope :del_periodo_actual, -> { where "periodo_id = ?", ParametroGeneral.periodo_actual_id}
 
 	scope :con_cupos, -> {joins(:inscripcionsecciones).group('secciones.id').having('count(inscripcionsecciones.id) < secciones.capacidad').order('count(inscripcionsecciones.id)')}
