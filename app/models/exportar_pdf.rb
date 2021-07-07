@@ -626,7 +626,7 @@ class ExportarPdf
 		i = 1
 		inscripciones.each do |h|
 
-			plan = h.grado.ultimo_plan
+			plan = h.grado ? h.grado.ultimo_plan : nil
 			plan = plan.id if plan 
 			if h.tiene_calificacion_posterior?
 				estado_a_letras = 'AP'
