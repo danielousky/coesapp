@@ -31,8 +31,6 @@
 			- @periodo = escuela.periodo_inscripcion
 			- @periodo ||= escuela.periodos.order(:inicia).last 
 			- @escupe = escuela.escuelaperiodos.where(periodo_id: @periodo.id).first
-			%h1= @escupe.periodo_id
-			%h1= @escupe.escuela_id
 			- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first unless @escupe.nil?
 			- if escuela.periodo_inscripcion
 				- @limiteCreditos = @escupe.limite_creditos_permitidos
@@ -78,7 +76,7 @@
 								= "El estudiante aún no  esta confirmado o reincorporado en #{escuela.descripcion.titleize}"
 								= "El estudiante no debe tener registros académicos previos (Nuevos Ingresos) o debe haber inscrito asignaturas en el período inmediatemente anterior #{periodo_anterior.id} (Regulares)."
 				- else
-					- if @inscripcionperiodo.reportepago.nil? and @periodo.es_mayor_al_anno? 2020
+					- if @inscripcionperiodo.reportepago.nil? and @periodo.es_mayor_al_anno? 2019
 						.alert.alert-warning
 							%h6
 								%b Atención: 
