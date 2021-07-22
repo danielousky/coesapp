@@ -1,5 +1,5 @@
 - if escupe = Escuelaperiodo.where(escuela_id: escuela.id, periodo_id: periodo.id).first
-	- if periodo.es_mayor_al_anno? 2020
+	- if (periodo.anual? and periodo.es_mayor_al_anno? 2019) or (periodo.semestral? and periodo.es_mayor_al_anno? 2020)
 		= # Esperados
 		.tooltip-btn{'data-toggle': :tooltip, title: "Total Esperados",'data-placement': :right }
 			= escuela.grados.confirmado.inscritos_ucv.count
