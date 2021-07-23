@@ -207,11 +207,14 @@ module Admin
 				bita.ip_origen = request.remote_ip
 				bita.save
 
-				if ins.secciones.map{|s| s.horario}.compact.any?
-					pdf = ExportarPdf.hacer_constancia_inscripcion bita.id
-				else
-					pdf = ExportarPdf.hacer_constancia_inscripcion_sin_horario bita.id
-				end
+				pdf = ExportarPdf.hacer_constancia_inscripcion_sin_horario bita.id
+
+				# OCULTAMIENTO TEMPORAL DE HORARIOS
+				# if ins.secciones.map{|s| s.horario}.compact.any?
+				# 	pdf = ExportarPdf.hacer_constancia_inscripcion bita.id
+				# else
+				# 	pdf = ExportarPdf.hacer_constancia_inscripcion_sin_horario bita.id
+				# end
 				
 				respond_to do |format|
 					format.pdf do
