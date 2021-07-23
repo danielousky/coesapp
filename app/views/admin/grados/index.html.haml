@@ -65,7 +65,7 @@
       data: {estado: estado},
       success: function (html) {
         if (url.includes("grado") || estado == 1 || (url.includes("inscripcionseccion") && estado == 0)) {
-          console.log(`Tr: ${html.tr}`)
+          //console.log(`Tr: ${html.tr}`)
           if (url.includes("inscripcionseccion") && estado == 1) estado = 2
           if (url.includes("inscripcionseccion") && estado == 0) estado = 1
           let = tableID = `table${estado}`

@@ -31,7 +31,8 @@ module Admin
 
     def cambiar_estado
       estado = params[:estado].to_i
-      escuela_id, estudiante_id = params[:id].split("-")
+      # escuela_id, estudiante_id = params[:id].split("-")
+      estudiante_id, escuela_id = params[:id].split("/")
       grado = Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).first
       if estado.eql? 1
         escuelas_ids = current_admin.escuelas.ids
