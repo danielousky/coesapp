@@ -1,5 +1,5 @@
-.alert#message{role: :alert, style: 'position:absolute;left:100px;top:180px;padding:7px'} 
 
+.alert#message{role: :alert, style: 'position:absolute;left:200px;top:180px;padding:7px'} 
 %nav
   .nav.nav-tabs
     = link_to 'Tesistas', "#tab1", "data-toggle": "tab", class: 'nav-item nav-link active show'
@@ -23,39 +23,7 @@
 
 :javascript
 
-  $(document).ready(function() {
-      $('table.table').DataTable( {
-          // scrollY: 410, #da error
-          fixedHeader: {
-              header: true,
-              footer: true,
-          },
-          paging: false,
-          language: 
-            {
-              "sZeroRecords":    "No se encontraron resultados",
-              "sEmptyTable":     "Ningún dato disponible en esta tabla",
-              "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-              "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
-              "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
-              "sSearch":         "Buscar:",
-              "sInfoThousands":  ",",
-              "sLoadingRecords": "Cargando...",
-              "oPaginate": {
-                "sFirst":    "Primero",
-                "sLast":     "Último",
-                "sNext":     "Siguiente",
-                "sPrevious": "Anterior"
-              },
-              "oAria": {
-                "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
-                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-              }
-            }
 
-
-      } );
-  } );
   
   function moveRow(url, estado, boton) {
     $.ajax({
@@ -68,10 +36,9 @@
           //console.log(`Tr: ${html.tr}`)
           if (url.includes("inscripcionseccion") && estado == 1) estado = 2
           if (url.includes("inscripcionseccion") && estado == 0) estado = 1
-          let = tableID = `table${estado}`
           let trResponse = document.createElement('tr')
           trResponse.innerHTML = html.tr
-          let tableRef = document.getElementById(tableID);
+          let tableRef = document.getElementById(`table${estado}`);
           tableRef.insertBefore(trResponse, tableRef.firstChild);
         }
         $('#message').html(``)

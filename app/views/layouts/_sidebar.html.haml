@@ -27,11 +27,6 @@
         #asigSubMenu.list-subgroup.list-group-flush.d-none
           - current_admin.escuelas.joins(:escuelaperiodos).where('escuelaperiodos.periodo_id = ?', current_periodo.id).each do |esc| 
             = sidebar_link_to_item "Asignaturas de #{esc.descripcion}", "#{asignaturas_path}?escuela_id=#{esc.id}"
-    = sidebar_item current_admin, 'Planes', 'index', planes_path, 'book'
-    = sidebar_item current_admin, 'Carteleras', 'index', carteleras_path, 'blackboard'
-    = sidebar_item current_admin, 'Reportepagos', 'index', reportepagos_path, 'briefcase', 'Reportes de Pago'
-    = sidebar_item current_admin, 'Comentarios', 'index', comentarios_path, 'bullhorn', 'Noticias'
-
 
     - if (current_admin.autorizado? 'Secciones', 'index') or (current_admin.autorizado? 'Grados', 'citas_horarias') or (current_admin.autorizado? 'Grados', 'index_nuevos') 
       = sidebar_sub_item 'report', 'Reportes', 'stats'
@@ -51,8 +46,6 @@
           = sidebar_link_to_item 'Migrar Estudiantes', {controller: 'importador', action: 'seleccionar_archivo_estudiantes'}
         - if (current_admin.autorizado? 'Importador', 'importar_seccion')
           = sidebar_link_to_item 'Migrar Inscripciones', {controller: 'importador', action: 'seleccionar_archivo_inscripciones'}
-
-
     - if (current_admin.autorizado? 'Usuarios', 'create') and (current_admin.autorizado? 'Usuarios', 'set_estudiante') or (current_admin.autorizado? 'Usuarios', 'set_profesor')
       = sidebar_sub_item 'usuario', 'Usuarios', 'user'
       #usuarioSubMenu.list-subgroup-item.list-subgroup.list-group-flush.d-none
@@ -64,5 +57,12 @@
         - if current_admin.maestros?
           = sidebar_link_to_item 'Registrar Administrador', "#{new_usuario_path}?administrador=true"
           = sidebar_link_to_item 'Lista de Administradores', administradores_path
+
+    = sidebar_item current_admin, 'Grados', 'index', grados_path, 'certificate', 'Graduandos'
+    = sidebar_item current_admin, 'Reportepagos', 'index', reportepagos_path, 'briefcase', 'Reportes de Pago'
+    = sidebar_item current_admin, 'Planes', 'index', planes_path, 'book'
+    = sidebar_item current_admin, 'Carteleras', 'index', carteleras_path, 'blackboard'
+    = sidebar_item current_admin, 'Comentarios', 'index', comentarios_path, 'bullhorn', 'Noticias'
+
 
 
