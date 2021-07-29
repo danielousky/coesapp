@@ -45,11 +45,8 @@ module Admin
         total1 = Inscripcionseccion.proyectos.del_periodo(current_periodo.id).de_las_escuelas(escuelas_ids).sin_calificar.count
         total2 = Grado.de_las_escuelas(escuelas_ids).culminado_en_periodo(current_periodo.id).posible_graduando.count
       elsif estado > 1
-        if estado > 2 
-          Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).first.update(estado: estado, culminacion_periodo_id: current_periodo.id)
-        else
-          Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).first.update(estado: estado)
-        end
+
+        Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).first.update(estado: estado, culminacion_periodo_id: current_periodo.id)
 
         total1 = Grado.de_las_escuelas(escuelas_ids).culminado_en_periodo(current_periodo.id).where(estado: estado-1).count
         total2 = Grado.de_las_escuelas(escuelas_ids).culminado_en_periodo(current_periodo.id).where(estado: estado).count
@@ -124,9 +121,9 @@ module Admin
 
         @tesistas = Inscripcionseccion.proyectos.del_periodo(current_periodo.id).de_las_escuelas(escuelas_ids).sin_calificar
 
-        @posibles_graduandos = Grado.de_las_escuelas(escuelas_ids).posible_graduando.culminado_en_periodo(current_periodo.id)
-        @graduandos = Grado.de_las_escuelas(escuelas_ids).graduando.culminado_en_periodo(current_periodo.id)
-        @graduados = Grado.de_las_escuelas(escuelas_ids).graduado.culminado_en_periodo(current_periodo.id)
+        # @posibles_graduandos = Grado.de_las_escuelas(escuelas_ids).posible_graduando.culminado_en_periodo(current_periodo.id)
+        # @graduandos = Grado.de_las_escuelas(escuelas_ids).graduando.culminado_en_periodo(current_periodo.id)
+        # @graduados = Grado.de_las_escuelas(escuelas_ids).graduado.culminado_en_periodo(current_periodo.id)
       else
         flash[:danger] = 'Debe tener al menos una escuela asociada. Por favor diríjase al personal administrativo correspondiente para solventar esto y vuelva a intentarlo.'
         redirect_back fallback_location: principal_admin_path
