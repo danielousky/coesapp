@@ -12,6 +12,9 @@
 					- boton_nombre = (current_admin and @inscripcionperiodo and @inscripcionperiodo.inscrito?) ? 'Modificar Inscripción' : 'Inscribir'
 					= btn_inscribir "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", "Inscripción en el periodo actual", boton_nombre
 
+		- if @estudiante and (current_admin and current_admin.autorizado? 'Grados', 'index')
+			%td= btn_success 'download-alt', exportar_historial_grado_descargar_path(@grado.id.join('-')), "Descargar registro academico en scv (Excel)", 'Record Académico en Excel'
+
 		- if !(@grado.escuela_id.eql? 'POST') and @grado.reportepago and @grado.preinscrito? and !@grado.inscripciones.any?
 			%td= btn_success 'download-alt', "#{constancia_preinscripcion_facultad_descargar_path(@grado.id.join("-"), :pdf)}", "Descargar Constancia de Preinscripción por Facultad", 'Constancia de Preinscripción'
 		- if @grado.inscripciones.any?

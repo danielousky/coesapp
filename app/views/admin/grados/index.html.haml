@@ -1,30 +1,39 @@
 
-.alert#message{role: :alert, style: 'position:absolute;left:200px;top:180px;padding:7px'} 
+.alert#message{role: :alert, style: 'position:absolute;left:520px;top:135px;padding:7px'} 
 %nav
   .nav.nav-tabs
-    = link_to 'Tesistas', "#tab1", "data-toggle": "tab", class: 'nav-item nav-link active show'
-    = link_to 'Posibles Graduandos', "#tab2", "data-toggle": "tab", class: 'nav-item nav-link'
-    = link_to 'Graduandos', "#tab3", "data-toggle": "tab", class: 'nav-item nav-link'
-    = link_to 'Graduados', "#tab4", "data-toggle": "tab", class: 'nav-item nav-link'
+
+    = link_to "#tab1", "data-toggle": "tab", class: 'nav-item nav-link active show' do
+      = "Tesistas"
+      =# label_bst("<span id='labelTotal1'>#{@tesistas.count}</span>").html_safe
+    - (2..4).each do |i| 
+      = link_to "#tab#{i}", "data-toggle": "tab", class: "nav-item nav-link" do
+        - totales = @registros.where(estado: i).count
+        = Grado.estados.keys[i].pluralize.titleize
+        =# label_bst("<span id='labelTotal#{i}'>#{totales}</span>").html_safe
+
+    - if false
+      = link_to "#tab1", "data-toggle": "tab", class: 'nav-item nav-link active show' do
+        = "Tesistas #{label_bst(@tesistas.count)}".html_safe
+      = link_to "#tab2", "data-toggle": "tab", class: 'nav-item nav-link' do
+        = "Posibles Graduandos #{label_bst(@posibles_graduandos.count)}".html_safe
+      = link_to "#tab3", "data-toggle": "tab", class: 'nav-item nav-link' do
+        = "Graduandos #{label_bst(@graduandos.count)}".html_safe
+      = link_to "#tab4", "data-toggle": "tab", class: 'nav-item nav-link' do
+        = "Graduados #{label_bst(@graduados.count)}".html_safe
       
 .tab-content
   .tab-pane.active.show#tab1
     .border.mt-3.p-3
-      = render partial: '/admin/grados/lista', locals: {registros: @tesistas, estado: 1, tipo: 'Tesistas'}
-  .tab-pane#tab2
-    .border.mt-3.p-3
-      = render partial: '/admin/grados/lista', locals: {registros: @posibles_graduandos, estado: 2, tipo: 'Posibles Graduandos'}
-  .tab-pane#tab3
-    .border.mt-3.p-3
-      = render partial: '/admin/grados/lista', locals: {registros: @graduandos, estado: 3, tipo: 'Graduandos'}
-  .tab-pane#tab4
-    .border.mt-3.p-3
-      = render partial: '/admin/grados/lista', locals: {registros: @graduados, estado: 4, tipo: 'Graduados'}
+      = render partial: '/admin/grados/lista', locals: {registros: @tesistas, estado: 1}
+
+  - (2..4).each do |i| 
+    .tab-pane{id: "tab#{i}"}
+      .border.mt-3.p-3
+        = render partial: '/admin/grados/lista', locals: {registros: @registros.where(estado: i), estado: i}
 
 :javascript
 
-
-  
   function moveRow(url, estado, boton) {
     $.ajax({
       url: url,
@@ -33,7 +42,6 @@
       data: {estado: estado},
       success: function (html) {
         if (url.includes("grado") || estado == 1 || (url.includes("inscripcionseccion") && estado == 0)) {
-          //console.log(`Tr: ${html.tr}`)
           if (url.includes("inscripcionseccion") && estado == 1) estado = 2
           if (url.includes("inscripcionseccion") && estado == 0) estado = 1
           let trResponse = document.createElement('tr')
@@ -41,11 +49,13 @@
           let tableRef = document.getElementById(`table${estado}`);
           tableRef.insertBefore(trResponse, tableRef.firstChild);
         }
-        $('#message').html(``)
-        $('#message').removeClass('alert-danger')
-        $('#message').addClass('alert-success')
+        $(`#labelTotal${estado-1}`).html(html.total1) ;
+        $(`#labelTotal${estado}`).html(html.total2);
+        $('#message').html(``);
+        $('#message').removeClass('alert-danger');
+        $('#message').addClass('alert-success');
 
-        $('#message').html(html.msg)
+        $('#message').html(html.msg);
         boton.parent().parent()[0].remove();
       },
       error: function(html){
@@ -57,6 +67,7 @@
       }
 
     })
+    $('.tooltip-btn').tooltip();
     $('#message').fadeIn()
     $('#message').fadeOut(4000)
 

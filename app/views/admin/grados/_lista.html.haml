@@ -1,28 +1,23 @@
-- case estado
-	- when 1
-		- tipo = 'Tesistas'
-	- when 2
-		- tipo = 'Posibles Graduandos'
-	- when 3
-		- tipo = 'Graduandos'
-	- when 4
-		- tipo = 'Graduados'
-	- else
-		- tipo = 'Sin tipo'
+- tipo = 'Sin tipo'
+- tipo = Grado.estados.keys[estado]
+- tipo = tipo.pluralize.titleize
 
-
-
-- href = "#{exportar_lista_csv_descargar_path(1)}?grado=#{estado}"
-= btn_toggle_download 'btn btn-sm btn-outline-secondary',href , "listado de #{tipo.downcase} en CSV (Válido para Excel)", "#{glyph 'file'}"
+- href = "#{exportar_lista_csv_descargar_path(1)}?estado=#{estado}"
+= btn_toggle_download 'btn btn-sm btn-outline-secondary',href , "listado de #{tipo.downcase} en CSV (Válido para Excel)", "#{tipo} #{glyph 'file'}"
 %br
 %br
-%table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table{id: "table#{estado}"}
-	%thead
-		%tr
-			%th Estudiante
-			%th Escuela
-			%th Plan
-			%th Opciones
-	%tbody
-		- registros.each do |registro| 
-			= render partial: '/admin/grados/detalle_registro', locals: {registro: registro, estado: estado}
+
+%table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table.mb-0
+  %thead
+    %tr
+      %th Estudiante
+      %th Escuela
+      %th Plan
+      - if estado.eql? 1
+        %th Periodo
+      %th Opciones
+%div{style: 'max-height: 400px;overflow-y: scroll;'} 
+  %table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table{id: "table#{estado}"}
+    %tbody
+      - registros.each do |registro| 
+        = render partial: '/admin/grados/detalle_registro', locals: {registro: registro, estado: estado}

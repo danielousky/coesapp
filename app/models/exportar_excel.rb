@@ -84,8 +84,22 @@ class ExportarExcel
 		
 	end
 
+	def self.registro_inscripciones grado_id
+		require 'csv'
+		estudiante_id, escuela_id = grado_id.split('-')
+		grado = Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).first
 
-	def self.estudiantes_csv plan_id, periodo_id, seccion_id = nil, grado = false, escuelas_ids = false
+		csv_data =CSV.generate(headers: true, col_sep: ";") do |csv|
+
+			csv << %w(CEDULA ASIGNATURA DENOMINACION CREDITO NOTA_FINAL NOTA_DEFI TIPO_EXAM PER_LECTI ANO_LECTI SECCION PLAN1)
+			insertar_inscripciones csv, grado.inscripciones
+		end
+
+		return csv_data
+	end
+
+
+	def self.estudiantes_csv plan_id, periodo_id, seccion_id = nil, estado = false, escuelas_ids = false
 		require 'csv'
 
 		csv_data =CSV.generate(headers: true, col_sep: ";") do |csv|
@@ -93,7 +107,7 @@ class ExportarExcel
 			csv << %w(CEDULA ASIGNATURA DENOMINACION CREDITO NOTA_FINAL NOTA_DEFI TIPO_EXAM PER_LECTI ANO_LECTI SECCION PLAN1)
 
 
-			if periodo_id and !grado
+			if periodo_id and !estado
 				plan = Plan.find plan_id
 				plan.estudiantes.each do |es|
 					insertar_inscripciones csv, (es.inscripcionsecciones.del_periodo periodo_id), plan
@@ -102,19 +116,33 @@ class ExportarExcel
 				seccion = Seccion.find seccion_id
 				insertar_inscripciones csv, seccion.inscripciones.aprobado
 			else
-				if grado.eql? 1
-					grados = Grado.tesista
-				elsif grado.eql? 2
-					grados = Grado.posible_graduando
-				elsif grado.eql? 3
-					grados = Grado.graduando
+				estado = estado.to_i
+
+				if estado.eql? 1
+					registros = Inscripcionseccion.proyectos.del_periodo(periodo_id).de_las_escuelas(escuelas_ids).sin_calificar
+
+					registros.each do |ins|
+						plan = ins.grado.ultimo_plan
+						insertar_inscripciones csv, ins.estudiante.inscripciones, plan
+					end					
 				else
-					grados = Grado.graduado
+					registros = Grado.culminado_en_periodo(periodo_id).de_las_escuelas(escuelas_ids).where(estado: estado)
+					registros.each do |g|
+						plan = g.ultimo_plan
+						insertar_inscripciones csv, g.estudiante.inscripciones, plan
+					end
 				end
-				grados.each do |g|
-					plan = g.ultimo_plan
-					insertar_inscripciones csv, g.estudiante.inscripciones, plan
-				end
+				# 	grados = grados.tesista
+				# elsif grado.eql? 2
+				# 	grados = grados.posible_graduando
+				# elsif grado.eql? 3
+				# 	grados = grados.graduando
+				# else
+				# 	grados = grados.graduado
+				# end
+
+
+				csv << ["TOTAL #{Grado.estados.keys[estado]}", registros.count]
 
 			end
 		end

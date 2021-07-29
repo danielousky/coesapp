@@ -625,6 +625,9 @@ module Admin
 				if es.save
 					flash[:success] = "Se guardó el estado #{es.estado} del estudiante #{es.estudiante.usuario.descripcion} en la sección #{es.seccion.descripcion}."
 					info_bitacora "Cambio de estado del estudiante #{es.estudiante_id} de #{estado_anterior} a #{es.estado}", Bitacora::ACTUALIZACION, es
+					escuelas_ids = current_admin.escuelas.ids
+					total1 = Inscripcionseccion.proyectos.del_periodo(current_periodo.id).de_las_escuelas(escuelas_ids).sin_calificar.count
+					total2 = Grado.de_las_escuelas(escuelas_ids).culminado_en_periodo(current_periodo.id).posible_graduando.count
 				else
 					flash[:error] = "No se pudo cambiar el valor de retiro, intentelo de nuevo: #{es.errors.full_messages.join' | '}"
 				end
@@ -635,7 +638,7 @@ module Admin
 			if es.grado.posible_graduando?
 				tr = view_context.render partial: '/admin/grados/detalle_registro', locals: {registro: es.grado, estado: 2}
 			elsif es.grado.tesista?
-				tr = view_context.render partial: '/admin/grados/detalle_registro', locals: {registro: es.grado, estado: 1}
+				tr = view_context.render partial: '/admin/grados/detalle_registro', locals: {registro: es, estado: 1}
 			else
 				tr = ''
 			end
@@ -645,7 +648,7 @@ module Admin
 				format.json do 
 					flash[:success] = flash[:error] = nil
 					msg = "Cambio de estado de #{es.estudiante.usuario.descripcion}"
-					render json: {tr: tr, msg: msg}, status: :ok 
+					render json: {tr: tr, msg: msg, total1: total1, total2: total2}, status: :ok 
 				end
 
 			end

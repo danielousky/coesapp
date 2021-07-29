@@ -32,22 +32,32 @@ module Admin
     def cambiar_estado
       estado = params[:estado].to_i
       # escuela_id, estudiante_id = params[:id].split("-")
-      estudiante_id, escuela_id = params[:id].split("/")
+      estudiante_id, escuela_id = params[:id].split("-")
       grado = Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).first
+      escuelas_ids = current_admin.escuelas.ids
       if estado.eql? 1
         escuelas_ids = current_admin.escuelas.ids
         # Creo que pudieran publicarse todas los grados no solo del periodo como en la linea d abajo
         # inscripcion = grado.inscripciones.grados.de_la_escuela(escuela_id).first
-        inscripcion = grado.inscripciones.grados.del_periodo(current_periodo.id).de_la_escuela(escuela_id).first
+        inscripcion = grado.inscripciones.proyectos.del_periodo(current_periodo.id).de_la_escuela(escuela_id).first
         estado_anterior = inscripcion.estado
         info_bitacora "Cambio de estado del estudiante #{estudiante_id} de #{estado_anterior} a #{inscripcion.estado}", Bitacora::ACTUALIZACION, inscripcion if inscripcion.update_attributes(estado: :sin_calificar)
+        total1 = Inscripcionseccion.proyectos.del_periodo(current_periodo.id).de_las_escuelas(escuelas_ids).sin_calificar.count
+        total2 = Grado.de_las_escuelas(escuelas_ids).culminado_en_periodo(current_periodo.id).posible_graduando.count
       elsif estado > 1
-        Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).update_all(estado: estado, culminacion_periodo_id: grado.inscripciones.first.periodo.id)
+        if estado > 2 
+          Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).first.update(estado: estado, culminacion_periodo_id: current_periodo.id)
+        else
+          Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).first.update(estado: estado)
+        end
+
+        total1 = Grado.de_las_escuelas(escuelas_ids).culminado_en_periodo(current_periodo.id).where(estado: estado-1).count
+        total2 = Grado.de_las_escuelas(escuelas_ids).culminado_en_periodo(current_periodo.id).where(estado: estado).count
       end
       tr = view_context.render partial: '/admin/grados/detalle_registro', locals: {registro: grado, estado: estado}
       msg = "Cambio de estado de #{grado.estudiante.usuario.descripcion}"
 
-      render json: {tr: tr, msg: msg}, status: :ok
+      render json: {tr: tr, msg: msg, total1: total1, total2: total2}, status: :ok
 
     end
 
@@ -107,9 +117,13 @@ module Admin
     def index
       @titulo = 'Graduandos'
       escuelas_ids = current_admin.escuelas.ids
-
-      @tesistas = Inscripcionseccion.grados.del_periodo(current_periodo.id).de_las_escuelas(escuelas_ids).sin_calificar
       if escuelas_ids.count > 0
+      
+        @registros = Grado.de_las_escuelas(escuelas_ids).culminado_en_periodo(current_periodo.id)
+
+
+        @tesistas = Inscripcionseccion.proyectos.del_periodo(current_periodo.id).de_las_escuelas(escuelas_ids).sin_calificar
+
         @posibles_graduandos = Grado.de_las_escuelas(escuelas_ids).posible_graduando.culminado_en_periodo(current_periodo.id)
         @graduandos = Grado.de_las_escuelas(escuelas_ids).graduando.culminado_en_periodo(current_periodo.id)
         @graduados = Grado.de_las_escuelas(escuelas_ids).graduado.culminado_en_periodo(current_periodo.id)

@@ -134,6 +134,7 @@ Rails.application.routes.draw do
       member do
         get 'verificar_constancia_estudio'
         get 'exportar_lista_csv'
+        get 'exportar_historial_grado'
         get :kardex
         get 'acta_examen_excel'
         get 'acta_examen'

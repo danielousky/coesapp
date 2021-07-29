@@ -11,7 +11,16 @@ module ApplicationHelper
  #    def is_active_action(action_name)
  #        params[:action] == action_name ? "active" : nil
  #    end
+	def render_haml(haml, locals = {})
+		Haml::Engine.new(haml.strip_heredoc, format: :html5).render(self, locals)
+	end
 
+	def label_bst(content)
+		render_haml <<-HAML, content: content
+			.badge.badge-success
+				= content
+		HAML
+	end	
 
 	def capitalize_all frase
 		frase.split(" ").map{|a| a.length > 2 ? a.capitalize : a}.join(" ")

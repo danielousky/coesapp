@@ -81,7 +81,7 @@ class Inscripcionseccion < ApplicationRecord
 
 	scope :de_las_escuelas, lambda {|escuelas_ids| includes(:escuela).where("escuelas.id IN (?)", escuelas_ids).references(:escuelas)}
 
-	scope :grados, -> {joins(:asignatura).where("asignaturas.tipoasignatura_id = ?", Tipoasignatura::PROYECTO)}
+	scope :proyectos, -> {joins(:asignatura).where("asignaturas.tipoasignatura_id = ?", Tipoasignatura::PROYECTO)}
 
 	scope :posibles_graduandos, -> {joins(:grado).where("grados.estado = 2")}
 
@@ -377,7 +377,9 @@ class Inscripcionseccion < ApplicationRecord
 		if retirado?
 			valor = '--'
 		elsif seccion.asignatura.absoluta?
-			if self.aprobado?
+			if self.sin_calificar?
+				valor = 'SC'
+			elsif self.aprobado?
 				valor = 'A'
 			else
 				valor = 'AP'

@@ -1,5 +1,15 @@
-%tr
+%tr	
 	%td= link_to registro.estudiante.descripcion, usuario_path(registro.estudiante)
 	%td= registro.escuela.descripcion
 	%td= registro.descripcion_ultimo_plan
+	- if estado.eql? 1
+		%td
+			- if registro.is_a? Inscripcionseccion
+				= registro.periodo.id 
+				.text-muted= registro.asignatura.descripcion
+			- else
+				- aux = registro.inscripciones.proyectos.del_periodo(current_periodo.id).first
+				= aux.periodo.id
+				.text-muted= aux.asignatura.descripcion
+
 	%td= render partial: '/admin/grados/opciones', locals: {registro: registro, estado: estado}

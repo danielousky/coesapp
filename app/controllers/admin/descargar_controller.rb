@@ -46,17 +46,23 @@ module Admin
 			File.delete(file) if File.exist?(file)
 		end
 
+		def exportar_historial_grado
+			data = ExportarExcel.registro_inscripciones params[:id]
+			send_data data, filename: "registro_academico_#{params[:id]}.xls"
+		end
+
 		def exportar_lista_csv
 			if params[:periodo_id]
 				data = ExportarExcel.estudiantes_csv params[:id], params[:periodo_id]
-				send_data data, filename: "estudiantes_x_plan_#{params[:periodo_id]}_#{params[:id]}.csv"
+				send_data data, filename: "estudiantes_x_plan_#{params[:periodo_id]}_#{params[:id]}.xls"
 			elsif params[:seccion_id]
 				data = ExportarExcel.estudiantes_csv nil, nil, params[:seccion_id]
-				send_data data, filename: "estudiantes_x_seccion_#{params[:seccion_id]}.csv"
-			elsif params[:grado]
-				escuelas_ids = current_admin.escuelas.ids
-				data = ExportarExcel.estudiantes_csv nil, nil, nil, params[:grado], escuelas_ids
-				send_data data, filename: "grado_#{params[:grado]}.csv"
+				send_data data, filename: "estudiantes_x_seccion_#{params[:seccion_id]}.xls"
+			elsif params[:estado]
+				data = ExportarExcel.estudiantes_csv nil, current_periodo.id, nil, params[:estado], current_admin.escuelas.ids
+				value = Grado.estados.keys[params[:estado].to_i]
+				value += "_#{current_periodo.id}_#{current_admin.escuelas.ids.join('_')}"
+				send_data data, filename: "#{value}.xls"
 			end
 		end
 
