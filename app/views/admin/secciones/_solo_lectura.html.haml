@@ -22,7 +22,8 @@
 			- retirado = es.retirado?
 			%tr{class: es.tr_class_style_qualify}
 				%td= simple_tooltip_plan es.ultimo_plan if es.grado
-				%td= es.estudiante_id
+				%td
+					= link_to_if current_admin, es.estudiante_id, es.estudiante.usuario 
 				%td
 					- if current_admin
 						= link_to es.estudiante.usuario do
