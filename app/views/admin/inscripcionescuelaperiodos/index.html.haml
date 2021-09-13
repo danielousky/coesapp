@@ -26,8 +26,10 @@
 			%th Asig. Inscritas
 			%th Región
 			%th Créditos
-			%th C. Aprobados
+			%th C. Aprob.
 			%th Total Créditos Plan
+			%th Ingreso
+			%th Secretaría
 
 	%tbody
 
@@ -69,6 +71,9 @@
 				%td= ins.inscripcionsecciones.total_creditos
 				%td= ins.inscripcionsecciones.aprobado.total_creditos
 				%td= plan.creditos if plan
+				%td= grado.tipo_ingreso
+				%td= grado.inscrito_ucv_label
+
 
 
 
@@ -104,6 +109,7 @@
 		maxDate = null;
 
 		let tableData =  $('#dataTable').DataTable({
+			scrollX: true,
 			scrollY: 460,
 			pageLength: 50,
 			// lengthChange: false,

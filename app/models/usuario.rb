@@ -53,7 +53,12 @@ class Usuario < ApplicationRecord
 	end
 
 	def correo_descripcion
-		"#{apellidos.titleize} #{nombres.titleize} <#{email}>"
+		compilado = apellidos ? "#{apellidos.titleize} " : "" 
+
+		compilado += "#{nombres.titleize} " if nombres
+		compilado += "<#{email}>"
+
+		compilado
 	end
 
 	def datos_incompletos?

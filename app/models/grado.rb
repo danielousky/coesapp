@@ -78,6 +78,16 @@ class Grado < ApplicationRecord
 		"<span class='badge badge-info'>#{autorizar_inscripcion_en_periodo_decrip}</span>".html_safe
 	end
 
+	def inscrito_ucv_label
+		valor = 'No'
+		tipo = 'danger'
+		if self.inscrito_ucv
+			valor = 'Si'
+			tipo = 'success'
+		end
+		"<span class='badge badge-#{tipo}'>#{valor}</span>".html_safe
+	end
+
 
 	def printHorario periodo_id
 	data = Bloquehorario::DIAS
