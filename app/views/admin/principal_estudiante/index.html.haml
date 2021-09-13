@@ -80,9 +80,9 @@
 						.alert.alert-warning
 							%h6
 								%b Atención: 
-								Aún no reporta el pago de su inscripción. Recuerde que es un paso indispensable para completar su preinscripción. Haga clic 
+								Aún no ha reporta el pago de su inscripción. Recuerde que es un paso indispensable para completar el proceso. Haga clic 
 								= link_to 'aquí', new_reportepago_path(reportable_id: @inscripcionperiodo.id, reportable_type: @inscripcionperiodo.class.name)
-								para reportar el pago
+								para reportar el pago.
 						= link_to new_reportepago_path(reportable_id: @inscripcionperiodo.id, reportable_type: @inscripcionperiodo.class.name), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
 							= glyph 'chevron-right'
 							= "Reportar pago de inscripción el periodo #{@periodo.id}"

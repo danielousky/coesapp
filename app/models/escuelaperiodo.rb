@@ -23,7 +23,7 @@ class Escuelaperiodo < ApplicationRecord
 	end
 
 	def limite_creditos_permitidos
-		self.periodo.anual? ? 49 : 25
+		self.periodo.anual? ? 48 : 24
 	end
 
 end
