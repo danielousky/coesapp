@@ -35,7 +35,8 @@
 
 		- @inscripciones.each do |ins|
 			- grado = ins.grado
-			%tr
+			- clase = grado.nil? ? 'table-danger' : ''
+			%tr{class: clase}
 				- usuario = ins.estudiante.usuario
 				- if params[:status].eql? 'reported' and ins.reportepago
 					- obj = ins.reportepago
@@ -71,8 +72,8 @@
 				%td= ins.inscripcionsecciones.total_creditos
 				%td= ins.inscripcionsecciones.aprobado.total_creditos
 				%td= plan.creditos if plan
-				%td= grado.tipo_ingreso
-				%td= grado.inscrito_ucv_label
+				%td= grado.tipo_ingreso if grado
+				%td= grado.inscrito_ucv_label if grado
 
 
 
