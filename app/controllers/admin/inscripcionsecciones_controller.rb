@@ -109,6 +109,10 @@ module Admin
 				flash[:danger] = "Supera el límite de créditos permitidos por #{inscripcion.escuela.descripcion}. Por favor, corrija su inscripción e inténtelo de nuevo. Se procede a anular las selecciones previas."
 				
 				any_error = true
+			elsif (inscripcionescuelaperiodo.total_asignaturas > escupe.limite_asignaturas_permitidas)
+				flash[:danger] = "Supera el límite de asignaturas permitidas por #{inscripcion.escuela.descripcion}. Por favor, corrija su inscripción e inténtelo de nuevo. Se procede a anular las selecciones previas."
+				
+				any_error = true			
 			elsif (inscripcionescuelaperiodo.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO))
 				info_bitacora "Estudiante #{inscripcionescuelaperiodo.estudiante_id} Preinscrito en el periodo #{inscripcionescuelaperiodo.periodo.id} en #{inscripcionescuelaperiodo.escuela.descripcion}.", Bitacora::CREACION, inscripcionescuelaperiodo
 				begin

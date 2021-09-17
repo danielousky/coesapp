@@ -7,7 +7,7 @@
           .form-group
             = f.label :id, class: 'control-label col-md-6', value: 'Identificador'
             .col-md-12
-              = f.text_field :id, class: 'text_field form-control', autofocus: true, required: true, placeholder: "2018-02A"
+              = f.text_field :id, class: 'form-control', autofocus: true, required: true, placeholder: "2018-02A"
           .form-group
             = f.label :tipo, class: 'control-label col-md-6', value: 'Tipo de Periodo'
             .col-md-12
@@ -20,20 +20,23 @@
           .form-group
             = f.label :inicia, class: 'control-label col-md-6'
             .col-md-12
-              = f.date_field :inicia, class: 'text_field form-control', required: true
+              = f.date_field :inicia, class: 'form-control', required: true
       .col-md-6.border
         .m-md-3.p-md-3
           %h5.text-center.titulo Escuelas para este período:
           .form-group.opciones
+            
             - @escuelas = @periodo.escuelas
-            = check_box_tag nil, nil, false, {id: 'todos'}
-            Todas/niguna
-            %br
-            - Escuela.all.each do |e| 
-              = check_box_tag "escuelas[]", e.id, (@escuelas.include? e), {required: true}
-              = e.descripcion
-              %br
-
+            %table.table.table-sm
+              %thead
+                %tr
+                  %th= check_box_tag nil, nil, false, {id: 'todos', class: 'tooltip-btn', 'data-toggle': :tooltip, 'data-title': 'Todas/niguna'}
+                  %th Escuela
+                  %th Creditos
+                  %th Asignaturas
+              %tbody
+              - Escuela.all.each do |e|
+                %tr= render partial: '/admin/escuelaperiodos/form', locals: {e: e}
 
     .form-group.m-md-3
       .col-md-offset-2.col-md-10
@@ -44,21 +47,24 @@
 
 :javascript
 
+  function toggleElems(elem, valor){
+    let inputs = $('.input'+elem.value),
+    check = $(elem);
+    check.prop('checked', valor)
+    check.prop('required', valor);
+    inputs.prop('required', valor);
+    inputs.prop('disabled', !valor);
+  }
+
   $(function(){
       var todos = $('#todos');
       todos.change(function(){
-        if(todos.is(':checked')) {
-          $(':checkbox').prop('checked', true); 
-        }else {
-          $(':checkbox').prop('checked', false);
-        }
+        $('.incluir').each(function(){
+          toggleElems(this, todos.is(':checked'));
+        });
       });
-      var requiredCheckboxes = $('.opciones :checkbox[required]');
-      requiredCheckboxes.change(function(){
-          if(requiredCheckboxes.is(':checked')) {
-              requiredCheckboxes.removeAttr('required');
-          } else {
-              requiredCheckboxes.prop('required', 'required');
-          }
+
+      $('.incluir').change(function(){
+        toggleElems(this, $(this).is(':checked'));
       });
   });

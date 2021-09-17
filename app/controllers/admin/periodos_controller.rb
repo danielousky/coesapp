@@ -46,7 +46,9 @@ module Admin
           flash[:success] = flash[:danger] = ''
 
           params[:escuelas].each do |escuela_id|
-            if @periodo.escuelaperiodos.create!(escuela_id: escuela_id)
+            max_creditos = params[:max_creditos][escuela_id]
+            max_asignaturas = params[:max_asignaturas][escuela_id]
+            if @periodo.escuelaperiodos.create!(escuela_id: escuela_id, max_creditos: max_creditos, max_asignaturas: max_asignaturas)
               flash[:success] += "Escuela #{escuela_id} vinculada al período con éxito. "
               info_bitacora "Escuela con id: #{escuela_id} vinculada al periodo", Bitacora::ACTUALIZACION, @periodo
             else
@@ -73,12 +75,24 @@ module Admin
       flash[:info] = flash[:danger] = ''
       Escuela.all.each do |escuela|
         if params[:escuelas].include? escuela.id
-          unless @periodo.escuelas.include? escuela
-            if @periodo.escuelaperiodos.create!(escuela_id: escuela.id)
+          max_creditos = params[:max_creditos][escuela.id]
+          max_asignaturas = params[:max_asignaturas][escuela.id]
+          p "Creditos:   < #{max_creditos} >   ".center(200, "#")
+          p "Asignatuas:   < #{max_asignaturas} >   ".center(200, "#")
+
+          if !(@periodo.escuelas.include? escuela)
+            if @periodo.escuelaperiodos.create!(escuela_id: escuela.id, max_creditos: max_creditos, max_asignaturas: max_asignaturas)
               flash[:info] += "Escuelas #{escuela.descripcion} vinculada con éxito. \n" 
               info_bitacora "Escuela con id: #{escuela.id} VINCULADA al periodo", Bitacora::ACTUALIZACION, @periodo
             else
               flash[:danger] += "No se pudo vincular la escuela #{escuela.descripcion}"
+            end
+          else
+            if @periodo.escuelaperiodos.where(escuela_id: escuela.id).update(max_creditos: max_creditos, max_asignaturas: max_asignaturas)
+              flash[:info] += "Escuela #{escuela.descripcion} actualizada con éxito. \n" 
+              info_bitacora "Escuela con id: #{escuela.id} ACTUALIZADA", Bitacora::ACTUALIZACION, @periodo
+            else
+              flash[:danger] += "No se pudo actualizar la escuela #{escuela.descripcion}"
             end
           end
         elsif @periodo.escuelas.include? escuela 

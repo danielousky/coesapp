@@ -1,0 +1,31 @@
+- ep = e.escuelaperiodos.where(periodo_id: @periodo.id).first
+- max_cred = ep ? ep.max_creditos : 24
+- max_asig = ep ? ep.max_asignaturas : 5
+- presente = @escuelas.include? e
+%td= check_box_tag "escuelas[]", e.id, (@escuelas.include? e), {required: presente, class: 'incluir'}
+%td= e.descripcion
+%td= number_field_tag "max_creditos[#{e.id}]", {}, {value: max_cred, class: "form-control form-control-sm input#{e.id}", required: presente, disabled: !presente, step: 1, in: 0...61}
+%td= number_field_tag "max_asignaturas[#{e.id}]", {}, {value: max_asig, class: "form-control form-control-sm input#{e.id} ", required: presente, disabled: !presente, step: 1, in: 0...21}
+:javascript
+
+  function toggleElems(elem, valor){
+    let inputs = $('.input'+elem.value),
+    check = $(elem);
+    check.prop('checked', valor)
+    check.prop('required', valor);
+    inputs.prop('required', valor);
+    inputs.prop('disabled', !valor);
+  }
+
+  $(function(){
+      var todos = $('#todos');
+      todos.change(function(){
+        $('.incluir').each(function(){
+          toggleElems(this, todos.is(':checked'));
+        });
+      });
+
+      $('.incluir').change(function(){
+        toggleElems(this, $(this).is(':checked'));
+      });
+  });

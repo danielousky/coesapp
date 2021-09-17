@@ -1,11 +1,16 @@
 = hidden_field_tag 'total_creditos', @totalCreditosReservados
-- tableColor = (@totalCreditosReservados > @limiteCreditos) ? 'table-danger' : 'table-success'
+= hidden_field_tag 'total_asignaturas', @totalAsignaturasReservadas
+- tableColor = (@totalCreditosReservados > @limiteCreditos or @totalAsignaturasReservadas > @limiteAsignaturas) ? 'table-danger' : 'table-success'
 
 %table.table.table-sm.responsive-table
   %tbody
     %tr{class: tableColor}
+      %td{style: 'width: 66%;text-align:right;'} Total Créditos Seleccionados:
       %td
-      %td{style: 'width: 65%;text-align:right;'} Total a Inscribir:
+        %b.text-right#totalCreditosNumero= @totalCreditosReservados
+        = "de #{@limiteCreditos} permitidos."
+    %tr{class: tableColor}
+      %td{style: 'width: 66%;text-align:right;'} Total Asignaturas Seleccionadas:
       %td
-        %b.text-right#totalCreditosNumero{style: 'width: 5%'}= @totalCreditosReservados
-      %td{style: 'width: 30%'}= "Créditos de #{@limiteCreditos} permitidos"
+        %b.text-right#totalAsignaturasNumero= @totalAsignaturasReservadas
+        = "de #{@limiteAsignaturas} permitidas."

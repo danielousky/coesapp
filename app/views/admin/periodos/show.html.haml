@@ -19,11 +19,15 @@
       %tr
         %th Identificador
         %th Descripción
+        %th límite Créditos
+        %th límite Asignaturas
     %tbody
-      - @periodo.escuelas.each do |escuela| 
+      - @periodo.escuelaperiodos.each do |ep| 
         %tr
-          %td= escuela.id
-          %td= escuela.descripcion
+          %td= ep.escuela.id
+          %td= ep.escuela.descripcion
+          %td= ep.max_creditos
+          %td= ep.max_asignaturas
 
   .form-group
     = btn_atras(periodos_path)

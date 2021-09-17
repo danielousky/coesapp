@@ -34,6 +34,7 @@
 			- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first unless @escupe.nil?
 			- if escuela.periodo_inscripcion
 				- @limiteCreditos = @escupe.limite_creditos_permitidos
+				- @limiteAsignaturas = @escupe.limite_asignaturas_permitidas
 				- if @inscripcionperiodo.nil? or (@inscripcionperiodo and @inscripcionperiodo.reservado?)
 					- if escuela.id.eql? 'IDIO' and @periodo.id.eql? '2019-02A'
 						-# inscripciones_del_periodo = @inscripciones.del_periodo(periodo.id)#.inscritos
@@ -49,6 +50,7 @@
 					- else
 						-# periodo_anterior = escuela.periodo_anterior @periodo.id
 						- @totalCreditosReservados = @inscripcionperiodo ? @inscripcionperiodo.total_creditos : 0
+						- @totalAsignaturasReservadas = @inscripcionperiodo ? @inscripcionperiodo.total_asignaturas : 0
 						- periodo_anterior = escuela.periodo_anterior @periodo.id
 						-# periodo_anteanterior = escuela.periodo_anterior periodo_anterior.id
 						-if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? ))
@@ -61,7 +63,7 @@
 							-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
 							- titulo_modal = "Proceso de Preinscripción #{@periodo.id}"
 							- titulo_btn = "Preinscribirse"
-							- msgDanger = "Seleccione las asignaturas que desea preinscribir"
+							- msgDanger = "Seleccione las asignaturas que desea preinscribir. Recuerde mover el scroll para ver todas las asignaturas ofertadas."
 							- url = '/inscripcionsecciones/preinscribirse'
 							- idModal = "preinscripcion#{escuela.id}"
 							= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas_x_escuela, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}

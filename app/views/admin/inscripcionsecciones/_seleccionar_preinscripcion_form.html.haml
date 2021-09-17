@@ -15,13 +15,8 @@
       .alert.alert-warning.text-center
         = msgDanger.html_safe
         %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} &times;
-      .alert.alert-danger.text-center
-        %b Atención:
-        Una vez que inicie la selección de asignaturas, evite refrescar la pantalla para conservar su cupo.
-        %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} &times;
-
       = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
-        .modal-body.border.p-2{style: 'overflow-y:scroll;max-height:300px'}
+        .modal-body.border.p-2{style: 'overflow-y:scroll;max-height:280px'}
           = hidden_field_tag 'estudiante_id', @estudiante.id
           = hidden_field_tag 'escuelaperiodo_id', @escupe.id
 
@@ -38,8 +33,10 @@
         = render partial: '/admin/inscripcionsecciones/total_creditos'
         .modal-footer
           / %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
-          - disabledClass = (@totalCreditosReservados > 0) ? '' : 'disabled'
-          = submit_tag title_btn, class: "#{disabledClass} btn btn-success btn-sm", id: 'submitBtn', 'data-disable-with': 'Enviando', disabled: !(@totalCreditosReservados > 0)
+          - enableSubmit = (@totalCreditosReservados > 0 and @totalCreditosReservados <= @limiteCreditos and @totalAsignaturasReservadas > 0 and @totalAsignaturasReservadas <= @limiteAsignaturas)
+
+          - disabledClass = enableSubmit ? '' : 'disabled'
+          = submit_tag title_btn, class: "#{disabledClass} btn btn-success btn-sm", id: 'submitBtn', 'data-disable-with': 'Enviando', disabled: !enableSubmit
 
 :javascript
 
@@ -85,35 +82,37 @@
     // let selecteds = $(".selectInscripcion :selected");
     let selecteds = $(".selectInscripcion option:selected");
 
-    let creditosSeleccionados = 0;
-    let total = $('#totalCreditosNumero');
-    let asigTotal = 0
+    let totalCredSel = 0;
+    let totalAsigSel = 0
+    let totalCred = $('#totalCreditosNumero');
+    let totalAsig = $('#totalAsignaturasNumero');
     selecteds.each(function(){
       if ($(this).val() != ''){
-        asigTotal += 1;
-        creditosSeleccionados += Number($(this).parent().attr('creditos'));
+        totalAsigSel += 1;
+        totalCredSel += Number($(this).parent().attr('creditos'));
       }
     });
 
-    total.text(creditosSeleccionados);
-    $('#total_creditos').val(total.text());
+    totalCred.text(totalCredSel);
+    totalAsig.text(totalAsigSel);
+
+    $('#total_creditos').val(totalCred.text());
+    $('#total_asignaturas').val(totalAsig.text());
     let limiteCreditos = Number(#{@limiteCreditos})
+    let limiteAsignaturas = Number(#{@limiteAsignaturas})
     let submitBtn = $('#submitBtn');
-    if ((asigTotal > 0) & (creditosSeleccionados <= limiteCreditos)){
-      submitBtn.removeClass('disabled');
-      submitBtn.attr('disabled', false);
-    }else{
-      submitBtn.addClass('disabled');
-      submitBtn.attr('disabled', 'disabled');
-    }
-    let tr = total.closest('tr')
-    if (creditosSeleccionados > limiteCreditos){
-      tr.removeClass('table-success');
-      tr.addClass('table-danger');
-    }else{  
-      tr.removeClass('table-danger');
-      tr.addClass('table-success');
-    }
+
+    let activo = ((totalAsigSel > 0) & (totalAsigSel <= limiteAsignaturas) & (totalCredSel <= limiteCreditos)),
+    tr = totalCred.closest('tr');
+    tr2 = totalAsig.closest('tr');
+
+    submitBtn.toggleClass('disabled', !activo);
+    submitBtn.prop('disabled', !activo);
+
+    tr.toggleClass('table-success', activo);
+    tr.toggleClass('table-danger', !activo);
+    tr2.toggleClass('table-success', activo);
+    tr2.toggleClass('table-danger', !activo);
   }
   
   $('.selectInscripcion').on('change', function(event){
