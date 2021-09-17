@@ -32,8 +32,8 @@
                 %tr
                   %th= check_box_tag nil, nil, false, {id: 'todos', class: 'tooltip-btn', 'data-toggle': :tooltip, 'data-title': 'Todas/niguna'}
                   %th Escuela
-                  %th Creditos
-                  %th Asignaturas
+                  %th Límite Creditos
+                  %th Límite Asignaturas
               %tbody
               - Escuela.all.each do |e|
                 %tr= render partial: '/admin/escuelaperiodos/form', locals: {e: e}
