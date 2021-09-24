@@ -52,7 +52,7 @@
 					%td.align-middle= inscripcion.segunda_calificacion
 					%td.align-middle= inscripcion.tercera_calificacion
 				%td.align-middle= inscripcion.valor_calificacion true
-				%td.align-middle.text-center= inscripcion.asignatura.orden if inscripcion.asignatura
+				%td.align-middle.text-center= inscripcion.asignatura.anno if inscripcion.asignatura
 				- if current_admin and controller_name.eql? 'usuarios'
 
 					- if inscripcion.foranea? 
