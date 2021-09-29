@@ -1,5 +1,6 @@
-- atras = params[:back] ? params[:back] : reportepagos_path
-= btn_atras atras
+- if current_admin and current_admin.autorizado? 'Reportepagos', 'show'
+  - atras = params[:back] ? params[:back] : reportepagos_path
+  = btn_atras atras
 .border.m-3.p-3{style: 'font-size: 14px;'}
   .float-right.badge.badge-dark
     %b Fecha:
