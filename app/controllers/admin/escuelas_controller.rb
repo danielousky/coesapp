@@ -157,10 +157,10 @@ module Admin
     # PATCH/PUT /escuelas/1.json
     def update
       respond_to do |format|
-
         if @escuela.update(escuela_params)
           info_bitacora_crud Bitacora::ACTUALIZACION, @escuela
-          format.html { redirect_to @escuela, notice: 'Escuela actualizada con éxito.' }
+          flash[:success] = 'Escuela actualizada con éxito.'
+          format.html { redirect_back fallback_location: @escuela}
           format.json { render :show, status: :ok, location: @escuela }
         else
           format.html { render :edit }
@@ -252,7 +252,7 @@ module Admin
 
       # Never trust parameters from the scary internet, only allow the white list through.
       def escuela_params
-        params.require(:escuela).permit(:descripcion, :id, :inscripcion_abierta, :habilitar_retiro_asignaturas, :habilitar_cambio_seccion)
+        params.require(:escuela).permit(:descripcion, :id, :inscripcion_abierta, :habilitar_retiro_asignaturas, :habilitar_cambio_seccion, :periodo_inscripcion_id, :periodo_activo_id)
       end
   end
 end

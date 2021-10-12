@@ -97,10 +97,11 @@ class ApplicationController < ActionController::Base
 
 	def inicial_current_periodo
 		escuela = current_escuela
-		if escuela and escuela.periodos.count > 0 
-			return escuela.periodos.order(:inicia).last 
+
+		if escuela
+			escuela.periodo_activo ? escuela.periodo_activo : escuela.periodos.order(inicia: :desc).last
 		else
-			return Periodo.order(:inicia).last
+			Periodo.order(:inicia).last
 		end
 	end
 

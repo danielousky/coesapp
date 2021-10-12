@@ -19,10 +19,7 @@
           = raw (@titulo ? @titulo : action_name.titleize)
       %li.nav-item
         - if current_admin
-          = link_to "Periodo: #{current_periodo.id}", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold'}
-        - else
-          %b.text-info.nav-link
-            = "Periodo: #{current_periodo.id}"
+          = link_to "Periodo Activo: #{current_periodo.id}", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold'}
       = render 'layouts/nav_session_options' 
 
 = render 'admin/principal_admin/cambiar_sesion_periodo' if current_admin

@@ -2,7 +2,7 @@
 -# Este botón puede eliminarse si decidimos desplegar la modal al inicio
 = link_to 'javascript:void(0)', onclick: "$('##{id_modal}').modal();", class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
   = glyph 'education'
-  = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{@periodo.id}"
+  = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{@periodo_inscripcion.id}"
 
 .modal.fade{'aria-hidden': false, role: :dialog, id: id_modal, data: {backdrop: 'static', keyboard: :false} }
   .modal-dialog.modal-lg
@@ -11,7 +11,7 @@
         .text-center{id: "#{id_modal}Title"}
           %h4= title
           %h5= "Escuela de #{@escuela.descripcion_filtro}"
-          %h5= "Período Académico #{@periodo.id}"
+          %h5= "Período Académico #{@periodo_inscripcion.id}"
       .alert.alert-warning.text-center
         = msgDanger.html_safe
         %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} &times;
@@ -23,7 +23,7 @@
           = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: asignaturas_ofertadas, pcis: false}
 
           - unless (@escuela.id.eql? 'POST')
-            - pcis = Asignatura.pcis(@periodo.id).sin_la_escuela(@escuela.id)
+            - pcis = Asignatura.pcis(@periodo_inscripcion.id).sin_la_escuela(@escuela.id)
             - if pcis.any?
 
               %hr
@@ -147,7 +147,7 @@
       alert('ATENCIÓN: DEBE SELECCIONAR AL MENOS UNA ASIGNATURA A INSCRIBIR');
 
     }else{
-      msg = `${total} Asignaturas a preinscribir en el período académico #{@periodo.id} de la Escuela de #{@escuela.descripcion_filtro}:`;
+      msg = `${total} Asignaturas a preinscribir en el período académico #{@periodo_inscripcion.id} de #{@escuela.descripcion_filtro}:`;
       msg += selected;
       msg += '\n';
       msg += '\n';

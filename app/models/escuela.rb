@@ -2,6 +2,9 @@ class Escuela < ApplicationRecord
 
 	# ASOCIACIONES
 	belongs_to :periodo_inscripcion, foreign_key: 'periodo_inscripcion_id', class_name: 'Periodo', optional: true
+	belongs_to :periodo_activo, foreign_key: 'periodo_activo_id', class_name: 'Periodo'#, optional: true
+
+	validates :periodo_activo_id, presence: true
 
 	has_many :grados
 	has_many :estudiantes, through: :grados

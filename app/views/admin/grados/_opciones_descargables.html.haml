@@ -1,0 +1,8 @@
+- if @grado.inscripciones.any?
+	.float-right
+		= btn_success 'download-alt', "#{kardex_descargar_path(@grado.id.join("-"))}", "Descargar Kardex de #{@nickname}", 'Kardex'
+		- if current_admin
+			%td= btn_success 'download-alt', exportar_historial_grado_descargar_path(@grado.id.join('-')), "Descargar registro academico en scv (Excel)", 'Record Académico en Excel'
+		
+		- if false 
+			%td= btn_success 'download-alt', "#{constancia_estudio_descargar_path(@inscripcionperiodo.id, :pdf)}", "Constancia de Estudio de #{@nickname}", 'Constancia Estudio'

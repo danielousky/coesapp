@@ -10,7 +10,7 @@
       %th{style: 'width: 30%'} Sección
   %tbody
     - asignaturas.each_with_index do |asig, i|
-      - value = @inscripciones.joins(:asignatura).joins(:seccion).where("asignaturas.id = '#{asig.id}' AND secciones.periodo_id = '#{@periodo.id}'").first
+      - value = @inscripciones.joins(:asignatura).joins(:seccion).where("asignaturas.id = '#{asig.id}' AND secciones.periodo_id = '#{@periodo_inscripcion.id}'").first
       - value = value ? value.seccion_id : nil
       - if @aprobadas.include? asig.id
         - aprobada = true
@@ -38,7 +38,7 @@
         %td.align-middle.text-center= asig.creditos
         %td.align-middle.pl-3
           -unless aprobada
-            - secciones = asig.secciones.del_periodo(@periodo.id)#.con_cupos
+            - secciones = asig.secciones.del_periodo(@periodo_inscripcion.id)#.con_cupos
             - if secciones.any?
               - secciones = secciones.select{|s| s.hay_cupos? or s.estudiante_inscrito? @estudiante.id }
 

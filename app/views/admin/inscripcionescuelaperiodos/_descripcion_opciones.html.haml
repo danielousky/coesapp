@@ -1,0 +1,37 @@
+- if ins_esc_per
+	- if @estudiante and (current_admin and current_admin.autorizado? 'Inscripcionsecciones', 'inscribir')
+		- if ins_esc_per and ins_esc_per.preinscrito?
+			= link_to "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", class: "btn btn-sm btn-warning tooltip-btn mr-2", 'data_toggle': :tooltip,  title: "Confirmar Inscripción en el período #{ins_esc_per.periodo.id}" do
+				= glyph 'education'
+				¡Confirmar Inscripción!
+		- else
+			- boton_nombre = (current_admin and ins_esc_per and ins_esc_per.inscrito?) ? 'Modificar Inscripción' : 'Inscribir'
+			= btn_inscribir "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", "Inscripción en el periodo actual", boton_nombre
+
+	.float-right
+		- if ins_esc_per.reportepago
+			- @reportepago = ins_esc_per.reportepago
+			- content = render file: "/admin/reportepagos/show"
+
+			= render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "reportarPago#{@reportepago.id}", content: content, title: "Reporte de Pago #{ins_esc_per.decripcion_amplia}", width: "modal-lg"}
+
+			= link_to 'javascript:void(0)', class: 'btn btn-sm btn-success', onclick: "$('#reportarPago#{@reportepago.id}').modal()" do
+				= glyph 'check'
+				= "Reporte de Pago: "
+				= ins_esc_per.reportepago.numero
+				- if current_admin and (current_admin.autorizado? 'Reportepagos', 'edit')
+					= link_to edit_reportepago_path(@reportepago), class: 'btn btn-primary btn-sm tooltip-btn ml-2', data: {toggle: :tooltip}, title: 'Editar Reporte de Pago'  do
+						= glyph 'pencil'
+
+		- else
+			= link_to new_reportepago_path(reportable_id: ins_esc_per.id, reportable_type: ins_esc_per.class.name), class: 'btn btn-sm btn-danger' do	
+				= glyph 'remove'
+				Sin Reporte de Pago
+
+- if false
+	%td= btn_success 'download-alt', "#{constancia_preinscripcion_descargar_path(@estudiante.id)}?escuela_id=#{@escuela.id}", "Constancia de Preinscripción de #{@nickname}", 'Constancia Preinscripción'
+- if false #current_admin
+	%td= btn_toggle_modal 'plus', "Inscribir a #{@nickname} en una sección de esta escuela en periodo #{current_periodo.id}", "Inscribir en seccion del #{current_periodo.id}", "estudiante_seccion_#{@escuela.id}"
+	= render partial: '/admin/inscripcionsecciones/form'
+
+	

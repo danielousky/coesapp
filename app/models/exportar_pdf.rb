@@ -763,10 +763,6 @@ class ExportarPdf
 				pdf.text escuela.descripcion.upcase, align: :center, size: size
 			end
 		end
-		if estudiante and estudiante.usuario and estudiante.usuario.foto_perfil and estudiante.usuario.foto_perfil.attached?
-			require 'open-uri'
-			pdf.image open(estudiante.usuario.foto_perfil.service_url), at: [450, 720], height: 80 
-		end
 
 		pdf.move_down 5
 		pdf.text titulo, align: :center, size: size, style: :bold

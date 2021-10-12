@@ -27,18 +27,16 @@
 				= link_to 'javascript:void(0)', onclick: "$('#reportarPagoGrado#{@grado.id_flat}').modal()", class: 'm-3 btn btn-success' do
 					= glyph 'plus'
 					= "Reportar Pago Ingreso a #{escuela.descripcion}"
-			
-			- @periodo = escuela.periodo_inscripcion
-			- @periodo ||= escuela.periodos.order(:inicia).last 
-			- @escupe = escuela.escuelaperiodos.where(periodo_id: @periodo.id).first
-			- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first unless @escupe.nil?
-			- if escuela.periodo_inscripcion
+
+			- if @periodo_inscripcion = escuela.periodo_inscripcion
+				- @escupe = escuela.escuelaperiodos.where(periodo_id: @periodo_inscripcion.id).first
+				- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first unless @escupe.nil?
 				- @limiteCreditos = @escupe.limite_creditos_permitidos
 				- @limiteAsignaturas = @escupe.limite_asignaturas_permitidas
 				- if @inscripcionperiodo.nil? or (@inscripcionperiodo and @inscripcionperiodo.reservado?)
-					- if escuela.id.eql? 'IDIO' and @periodo.id.eql? '2019-02A'
+					- if escuela.id.eql? 'IDIO' and @periodo_inscripcion.id.eql? '2019-02A'
 						-# inscripciones_del_periodo = @inscripciones.del_periodo(periodo.id)#.inscritos
-						- inscripciones_del_periodo = @inscripciones.del_periodo(@periodo.id)#.preinscritos
+						- inscripciones_del_periodo = @inscripciones.del_periodo(@periodo_inscripcion.id)#.preinscritos
 						- if inscripciones_del_periodo.any?
 							- titulo_modal = "Proceso de Confirmación de Inscripción"
 							- titulo_btn = "Confirmación Inscripción"
@@ -48,20 +46,20 @@
 							= render partial: 'admin/inscripcionsecciones/confirmar_inscripcion_form', locals: {inscripciones: inscripciones_del_periodo, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
 
 					- else
-						-# periodo_anterior = escuela.periodo_anterior @periodo.id
+						-# periodo_anterior = escuela.periodo_anterior @periodo_inscripcion.id
 						- @totalCreditosReservados = @inscripcionperiodo ? @inscripcionperiodo.total_creditos : 0
 						- @totalAsignaturasReservadas = @inscripcionperiodo ? @inscripcionperiodo.total_asignaturas : 0
-						- periodo_anterior = escuela.periodo_anterior @periodo.id
+						- periodo_anterior = escuela.periodo_anterior @periodo_inscripcion.id
 						-# periodo_anteanterior = escuela.periodo_anterior periodo_anterior.id
-						-if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? ))
-							- # if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
+						-if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? ))
+							- # if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
 							- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
 
-							- asignaturas_ofertadas_x_escuela = escuela.asignaturas.activas(@periodo.id).order(anno: :asc )
+							- asignaturas_ofertadas_x_escuela = escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc )
 							-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
 							- @aprobadas = @inscripciones.aprobadas.joins(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
 							-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
-							- titulo_modal = "Proceso de Preinscripción #{@periodo.id}"
+							- titulo_modal = "Proceso de Preinscripción #{@periodo_inscripcion.id}"
 							- titulo_btn = "Preinscribirse"
 							- msgDanger = "Seleccione las asignaturas que desea preinscribir. Recuerde mover el scroll para ver todas las asignaturas ofertadas."
 							- url = '/inscripcionsecciones/preinscribirse'
@@ -75,10 +73,15 @@
 							.alert.alert-warning
 								%b Atención: 
 								Verifique alguna de las siguientes opciones con el personal administrativo para habilitar su inscripción:
-								= "El estudiante aún no  esta confirmado o reincorporado en #{escuela.descripcion.titleize}"
-								= "El estudiante no debe tener registros académicos previos (Nuevos Ingresos) o debe haber inscrito asignaturas en el período inmediatemente anterior #{periodo_anterior.id} (Regulares)."
+								%ul
+									- if !@grado.confirmado? and !@grado.reincorporado?
+										%li= "No esta confirmado o asignado como reincorporado en #{escuela.descripcion.titleize} para poder realizar su preinscribirse."
+									- if !@grado.inscripciones.del_periodo(periodo_anterior.id).any?
+										%li= "Debe haber inscrito asignaturas en el período inmediatemente anterior #{periodo_anterior.id} (Regulares)."
+									- if @grado.inscripciones.del_periodo(@periodo_inscripcion.id).any?
+										%li= "Ya ha realizado su inscripción en #{@periodo_inscripcion.id} (Nuevo Ingreso)." 
 				- else
-					- if @inscripcionperiodo.reportepago.nil? and @periodo.es_mayor_al_anno? 2019
+					- if @inscripcionperiodo.reportepago.nil? and @periodo_inscripcion.es_mayor_al_anno? 2019
 						.alert.alert-warning
 							%h6
 								%b Atención: 
@@ -87,7 +90,7 @@
 								para reportar el pago.
 						= link_to new_reportepago_path(reportable_id: @inscripcionperiodo.id, reportable_type: @inscripcionperiodo.class.name), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
 							= glyph 'chevron-right'
-							= "Reportar pago de inscripción el periodo #{@periodo.id}"
+							= "Reportar pago de inscripción el periodo #{@periodo_inscripcion.id}"
 
 
 
@@ -114,7 +117,7 @@
 					- @estudiante.combinaciones.each do |c| 
 						%p= c.descripcion
 
-			= render partial: '/admin/estudiantes/historial_academico'
+			= render partial: '/admin/grados/historial_academico'
 
 		- if false #@escuela.id.eql? 'IDIO' and !@estudiante.combinaciones.any?
 			- @idiomas = escuela.departamentos.reject{|i| i.id.eql? 'EG' or i.id.eql? 'TRA'; }

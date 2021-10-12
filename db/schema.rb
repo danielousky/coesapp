@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_16_132010) do
+ActiveRecord::Schema.define(version: 2021_10_06_222236) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -220,7 +220,9 @@ ActiveRecord::Schema.define(version: 2021_09_16_132010) do
     t.boolean "habilitar_retiro_asignaturas", default: true
     t.boolean "habilitar_cambio_seccion", default: true
     t.string "periodo_inscripcion_id"
+    t.string "periodo_activo_id"
     t.index ["id"], name: "index_escuelas_on_id"
+    t.index ["periodo_activo_id"], name: "fk_rails_490583ce06"
     t.index ["periodo_inscripcion_id"], name: "fk_rails_5f0f1fec52"
   end
 
@@ -568,6 +570,7 @@ ActiveRecord::Schema.define(version: 2021_09_16_132010) do
   add_foreign_key "direcciones", "estudiantes", primary_key: "usuario_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "escuelaperiodos", "escuelas", on_update: :cascade, on_delete: :cascade
   add_foreign_key "escuelaperiodos", "periodos", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "escuelas", "periodos", column: "periodo_activo_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "escuelas", "periodos", column: "periodo_inscripcion_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "estudiantes", "citahorarias", name: "estudiantes_ibfk_1", on_update: :cascade, on_delete: :nullify
   add_foreign_key "estudiantes", "usuarios", primary_key: "ci", name: "estudiantes_ibfk_3", on_update: :cascade, on_delete: :cascade

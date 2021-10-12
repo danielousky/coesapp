@@ -120,7 +120,7 @@
               -# @curso = @estudiante.grados.where(escuela_id: escuela.id).first
               -# @inscripciones = @curso.inscripciones
               - @periodos = Periodo.where(id: periodo_ids).order(inicia: :desc)
-              = render partial: '/admin/estudiantes/historial_academico'
+              = render partial: '/admin/grados/historial_academico'
 
     - if @profesor
       - activeTab = (session[:usuarioTypeTab].eql? 'profesor') ? 'active' : ''  

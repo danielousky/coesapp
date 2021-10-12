@@ -71,6 +71,16 @@ class Grado < ApplicationRecord
 	# 	Inscripcionseccion.where("estudiante_id = ? and escuelas_id = ?", estudiante_id, escuela_id)
 	# end
 
+
+	def inscripciones_en_periodo_activo
+		escupe_activo = escuela.escuelaperiodos.where(periodo_id: escuela.periodo_activo_id).first
+		estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: escupe_activo.id)
+	end
+
+	def inscripto_en_periodo_activo?
+		inscripnes_en_periodo_activo.any?
+	end
+
 	def autorizar_inscripcion_en_periodo_decrip
 		autorizar_inscripcion_en_periodo_id ? autorizar_inscripcion_en_periodo_id : 'Sin Autorización Especial'
 	end

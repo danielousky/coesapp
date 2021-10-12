@@ -61,6 +61,10 @@ class Administrador < ApplicationRecord
 		end
 	end
 
+	def periodo_activo
+		escuelas.first.periodo_activo
+	end
+
 	def escuelas
 		if self.escuela_id
 			return Escuela.where(id: self.escuela_id)
