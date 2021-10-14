@@ -696,10 +696,15 @@ class ExportarPdf
 		data = [["FECHA DE LA EMISIÓN: <b>#{Time.now.strftime('%d/%m/%Y %I:%M %p')}</b>", ""]]
 		data << ["EJERCICIO: <b>#{seccion.ejercicio}</b>", "ACTA No.: <b>#{seccion.acta_no.upcase}</b>" ]
 		if seccion.escuela.id.eql? 'POST'
+			
 			plan_id = seccion.asignatura.id[0..3]
-			plan = Plan.find plan_id
+			if plan = Plan.where(id: plan_id).first 
+				descripcion = plan.descripcion.upcase
+			else
+				descripcion = seccion.asignatura.descripcion.upcase
+			end
 
-			data << ["<b>#{plan.descripcion.upcase if plan}</b>", "PERÍODO ACADÉMICO: <b>#{seccion.periodo.anno}</b>" ]
+			data << ["<b>#{descripcion}</b>", "PERÍODO ACADÉMICO: <b>#{seccion.periodo.anno}</b>" ]
 
 		else
 			data << ["ESCUELA: <b>#{seccion.escuela.descripcion.upcase}</b>", "PERÍODO ACADÉMICO: <b>#{seccion.periodo.anno}</b>" ]
