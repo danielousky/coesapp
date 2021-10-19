@@ -126,7 +126,7 @@ module Admin
         # @graduados = Grado.de_las_escuelas(escuelas_ids).graduado.culminado_en_periodo(current_periodo.id)
       else
         flash[:danger] = 'Debe tener al menos una escuela asociada. Por favor diríjase al personal administrativo correspondiente para solventar esto y vuelva a intentarlo.'
-        redirect_back fallback_location: principal_admin_path
+        redirect_back fallback_location: principal_admin_index_path
       end
     end
     # Fin Index
