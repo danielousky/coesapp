@@ -12,6 +12,17 @@
       = form_tag(usuarios_path,{class: 'form-inline my-2 my-lg-0', role: :search, method: :get} ) do
         = text_field_tag :search, params[:search],{class: 'form-control mr-sm-2 form-control-sm', required: true, "aria-label" => "Search", placeholder: "Buscar Usuario", type: "search"}
         %button.btn.btn-outline-success.btn-sm.m-0{:type => "submit"} Buscar
+
+
+      - if (current_admin and current_admin.autorizado? 'Inscripcionsecciones', 'inscribir')
+        - escuelas = current_admin.escuelas
+        .ml-2
+        - if escuelas.count.eql? 1
+          = btn_inscribir "/inscripcionsecciones/buscar_estudiante?escuela_id=#{escuelas.first.id}", "Inscribir en #{escuelas.first.descripcion}", nil
+        - else
+          - @muchas_escuelas = true
+          = btn_inscribir 'javascript:void(0)', 'Inscribir', nil , "$('#inscribirSelEscuela').modal('show');"
+
     %ul.navbar-nav.mr-auto
     %ul.navbar-nav
       %li
@@ -21,5 +32,12 @@
         - if current_admin
           = link_to "Periodo Activo: #{current_periodo.id}", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold'}
       = render 'layouts/nav_session_options' 
+
+
+- if @muchas_escuelas
+  - content = collection_select(:escuela_id, nil, escuelas, :id, :descripcion, {:prompt => "-- Seleccione Escuela --"}, {required: true, class: 'form-control'})
+  - url = "/inscripcionsecciones/buscar_estudiante"
+  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "inscribirSelEscuela", title: "Seleccione Escuela en la que desea Inscribir", content: content, width: '', metodo: :get}
+
 
 = render 'admin/principal_admin/cambiar_sesion_periodo' if current_admin

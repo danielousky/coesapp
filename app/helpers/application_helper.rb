@@ -203,8 +203,8 @@ module ApplicationHelper
 		end
 	end	
 
-	def btn_inscribir href, title_tooltip, value
-		btn_toggle 'btn-success', 'education', href, title_tooltip, value
+	def btn_inscribir href, title_tooltip, value, onclick_action=nil
+		btn_toggle 'btn-success', 'education', href, title_tooltip, value, onclick_action
 	end
 
 	def btn_add_success href, title_tooltip, value

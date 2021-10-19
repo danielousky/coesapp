@@ -18,7 +18,7 @@
             %br
             .control-group
               %span.control-label
-                Nueva Período:
+                Período a Cambiar:
               .controls
                 - if current_escuela and current_escuela.periodos.count > 0
                   - periodos = current_escuela.periodos.order('inicia DESC').reject{|pe| pe.eql? current_periodo}

@@ -669,7 +669,7 @@ module Admin
 
 			if @escuela.nil?
 				flash[:danger] = "Escuela no encontrada"
-				redirect_back fallback_location: periodos_path
+				redirect_back fallback_location: principal_admin_index_path
 			end
 
 

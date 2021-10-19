@@ -1,4 +1,5 @@
-.modal.fade{'aria-hidden': true, role: :dialog, id: id_modal}
+- metodo ||= :post
+.modal.fade{'aria-hidden': true, role: :dialog, id: id_modal, tabindex: "-1"}
   .modal-dialog{class: width}
     .modal-content
       .alert.alert-info
@@ -6,7 +7,7 @@
           %span{"aria-hidden": true} ×      
         %h4.text-center{id: "#{id_modal}Title"}= title
       .modal-body.border.p-2
-        = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal') do
+        = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', method: metodo) do
           = content
           .modal-footer
             %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
