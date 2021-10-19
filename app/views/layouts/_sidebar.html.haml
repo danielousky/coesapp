@@ -25,7 +25,8 @@
       - else
         = sidebar_sub_item 'asig', 'Asignaturas', 'modal-window'
         #asigSubMenu.list-subgroup.list-group-flush.d-none
-          - current_admin.escuelas.joins(:escuelaperiodos).where('escuelaperiodos.periodo_id = ?', current_admin.periodo_activo.id).each do |esc| 
+          -# current_admin.escuelas.joins(:escuelaperiodos).where('escuelaperiodos.periodo_id = ?', current_admin.periodo_activo.id).each do |esc| 
+          - current_admin.escuelas.joins(:escuelaperiodos).where('escuelaperiodos.periodo_id = ?', current_periodo.id).each do |esc| 
             = sidebar_link_to_item "Asignaturas de #{esc.descripcion}", "#{asignaturas_path}?escuela_id=#{esc.id}"
 
     - if (current_admin.autorizado? 'Secciones', 'index') or (current_admin.autorizado? 'Grados', 'citas_horarias') or (current_admin.autorizado? 'Grados', 'index_nuevos') 
