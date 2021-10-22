@@ -151,7 +151,7 @@ class ExportarPdf
 		pdf.move_down 5
 
 
-		pdf.text "Quien suscribe, Jefe de Control de Estudios de la Facultad de HUMANIDADES Y EDUCACIÓN, de la Universidad Central de Venezuela, por medio de la presente hace constar que #{usuario.la_el} BR. <b>#{usuario.apellido_nombre}</b>, titular de la Cédula de Identidad <b>#{usuario.id}</b> realizó su proceso de preinscripción en la facultad de Humanidades y Educación para insgresar en la escuela de <b>#{escuela.descripcion.upcase}</b>.", size: 10, inline_format: true, align: :justify
+		pdf.text "Quien suscribe, Jefe de Control de Estudios de la Facultad de HUMANIDADES Y EDUCACIÓN, de la Universidad Central de Venezuela, por medio de la presente hace constar que #{usuario.la_el} BR. <b>#{usuario.apellido_nombre}</b>, titular de la Cédula de Identidad <b>#{usuario.id}</b> realizó su proceso de preinscripción en la facultad de Humanidades y Educación para ingresar en la escuela de <b>#{escuela.descripcion.upcase}</b>.", size: 10, inline_format: true, align: :justify
 
 		pdf.move_down 20
 
