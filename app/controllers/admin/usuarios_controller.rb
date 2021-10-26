@@ -66,12 +66,17 @@ module Admin
 
       if params[:search]
         @usuarios = Usuario.search(params[:search]).limit(50)
-        if @usuarios.count > 0 && @usuarios.count < 50  
-          flash[:success] = "Total de coincidencias: #{@usuarios.count}"
+        if @usuarios.count > 0 && @usuarios.count < 50
+          if @usuarios.count.eql? 1
+            flash[:success] = "Una coincidencia, redirigido al detalle del usuario"
+            redirect_to @usuarios.first
+          else
+            flash[:success] = "Total de coincidencias: #{@usuarios.count}"
+          end
         elsif @usuarios.count == 0
           flash[:error] = "No se encontraron conincidencas. Intenta con otra búsqueda"
         else
-          flash[:error] = "50 o más conincidencia. Puedes ser más explicito en la búsqueda. Recuerda que puedes buscar por CI, Nombre, Apellido, Correo Electrónico o incluso Número Telefónico"
+          flash[:error] = "50 o más conincidencia. Puedes ser más explícito en la búsqueda. Recuerda que puedes buscar por CI, Nombre, Apellido, Correo Electrónico o incluso Número Telefónico"
         end
       else
         @usuarios = Usuario.limit(50).order("created_at, apellidos, nombres, ci")      
