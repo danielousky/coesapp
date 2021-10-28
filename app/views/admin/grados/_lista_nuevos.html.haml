@@ -21,6 +21,7 @@
 
 
 :javascript
+
   function reviewParams(e, edo){
     let escuela = $(`#escuela_${edo}`).val()
     let plan = $(`#plan_${edo}`).val()
@@ -31,108 +32,118 @@
 
 
   $(document).ready(function() {
-      $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
-        $($.fn.dataTable.tables( true ) ).css('width', '100%');
-        $($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
-      } );
 
-      $(`#table#{estado}`).DataTable( {
-          scrollY: 300,
-          fixedHeader: {
-              header: true,
-              footer: true
-          },
-          dom: '<"html5buttons"B>lTfgitp',
-          buttons: [
-            {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `estudiantes_nuevos_#{current_periodo.id}`, className: 'btn btn-sm btn-outline-info'}
-          ], 
-          paging: false,
-          language: 
-            {
-              "sZeroRecords":    "No se encontraron resultados",
-              "sEmptyTable":     "Ningún dato disponible en esta tabla",
-              "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-              "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
-              "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
-              "sSearch":         "Buscar:",
-              "sInfoThousands":  ",",
-              "sLoadingRecords": "Cargando...",
-              "oPaginate": {
-                "sFirst":    "Primero",
-                "sLast":     "Último",
-                "sNext":     "Siguiente",
-                "sPrevious": "Anterior"
-              },
-              "oAria": {
-                "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
-                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-              }
+  
+    // $(`#escuela_preinscritos`).on('change', function(){
+      
+      // $(`<button class='btn btn-danger'>Borrar Preinscritos ${$(this).val()}<button>`).insertAfter($(`#escuela_preinscritos`))
+
+      
+    // })
+
+
+    $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+      $($.fn.dataTable.tables( true ) ).css('width', '100%');
+      $($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
+    } );
+
+    $(`#table#{estado}`).DataTable( {
+        scrollY: 300,
+        fixedHeader: {
+            header: true,
+            footer: true
+        },
+        dom: '<"html5buttons"B>lTfgitp',
+        buttons: [
+          {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `estudiantes_nuevos_#{current_periodo.id}`, className: 'btn btn-sm btn-outline-info'}
+        ], 
+        paging: false,
+        language: 
+          {
+            "sZeroRecords":    "No se encontraron resultados",
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+            "sSearch":         "Buscar:",
+            "sInfoThousands":  ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
             },
+            "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+          },
 
 
-          initComplete: function () {
+        initComplete: function () {
 
 
-              this.api().columns(3).every( function () {
-                  var column = this;
-                  var select = $('<select id="ingreso_#{estado.downcase}" style="width: 300px;" class="form-control form-control-sm my-3"><option value="">Todos los Tipo de Ingreso</option></select>')
-                      .insertAfter( $(`#table#{estado}_info`) )
-                      .on( 'change', function () {
-                          var val = $.fn.dataTable.util.escapeRegex(
-                              $(this).val()
-                          );
-   
-                          column
-                              .search( val ? '^'+val+'$' : '', true, false )
-                              .draw();
-                      } );
-   
-                  column.data().unique().sort().each( function ( d, j ) {
-                      select.append( '<option value="'+d+'">'+d+'</option>' )
-                  } );
-              } );
+            this.api().columns(3).every( function () {
+                var column = this;
+                var select = $('<select id="ingreso_#{estado.downcase}" style="width: 300px;" class="form-control form-control-sm my-3"><option value="">Todos los Tipo de Ingreso</option></select>')
+                    .insertAfter( $(`#table#{estado}_info`) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
 
-              this.api().columns(2).every( function () {
-                  var column = this;
-                  var select = $('<select id="plan_#{estado.downcase}" style="width: 300px;" class="form-control form-control-sm my-3"><option value="">Todos los Planes</option></select>')
-                      .insertAfter( $(`#table#{estado}_info`) )
-                      .on( 'change', function () {
-                          var val = $.fn.dataTable.util.escapeRegex(
-                              $(this).val()
-                          );
-   
-                          column
-                              .search( val ? '^'+val+'$' : '', true, false )
-                              .draw();
-                      } );
-   
-                  column.data().unique().sort().each( function ( d, j ) {
-                      select.append( '<option value="'+d+'">'+d+'</option>' )
-                  } );
-              } );
-
-
-              this.api().columns(1).every( function () {
-                  var column = this;
-                  var select = $(`<select id="escuela_#{estado.downcase}" style="width: 300px;" class="form-control form-control-sm my-3"><option value="">Todos las Escuelas</option></select>`)
-                      .insertAfter( $(`#table#{estado}_info`) )
-                      .on( 'change', function () {
-                          var val = $.fn.dataTable.util.escapeRegex(
-                              $(this).val()
-                          );
-   
-                          column
-                              .search( val ? '^'+val+'$' : '', true, false )
-                              .draw();
-                      } );
-   
-                  column.data().unique().sort().each( function ( d, j ) {
-                      select.append( '<option value="'+d+'">'+d+'</option>' )
-                  } );
-              } );
+            this.api().columns(2).every( function () {
+                var column = this;
+                var select = $('<select id="plan_#{estado.downcase}" style="width: 300px;" class="form-control form-control-sm my-3"><option value="">Todos los Planes</option></select>')
+                    .insertAfter( $(`#table#{estado}_info`) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
 
 
-          }
+            this.api().columns(1).every( function () {
+                var column = this;
+                var select = $(`<select id="escuela_#{estado.downcase}" style="width: 300px;" class="form-control form-control-sm my-3"><option value="">Todos las Escuelas</option></select>`)
+                    .insertAfter( $(`#table#{estado}_info`) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+
+
+        }
 
 
 

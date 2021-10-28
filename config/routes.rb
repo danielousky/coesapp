@@ -28,6 +28,11 @@ Rails.application.routes.draw do
     resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas, :bitacoras, :reportepagos, :bancos
 
 
+    resources :escuelaperiodos, only: :show do
+      member do
+        get 'borrar_ausentes'
+      end
+    end
 
     resources :perfiles do
       member do
