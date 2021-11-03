@@ -16,7 +16,7 @@
         %td=link_to periodo.id, periodo_path(periodo)
         %td=l periodo.inicia
         %td= periodo.tipo.titleize
-        - current_admin.escuelas.all.each do |e| 
+        - current_admin.escuelas.each do |e| 
           %td.tdFiltrables{class: "fil#{e.id}"}
             -# inscripciones = e.inscripcionsecciones.del_periodo(periodo)
             -# inscripciones = e.inscripcionescuelaperiodos.del_periodo(periodo.id)

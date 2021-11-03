@@ -115,7 +115,7 @@ module Admin
 
     def index
       @titulo = "Escuelas"
-      @escuelas = Escuela.all
+      @escuelas = current_admin.escuelas
     end
 
     # GET /escuelas/1
