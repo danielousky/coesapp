@@ -30,6 +30,12 @@ class Periodo < ApplicationRecord
     validates :inicia, presence: true#, uniqueness: true
 
 	# FUNCIONES:
+
+	def bitacoras
+		Bitacora.search_by_type('Periodo').search_by_id(self.id)
+	end
+
+
 	def es_mayor_al_anno? anno
 		return (self.anno.to_i	> anno)
 	end

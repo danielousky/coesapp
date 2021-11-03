@@ -21,7 +21,9 @@ module Admin
     # GET /periodos/1
     # GET /periodos/1.json
     def show
-      @titulo = "Detalle de Periodo: #{@periodo.id}"      
+      @titulo = "Detalle de Periodo: #{@periodo.id}"
+      @bitacoras = @periodo.bitacoras.limit(50).order(created_at: :desc)
+
     end
 
     # GET /periodos/new

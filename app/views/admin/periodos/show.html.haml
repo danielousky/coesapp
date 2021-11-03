@@ -1,33 +1,60 @@
 - model_class = Periodo
-.fieldset.border.m-md-3.p-md-3
-  %dl
-    %dt Identificador
-    %dd
-      %pre.prettyprint= @periodo.id
-  %dl
-    %dt Tipo
-    %dd
-      %pre.prettyprint= @periodo.tipo.titleize
-  %dl
-    %dt= model_class.human_attribute_name(:inicia)
-    %dd
-      %pre.prettyprint= l(@periodo.inicia, format: :long)
-  %dl
-    %dt Escuelas:
-  %table.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3
-    %thead
-      %tr
-        %th Identificador
-        %th Descripción
-        %th límite Créditos
-        %th límite Asignaturas
-    %tbody
-      - @periodo.escuelaperiodos.each do |ep| 
-        %tr
-          %td= ep.escuela.id
-          %td= ep.escuela.descripcion
-          %td= ep.max_creditos
-          %td= ep.max_asignaturas
+
+%nav
+  .nav.nav-tabs
+
+    = link_to 'General', "#general", "data-toggle": :tab, class: "nav-item nav-link active show"
+    = link_to 'Escuelas', "#escuelas", "data-toggle": :tab, class: "nav-item nav-link"
+    - if @bitacoras.any? and (current_admin.autorizado? 'Bitacoras', 'index')
+      = link_to 'Bitácora', "#bitacora", "data-toggle"=> "tab", class: "nav-item nav-link"
+
+  .tab-content
+    .tab-pane#general.active.show
+      .fieldset.border.m-md-3.p-md-3
+        %dl
+          %dt Identificador
+          %dd
+            %pre.prettyprint= @periodo.id
+        %dl
+          %dt Tipo
+          %dd
+            %pre.prettyprint= @periodo.tipo.titleize
+        %dl
+          %dt= model_class.human_attribute_name(:inicia)
+          %dd
+            %pre.prettyprint= l(@periodo.inicia, format: :long)
+    .tab-pane#escuelas
+      %table.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3
+        %thead
+          %tr
+            %th Identificador
+            %th Descripción
+            %th límite Créditos
+            %th límite Asignaturas
+        %tbody
+          - @periodo.escuelaperiodos.each do |ep| 
+            %tr
+              %td= ep.escuela.id
+              %td= ep.escuela.descripcion
+              %td= ep.max_creditos
+              %td= ep.max_asignaturas
+
+    - if @bitacoras.any? and (current_admin.autorizado? 'Bitacoras', 'index')
+      .tab-pane#bitacora
+        %table.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3
+          %thead
+            %tr
+              %th Id
+              %th Descripcion
+              %th Usuario
+              %th Creado
+          %tbody
+            - @bitacoras.each do |bita| 
+              %tr
+                %td= bita.id
+                %td= bita.descripcion
+                %td= bita.usuario.descripcion
+                %td= "Hace #{distance_of_time_in_words(Time.now-4.hours,bita.created_at-4.hours )}"
 
   .form-group
     = btn_atras(periodos_path)

@@ -13,7 +13,7 @@
   %tbody
     - @periodos.each do |periodo|
       %tr.trFiltrables{id: "tr#{periodo.id}", style: "display:none", class: "regimen#{periodo.tipo_a_letra} tipo#{periodo.letra_final_de_id} periodo_id#{periodo.id}"}
-        %td= periodo.id
+        %td=link_to periodo.id, periodo_path(periodo)
         %td=l periodo.inicia
         %td= periodo.tipo.titleize
         - current_admin.escuelas.all.each do |e| 
