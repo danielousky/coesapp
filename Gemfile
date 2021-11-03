@@ -9,11 +9,11 @@ gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
-gem "bootstrap", ">= 4.1.2"
 gem 'haml-rails'
 gem 'jquery-rails'
 gem 'mysql2'#, '~> 0.4.10'
-gem 'bootstrap-sass-extras'
+gem "bootstrap", "~> 4.1.2"
+gem 'bootstrap-sass-extras', '~> 0.0.7' 
 gem 'composite_primary_keys', '=11.2'
 gem 'toastr-rails'
 # gem 'pdf-writer', :git => 'https://github.com/metaskills/pdf-writer.git'
