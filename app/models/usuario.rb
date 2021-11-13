@@ -98,7 +98,7 @@ class Usuario < ApplicationRecord
 	end
 
 	def descripcion_nacimiento
-		aux = ciudad_nacimiento
+		aux = "#{ciudad_nacimiento}"
 		aux += " - #{pais_nacimiento}" if pais_nacimiento
 		return aux
 	end
