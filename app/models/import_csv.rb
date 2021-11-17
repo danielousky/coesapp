@@ -319,7 +319,7 @@ class ImportCsv
 
 	end
 
-	def self.importar_inscripciones file, escuela_id, periodo_id
+	def self.importar_inscripciones file, escuela_id, periodo_id=nil
 		require 'csv'
 
 		csv_text = File.read(file)
@@ -358,98 +358,67 @@ class ImportCsv
 					row['id_uxxi'].strip!
 					row['numero'].strip! if row['numero']
 
+					# BUSCAR PERIODO
+					if periodo_id.nil?
+						if row['periodo_id']
 
-					if a = Asignatura.where(id_uxxi: row['id_uxxi']).first
-						if periodo_id.nil?
-							if row['periodo_id']
- 
-								row['periodo_id'].strip!
-								row['periodo_id'].upcase!
-								
-								unless Periodo.where(id: row['periodo_id']).any?
-									return [0, "Error: Periodo '#{row['periodo_id']}' es inválido. fila (#{i}): [#{row}]. Revise el archivo e inténtelo nuevamente."]
-								end
-
-							else
-								return [0, "Sin período para la inscripción: #{row}. Por favor revise el archivo e inténtelo nuevamente."]
+							row['periodo_id'].strip!
+							row['periodo_id'].upcase!
+							
+							unless Periodo.where(id: row['periodo_id']).any?
+								return [0, "Error: Periodo '#{row['periodo_id']}' es inválido. fila (#{i}): [#{row}]. Revise el archivo e inténtelo nuevamente."]
 							end
-							periodo_id = row['periodo_id']
-						end
 
-						unless s = Seccion.where(numero: row['numero'], periodo_id: periodo_id, asignatura_id: a.id).limit(1).first
+						else
+							return [0, "Sin período para la inscripción: #{row}. Por favor revise el archivo e inténtelo nuevamente."]
+						end
+						periodo_id = row['periodo_id']
+					end
+
+					# BUCAR ASIGNATURA
+					unless a = Asignatura.where(id_uxxi: row['id_uxxi']).first
+						asignaturas_inexistentes << row['id_uxxi']
+					else
+						# BUSCAR O CREAR SECCIÓN
+						s = Seccion.where(numero: row['numero'], periodo_id: periodo_id, asignatura_id: a.id).limit(1).first
+						if s.nil?
 							total_nuevas_secciones += 1 if s = Seccion.create!(numero: row['numero'], periodo_id: periodo_id, asignatura_id: a.id, tipo_seccion_id: 'NF')
 						end
 
-						if s
+						unless s
+							secciones_no_creadas << row.to_hash
+						else
+							# BUSCAR ESTUDIANTE
 							estu = Estudiante.where(usuario_id: row['ci']).first
-							unless estu
+							if estu.nil?
 								estudiantes_inexistentes << row['ci']
 							else
-								
-								inscrip = s.inscripcionsecciones.where(estudiante_id: row['ci']).first
-								unless inscrip
-									inscrip = Inscripcionseccion.new
-									escuelaperiodo = Escuelaperiodo.where(periodo_id: periodo_id, escuela_id: a.escuela.id).first
-
-									unless inscrip_escuela_period = estu.inscripcionescuelaperiodos.where(escuelaperiodo_id: escuelaperiodo.id).first
-
-										inscrip_escuela_period = Inscripcionescuelaperiodo.create!(estudiante_id: row['ci'], escuelaperiodo_id: escuelaperiodo.id, tipo_estado_inscripcion_id: 'INS')
-									end
-
-									inscrip.inscripcionescuelaperiodo_id = inscrip_escuela_period.id
-
-									grado = estu.grados.where(escuela_id: escuela_id).first
-
-									unless grado
-										estudiantes_sin_grado << estu.id
-									else
-										inscrip.seccion_id = s.id
-										inscrip.estudiante_id = estu.id
-
-										inscrip.escuela_id = escuela_id
-
-										inscrip.pci = true unless estu.grados.where(escuela_id: escuela_id).any?
-											
-										if inscrip.save!
-											total_inscritos += 1
-										else
-											estudiantes_no_inscritos << row['ci']
-										end
-									end
+								# BUSCAR GRADO
+								unless grado = estu.grados.where(escuela_id: escuela_id).first
+									estudiantes_sin_grado << estu.id
 								else
-									total_existentes += 1
-								end
+									# BUSCAR O CREAR INSCRIPCIÓN:
+									inscrip = s.inscripcionsecciones.where(estudiante_id: row['ci']).first
+									if inscrip.nil?
+										inscrip = Inscripcionseccion.new
+										escuelaperiodo = Escuelaperiodo.where(periodo_id: periodo_id, escuela_id: a.escuela.id).first
+										# BUSCAR O CREAR INSCRIPCIÓN_ESCUELA_PERIODO
+										unless inscrip_escuela_period = estu.inscripcionescuelaperiodos.where(escuelaperiodo_id: escuelaperiodo.id).first
 
-								# CALIFICAR:
-								if row['nota'] and !row['nota'].blank?
-									row['nota'].strip!
-									if row['nota'].eql? 'RT'
-										inscrip.estado = :retirado
-										inscrip.tipo_calificacion_id = TipoCalificacion::FINAL 
-									elsif inscrip.asignatura and inscrip.asignatura.absoluta?
-										if row['nota'].eql? 'A'
-											inscrip.estado = :aprobado
-										else
-											inscrip.estado = :aplazado
+											inscrip_escuela_period = Inscripcionescuelaperiodo.create!(estudiante_id: row['ci'], escuelaperiodo_id: escuelaperiodo.id, tipo_estado_inscripcion_id: 'INS')
 										end
-										inscrip.tipo_calificacion_id = TipoCalificacion::FINAL
-									else
-										inscrip.calificacion_final = row['nota']
-										
-										if inscrip.calificacion_final >= 10
-											inscrip.estado = :aprobado
-										else
-											if inscrip.calificacion_final == 0
-												inscrip.tipo_calificacion_id = TipoCalificacion::PI 
-											else
-												inscrip.tipo_calificacion_id = TipoCalificacion::FINAL 
-											end
-											inscrip.estado = :aplazado
-										end
+
+										inscrip.inscripcionescuelaperiodo_id = inscrip_escuela_period.id
+
+										inscrip.estudiante_id = estu.id
+										inscrip.escuela_id = escuela_id
+										inscrip.seccion_id = s.id
 									end
 
-									if inscrip.save!
-										total_calificados += 1
+									# CALIFICAR:
+									if row['nota'] and !row['nota'].blank?
+										row['nota'].strip!
+										inscrip.calificar row['nota']										
 										if inscrip.retirado?
 											total_retirados += 1
 										elsif inscrip.aprobado?
@@ -457,20 +426,25 @@ class ImportCsv
 										else
 											total_aplazados += 1
 										end
+									end
+
+									if inscrip.save!
+										total_inscritos += 1
+										total_calificados += 1
 									else
+										estudiantes_no_inscritos << row['ci']
 										total_no_calificados += 1
 									end
 								end
 							end
-
-						else
-							secciones_no_creadas << row.to_hash
-						end
-					else
-						asignaturas_inexistentes << row['id_uxxi']
+						end						
 					end
 				rescue Exception => e
-					return [0, "Error excepcional: #{e.to_sentence}. #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados, periodo_id, estudiantes_sin_grado }"]
+					# => OJO AYUDA EN EL ENTORNO DE DESARROLLO COLOCANDO EL BACKTRACE VISIBLE
+					backtrace = (Rails.root.to_s.include? 'localhost') ? "#{e.backtrace.first}" : ''
+
+					return [0, "<b>Error excepcional con el registro #{row.to_hash}: #{e.message} #{backtrace}</b>. #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados, periodo_id, estudiantes_sin_grado }"]
+					
 				end
 			end
 			return [1, "Resumen procesos de migración: #{self.resumen total_inscritos, total_existentes, estudiantes_no_inscritos, total_nuevas_secciones, secciones_no_creadas, estudiantes_inexistentes, asignaturas_inexistentes, total_calificados, total_no_calificados, total_aprobados, total_aplazados, total_retirados,periodo_id, estudiantes_sin_grado}"]

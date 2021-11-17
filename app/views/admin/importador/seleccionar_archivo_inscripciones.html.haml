@@ -32,7 +32,7 @@
         .col-md-12
           = check_box_tag :periodo_en_archivo, nil, false, onChange: "togglePeriodo($(this))" 
           El periodo está incluido en una columna del archivo
-          = grouped_collection_select nil, :periodo_id, current_admin.escuelas.order("id ASC"), :periodos, :descripcion, :id, :id, {:prompt => "Selecciona el período de ingreso a la facultad..."}, { class: 'form-control mt-md-3', required: true}
+          = grouped_collection_select nil, :periodo_id, current_admin.escuelas.order("id ASC"), :periodos, :descripcion, :id, :id, {:prompt => "Selecciona el período de inscripción..."}, { class: 'form-control mt-md-3', required: true}
 
     .form-group
       .col-md-offset-2.col-md-10

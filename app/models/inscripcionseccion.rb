@@ -37,11 +37,15 @@ class Inscripcionseccion < ApplicationRecord
 	before_validation :set_estados
 	after_save :actualizar_estados
 
+
 	before_destroy :set_bitacora
 	after_destroy :destroy_inscripcionescuelaperiodo
 
 
 	# VALIDACIONES:
+	validates_presence_of :estudiante_id
+	validates_presence_of :seccion_id
+
 	validates_uniqueness_of :estudiante_id, scope: [:seccion_id], message: 'El estudiante ya está inscrito en la sección', field_name: false
 
 	validates_with AsignaturaPeriodoInscripcionUnicaValidator, field_name: false, if: :new_record?
@@ -171,10 +175,11 @@ class Inscripcionseccion < ApplicationRecord
 		"#{escuela_id}-#{estudiante_id}"
 	end
 
-	def grado
-		# escuela_id = self.pci_escuela_id ? self.pci_escuela_id : self.escuela.id
-		Grado.where(estudiante_id: self.estudiante_id, escuela_id: escuela_id).first
-	end
+	# Este método no debe ir ya que es una relación belong_to definida arriba
+	# def grado
+	# 	# escuela_id = self.pci_escuela_id ? self.pci_escuela_id : self.escuela.id
+	# 	Grado.where(estudiante_id: self.estudiante_id, escuela_id: escuela_id).first
+	# end
 
 
 	def descripcion_asignatura_pdf
@@ -329,21 +334,21 @@ class Inscripcionseccion < ApplicationRecord
 	# 	end
 	# end
 
-	# def aprobada?
+	# ATENCIÓN: ESTA FUNCIÓN SE USA PARA CASOS EN LOS QUE EL REGISTRO ESTÉ AÚN EN MEMORIA, POR LO QUE NO SE HAYA ASIGNADO EL VALOR DEL ESTADO EN set_estados
+	def aprobada?
+		if seccion.asignatura.absoluta?
+			if no_presento?
+				return false
+			else
+				tipo_estado_calificacion_id.eql? 'A'
+			end	
+		elsif no_presento?
+			return calificacion_final > 10
+		else
+			return tipo_estado_calificacion_id.eql? 'A'
+		end
 
-	# 	if seccion.asignatura.absoluta?
-	# 		if no_presento?
-	# 			return false
-	# 		else
-	# 			tipo_estado_calificacion_id.eql? 'A'
-	# 		end	
-	# 	elsif no_presento?
-	# 		return calificacion_final > 10
-	# 	else
-	# 		tipo_estado_calificacion_id.eql? 'A'
-	# 	end
-
-	# end
+	end
 
 	# def calificacion_completa?
 	# 	if primera_calificacion.nil? or segunda_calificacion.nil? or tercera_calificacion.nil? or calificacion_final.nil?
@@ -513,6 +518,35 @@ class Inscripcionseccion < ApplicationRecord
 	def inscrita_como_pci?
 		self.escuela_id and self.escuela_id.eql? seccion.escuela.id ? false : true
 	end
+
+	def calificar valor
+
+		if valor.eql? 'RT'
+			self.estado = :retirado
+			self.tipo_calificacion_id = TipoCalificacion::FINAL 
+		elsif self.asignatura and self.asignatura.absoluta?
+			if valor.eql? 'A'
+				self.estado = :aprobado
+			else
+				self.estado = :aplazado
+			end
+			self.tipo_calificacion_id = TipoCalificacion::FINAL
+		else
+			self.calificacion_final = valor
+			
+			if self.calificacion_final >= 10
+				self.estado = :aprobado
+			else
+				if self.calificacion_final == 0
+					self.tipo_calificacion_id = TipoCalificacion::PI 
+				else
+					self.tipo_calificacion_id = TipoCalificacion::FINAL 
+				end
+				self.estado = :aplazado
+			end
+		end
+	end
+
 
 	protected
 
