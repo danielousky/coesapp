@@ -204,7 +204,7 @@ ActiveRecord::Schema.define(version: 2021_10_06_222236) do
     t.string "escuela_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "max_creditos", default: 20
+    t.integer "max_creditos", default: 24
     t.integer "max_asignaturas", default: 3
     t.index ["escuela_id", "periodo_id"], name: "index_escuelaperiodos_on_escuela_id_and_periodo_id", unique: true
     t.index ["escuela_id"], name: "index_escuelaperiodos_on_escuela_id"

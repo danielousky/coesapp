@@ -34,52 +34,40 @@
 				- @limiteCreditos = @escupe.limite_creditos_permitidos
 				- @limiteAsignaturas = @escupe.limite_asignaturas_permitidas
 				- if @inscripcionperiodo.nil? or (@inscripcionperiodo and @inscripcionperiodo.reservado?)
-					- if escuela.id.eql? 'IDIO' and @periodo_inscripcion.id.eql? '2019-02A'
-						-# inscripciones_del_periodo = @inscripciones.del_periodo(periodo.id)#.inscritos
-						- inscripciones_del_periodo = @inscripciones.del_periodo(@periodo_inscripcion.id)#.preinscritos
-						- if inscripciones_del_periodo.any?
-							- titulo_modal = "Proceso de Confirmación de Inscripción"
-							- titulo_btn = "Confirmación Inscripción"
-							- msgDanger = "<b>Atención: </b> Marque las asignaturas que desea confirmar"
-							- url = '/inscripcionsecciones/confirmar_inscripcion_idiomas201902A'
-							- idModal = "ratificarInscripcion#{escuela.id}"
-							= render partial: 'admin/inscripcionsecciones/confirmar_inscripcion_form', locals: {inscripciones: inscripciones_del_periodo, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
+					-# periodo_anterior = escuela.periodo_anterior @periodo_inscripcion.id
+					- @totalCreditosReservados = @inscripcionperiodo ? @inscripcionperiodo.total_creditos : 0
+					- @totalAsignaturasReservadas = @inscripcionperiodo ? @inscripcionperiodo.total_asignaturas : 0
+					- periodo_anterior = escuela.periodo_anterior @periodo_inscripcion.id
+					-# periodo_anteanterior = escuela.periodo_anterior periodo_anterior.id
+					-if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? ))
+						- # if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
+						- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
+
+						- asignaturas_ofertadas_x_escuela = escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc )
+						-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
+						- @aprobadas = @inscripciones.aprobadas.joins(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
+						-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
+						- titulo_modal = "Proceso de Preinscripción #{@periodo_inscripcion.id}"
+						- titulo_btn = "Preinscribirse"
+						- msgDanger = "Seleccione las asignaturas que desea preinscribir. Recuerde mover el scroll para ver todas las asignaturas ofertadas."
+						- url = '/inscripcionsecciones/preinscribirse'
+						- idModal = "preinscripcion#{escuela.id}"
+						= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas_x_escuela, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
+						- if @inscripcionperiodo and @inscripcionperiodo.reservado?
+							:javascript
+								$(`##{idModal}`).modal();
 
 					- else
-						-# periodo_anterior = escuela.periodo_anterior @periodo_inscripcion.id
-						- @totalCreditosReservados = @inscripcionperiodo ? @inscripcionperiodo.total_creditos : 0
-						- @totalAsignaturasReservadas = @inscripcionperiodo ? @inscripcionperiodo.total_asignaturas : 0
-						- periodo_anterior = escuela.periodo_anterior @periodo_inscripcion.id
-						-# periodo_anteanterior = escuela.periodo_anterior periodo_anterior.id
-						-if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? ))
-							- # if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
-							- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
-
-							- asignaturas_ofertadas_x_escuela = escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc )
-							-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
-							- @aprobadas = @inscripciones.aprobadas.joins(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
-							-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
-							- titulo_modal = "Proceso de Preinscripción #{@periodo_inscripcion.id}"
-							- titulo_btn = "Preinscribirse"
-							- msgDanger = "Seleccione las asignaturas que desea preinscribir. Recuerde mover el scroll para ver todas las asignaturas ofertadas."
-							- url = '/inscripcionsecciones/preinscribirse'
-							- idModal = "preinscripcion#{escuela.id}"
-							= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas_x_escuela, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
-							- if @inscripcionperiodo and @inscripcionperiodo.reservado?
-								:javascript
-									$(`##{idModal}`).modal();
-
-						- else
-							.alert.alert-warning
-								%b Atención: 
-								Verifique alguna de las siguientes opciones con el personal administrativo para habilitar su inscripción:
-								%ul
-									- if !@grado.confirmado? and !@grado.reincorporado?
-										%li= "No esta confirmado o asignado como reincorporado en #{escuela.descripcion.titleize} para poder realizar su preinscribirse."
-									- if !@grado.inscripciones.del_periodo(periodo_anterior.id).any?
-										%li= "Debe haber inscrito asignaturas en el período inmediatemente anterior #{periodo_anterior.id} (Regulares)."
-									- if @grado.inscripciones.del_periodo(@periodo_inscripcion.id).any?
-										%li= "Ya ha realizado su inscripción en #{@periodo_inscripcion.id} (Nuevo Ingreso)." 
+						.alert.alert-warning
+							%b Atención: 
+							Verifique alguna de las siguientes opciones con el personal administrativo para habilitar su inscripción:
+							%ul
+								- if !@grado.confirmado? and !@grado.reincorporado?
+									%li= "No esta confirmado o asignado como reincorporado en #{escuela.descripcion.titleize} para poder realizar su preinscribirse."
+								- if !@grado.inscripciones.del_periodo(periodo_anterior.id).any?
+									%li= "Debe haber inscrito asignaturas en el período inmediatemente anterior #{periodo_anterior.id} (Regulares)."
+								- if @grado.inscripciones.del_periodo(@periodo_inscripcion.id).any?
+									%li= "Ya ha realizado su inscripción en #{@periodo_inscripcion.id} (Nuevo Ingreso)." 
 				- else
 					- if @inscripcionperiodo.reportepago.nil? and @periodo_inscripcion.es_mayor_al_anno? 2019
 						.alert.alert-warning

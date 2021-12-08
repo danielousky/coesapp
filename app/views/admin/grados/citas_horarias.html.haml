@@ -15,9 +15,7 @@
 
       select.innerHTML = ""
 
-      if(id!= ""){
-
-      
+      if(id!= ""){      
         $.get(`${getHost()}/escuelas/${id}/periodos?periodo_actual_id=#{@current_periodo.id}`, function(data){
 
           // Add options
