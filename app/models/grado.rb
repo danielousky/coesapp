@@ -6,19 +6,14 @@ class Grado < ApplicationRecord
 	belongs_to :escuela
 	belongs_to :estudiante
 	belongs_to :plan, optional: true
-	belongs_to :autorizar_inscripcion_en_periodo, optional: true, class_name: 'Periodo', foreign_key: :autorizar_inscripcion_en_periodo_id
-
 	belongs_to :periodo_ingreso, optional: true, class_name: 'Periodo', foreign_key: :iniciado_periodo_id
-
-	
 	belongs_to :reportepago, optional: true, dependent: :destroy
+	belongs_to :autorizar_inscripcion_en_periodo, optional: true, class_name: 'Periodo', foreign_key: :autorizar_inscripcion_en_periodo_id
+	belongs_to :citahoraria, optional: true
 
 	has_many :historialplanes
-	
-	has_many :inscripciones, class_name: 'Inscripcionseccion'#, foreign_key: [:estudiante_id, :escuela_id] 
-	
+	has_many :inscripciones, class_name: 'Inscripcionseccion'
 	has_many :inscripcionescuelaperiodos
-
 	has_many :secciones, through: :inscripciones, source: :seccion
 
 	# CALLBACKS
@@ -34,6 +29,8 @@ class Grado < ApplicationRecord
 	# validates :inscrito_ucv, presence: true 
 	# has_many :inscripcionsecciones, foreign_key: [:escuela_id, :estudiante_id]
 
+
+	# SCOPES
 	scope :no_retirados, -> {where "estado != 3"}
 	scope :cursadas, -> {where "estado != 3"}
 	scope :aprobadas, -> {where "estado = 1"}
@@ -45,15 +42,30 @@ class Grado < ApplicationRecord
 	scope :inscritos_ucv, -> {where(inscrito_ucv: true)}
 	scope :no_inscritos_ucv, -> {where(inscrito_ucv: false)}
 
-	scope :culminado_en_periodo, lambda { |periodo_id| where "culminacion_periodo_id = ?", periodo_id}
-	scope :iniciados_en_periodo, lambda { |periodo_id| where "iniciado_periodo_id = ?", periodo_id}
+	scope :no_preinscrito, -> {where('estado_inscripcion != 0')}
+
+	scope :culminado_en_periodo, -> (periodo_id) {where "culminacion_periodo_id = ?", periodo_id}
+	scope :iniciados_en_periodo, -> (periodo_id) {where "iniciado_periodo_id = ?", periodo_id}
+	scope :iniciados_en_periodos, -> (periodo_ids) {where "iniciado_periodo_id IN (?)", periodo_ids}
 
 	scope :de_las_escuelas, lambda {|escuelas_ids| where("escuela_id IN (?)", escuelas_ids)}
+
+
 	scope :con_inscripciones, -> { where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0') }
+	scope :con_cita_horarias, -> { where('(SELECT COUNT(*) FROM citahorarias WHERE citahorarias.estudiante_id = grados.estudiante_id) > 0') }
+
+
+
+	# scope :con_inscripciones_en_periodo, -> (periodo_id) { joins(inscripciones: :seccion).where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0 and secciones.periodo_id = ?', periodo_id) }
+	
+	# scope :con_inscripciones_en_periodo, -> (periodo_id) { joins(inscripciones: :seccion).where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0 and secciones.periodo_id = ?', periodo_id) }
+
 	scope :sin_inscripciones, ->{ where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) = 0') }
 
 	scope :sin_plan, -> {where(plan_id: nil)}
 
+
+	# VARIABLES TIPOS
 	enum estado: [:pregrado, :tesista, :posible_graduando, :graduando, :graduado, :postgrado]
 
 	enum estado_inscripcion: [:preinscrito, :confirmado, :reincorporado, :asignado]
@@ -79,7 +91,7 @@ class Grado < ApplicationRecord
 	end
 
 	def inscripto_en_periodo_activo?
-		inscripnes_en_periodo_activo.any?
+		inscripciones_en_periodo_activo.any?
 	end
 
 	def autorizar_inscripcion_en_periodo_decrip
@@ -188,6 +200,12 @@ class Grado < ApplicationRecord
 
 		cursados > 0 ? (aux.to_f/cursados.to_f).round(4) : 0.0
 	end
+
+
+	def inscrito_en_periodos? periodo_ids
+		(inscripciones.de_los_periodos(periodo_ids)).count > 0
+	end
+
 
 
 	def inscrito_en_periodo? periodo_id
