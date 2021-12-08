@@ -1,7 +1,7 @@
 .modal-dialog
   .modal-content
     .alert.alert-info.text-center
-      %h5= @hp.estudiante.usuario.nombre_completo 
+      %h5= @hp.estudiante.usuario.nombre_completo #if @hp.estudiante
       %i Plan de Estudio para Estudiante
     .modal-header
       <button type="button" class="close fade" data-dismiss="modal" aria-hidden="true">×</button>

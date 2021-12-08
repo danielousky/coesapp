@@ -8,17 +8,14 @@ class Inscripcionseccion < ApplicationRecord
 
 	# ASOCIACIONES: 
 	belongs_to :seccion
-	belongs_to :estudiante, primary_key: :usuario_id
 	belongs_to :inscripcionescuelaperiodo
 
 	has_one :asignatura, through: :seccion
 	has_one :periodo, through: :seccion
 
+	belongs_to :grado
+	belongs_to :estudiante
 	belongs_to :escuela
-
-	belongs_to :grado, primary_key: ['estudiante_id', 'escuela_id'], foreign_key: ['estudiante_id', 'escuela_id']
-
-	# has_one :escuela, through: :asignatura
 
 	belongs_to :pci_escuela, foreign_key: 'pci_escuela_id', class_name: 'Escuela', optional: true
 
@@ -26,7 +23,6 @@ class Inscripcionseccion < ApplicationRecord
 
 	has_one :usuario, through: :estudiante
 	belongs_to :tipo_calificacion
-	# belongs_to :tipo_estado_inscripcion
 	belongs_to :tipoasignatura, optional: true
 	
 	# VARIABLES:
@@ -37,16 +33,16 @@ class Inscripcionseccion < ApplicationRecord
 	before_validation :set_estados
 	after_save :actualizar_estados
 
-
 	before_destroy :set_bitacora
 	after_destroy :destroy_inscripcionescuelaperiodo
 
 
 	# VALIDACIONES:
+	validates_presence_of :grado_id
 	validates_presence_of :estudiante_id
 	validates_presence_of :seccion_id
 
-	validates_uniqueness_of :estudiante_id, scope: [:seccion_id], message: 'El estudiante ya está inscrito en la sección', field_name: false
+	validates_uniqueness_of :grado_id, scope: [:seccion_id], message: 'El estudiante ya está inscrito en la sección', field_name: false
 
 	validates_with AsignaturaPeriodoInscripcionUnicaValidator, field_name: false, if: :new_record?
 	validates_with AsignaturaAprobadaUnicaValidator, field_name: false, if: :new_record?
@@ -56,7 +52,7 @@ class Inscripcionseccion < ApplicationRecord
 	scope :inscritos, -> {joins(:inscripcionescuelaperiodo).where('inscripcionescuelaperiodos.tipo_estado_inscripcion_id = ?', TipoEstadoInscripcion::INSCRITO)}
 
 
-	scope :con_totales, ->(escuela_id, periodo_id) {joins(:escuela).where("escuelas.id = ?", escuela_id).del_periodo(periodo_id).joins(:usuario).order("usuarios.apellidos ASC").joins(:asignatura).group(:estudiante_id).select('estudiante_id, usuarios.apellidos apellidos, usuarios.nombres nombres, SUM(asignaturas.creditos) total_creditos, COUNT(*) asignaturas, SUM(IF (estado = 1, asignaturas.creditos, 0)) aprobados')}
+	scope :con_totales, ->(escuela_id, periodo_id) {joins(:escuela).where("escuelas.id = ?", escuela_id).del_periodo(periodo_id).joins(:usuario).order("usuarios.apellidos ASC").joins(:asignatura).group(:estudiante_id).select('estudiante_id, usuarios.apellidos apellidos, usuarios.nombres nombres, SUM(asignaturas.creditos) total_creditos, COUNT(*) asignaturas, SUM(IF (inscripcionsecciones.estado = 1, asignaturas.creditos, 0)) aprobados')}
 
 	scope :por_confirmar, -> {where(inscripcionescuelaperiodo_id: nil)}
 
@@ -92,10 +88,10 @@ class Inscripcionseccion < ApplicationRecord
 	scope :no_absolutas, -> {joins(:asignatura).where("asignaturas.calificacion != 1")}
 	scope :absolutas, -> {joins(:asignatura).where("asignaturas.calificacion = 1")}
 
-	scope :no_retirados, -> {where "estado != 3"}
-	scope :cursadas, -> {where "estado = 1 or estado = 2"}
-	scope :en_curso, -> {where "estado != 1 and estado != 2 and estado != 3"} # Excluye retiradas también
-	scope :aprobadas, -> {where "estado = 1"}
+	scope :no_retirados, -> {where "inscripcionsecciones.estado != 3"}
+	scope :cursadas, -> {where "inscripcionsecciones.estado = 1 or inscripcionsecciones.estado = 2"}
+	scope :en_curso, -> {where "inscripcionsecciones.estado != 1 and inscripcionsecciones.estado != 2 and inscripcionsecciones.estado != 3"} # Excluye retiradas también
+	scope :aprobadas, -> {where "inscripcionsecciones.estado = 1"}
 	
 	scope :total_creditos_cursados_en_periodos, lambda{|periodos_ids| cursadas.joins(:seccion).where('secciones.periodo_id IN (?)', periodos_ids).joins(:asignatura).sum('asignaturas.creditos')}
 
@@ -128,7 +124,7 @@ class Inscripcionseccion < ApplicationRecord
 
 	scope :secciones_creadas, -> { group(:seccion_id).count }
 
-	scope :con_calificacion, -> {where('estado >= 1 and estado <= 3')}
+	scope :con_calificacion, -> {where('inscripcionsecciones.estado >= 1 and inscripcionsecciones.estado <= 3')}
 
 
 # Inscripcionseccion.joins(:seccion).joins(:estudiante).where("estudiantes.escuela_id": 'IDIO', "secciones.periodo_id": '2018-02A').group(:estudiante_id).count.count
@@ -172,7 +168,7 @@ class Inscripcionseccion < ApplicationRecord
 	# Funciones Generales
 
 	def grado_id
-		"#{escuela_id}-#{estudiante_id}"
+		grado.id
 	end
 
 	# Este método no debe ir ya que es una relación belong_to definida arriba
@@ -566,9 +562,10 @@ class Inscripcionseccion < ApplicationRecord
 			
 			unless aux = Inscripcionescuelaperiodo.where(estudiante_id: self.estudiante_id, escuelaperiodo_id: escupe.id).first
 
-				aux = Inscripcionescuelaperiodo.create(estudiante_id: self.estudiante_id, escuelaperiodo_id: escupe.id, tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)
+				aux = Inscripcionescuelaperiodo.create(estudiante_id: self.estudiante_id, escuelaperiodo_id: escupe.id, tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO, grado_id: self.grado_id)
 			end
 			self.inscripcionescuelaperiodo_id = aux.id
+
 		end
 	end
 

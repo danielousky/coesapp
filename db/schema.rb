@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_06_222236) do
+ActiveRecord::Schema.define(version: 2021_12_08_131419) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -241,7 +241,7 @@ ActiveRecord::Schema.define(version: 2021_10_06_222236) do
     t.index ["usuario_id"], name: "index_estudiantes_on_usuario_id"
   end
 
-  create_table "grados", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "grados", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "escuela_id"
     t.string "estudiante_id"
     t.datetime "created_at", null: false
@@ -273,10 +273,12 @@ ActiveRecord::Schema.define(version: 2021_10_06_222236) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "escuela_id"
+    t.bigint "grado_id"
     t.index ["escuela_id"], name: "index_historialplanes_on_escuela_id"
     t.index ["estudiante_id", "escuela_id", "periodo_id", "plan_id"], name: "unique_historial", unique: true
     t.index ["estudiante_id", "periodo_id"], name: "index_unique", unique: true
     t.index ["estudiante_id"], name: "index_historialplanes_on_estudiante_id"
+    t.index ["grado_id"], name: "fk_rails_d7a1d63156"
     t.index ["periodo_id"], name: "index_historialplanes_on_periodo_id"
     t.index ["plan_id"], name: "index_historialplanes_on_plan_id"
   end
@@ -296,9 +298,11 @@ ActiveRecord::Schema.define(version: 2021_10_06_222236) do
     t.bigint "reportepago_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "grado_id"
     t.index ["escuelaperiodo_id"], name: "index_inscripcionescuelaperiodos_on_escuelaperiodo_id"
     t.index ["estudiante_id", "escuelaperiodo_id"], name: "index_inscripciones_on_estudiante_id_and_escuelaperiodo_id", unique: true
     t.index ["estudiante_id"], name: "index_inscripcionescuelaperiodos_on_estudiante_id"
+    t.index ["grado_id"], name: "fk_rails_d168bd0890"
     t.index ["reportepago_id"], name: "index_inscripcionescuelaperiodos_on_reportepago_id"
     t.index ["tipo_estado_inscripcion_id"], name: "index_inscripcionescuelaperiodos_on_tipo_estado_inscripcion_id"
   end
@@ -322,9 +326,11 @@ ActiveRecord::Schema.define(version: 2021_10_06_222236) do
     t.string "escuela_id"
     t.boolean "pci", default: false
     t.bigint "inscripcionescuelaperiodo_id"
+    t.bigint "grado_id"
     t.index ["escuela_id"], name: "index_inscripcionsecciones_on_escuela_id"
     t.index ["estudiante_id", "seccion_id"], name: "index_inscripcionsecciones_on_estudiante_id_and_seccion_id", unique: true
     t.index ["estudiante_id"], name: "index_inscripcionsecciones_on_estudiante_id"
+    t.index ["grado_id"], name: "fk_rails_d28b12f260"
     t.index ["inscripcionescuelaperiodo_id"], name: "index_inscripcionsecciones_on_inscripcionescuelaperiodo_id"
     t.index ["pci_escuela_id"], name: "fk_rails_24a264013f"
     t.index ["seccion_id", "estudiante_id"], name: "index_inscripcionsecciones_on_seccion_id_and_estudiante_id", unique: true
@@ -581,15 +587,18 @@ ActiveRecord::Schema.define(version: 2021_10_06_222236) do
   add_foreign_key "grados", "reportepagos", on_update: :cascade, on_delete: :nullify
   add_foreign_key "historialplanes", "escuelas"
   add_foreign_key "historialplanes", "estudiantes", primary_key: "usuario_id", name: "historialplanes_ibfk_3", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "historialplanes", "grados", on_update: :cascade, on_delete: :cascade
   add_foreign_key "historialplanes", "periodos", name: "historialplanes_ibfk_2", on_update: :cascade, on_delete: :cascade
   add_foreign_key "historialplanes", "planes", name: "historialplanes_ibfk_1", on_update: :cascade, on_delete: :cascade
   add_foreign_key "horarios", "secciones", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inscripcionescuelaperiodos", "escuelaperiodos", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inscripcionescuelaperiodos", "estudiantes", primary_key: "usuario_id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inscripcionescuelaperiodos", "grados", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inscripcionescuelaperiodos", "reportepagos", on_update: :cascade, on_delete: :nullify
   add_foreign_key "inscripcionescuelaperiodos", "tipo_estado_inscripciones", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inscripcionsecciones", "escuelas", column: "pci_escuela_id", name: "inscripcionsecciones_ibfk_1", on_update: :cascade, on_delete: :nullify
   add_foreign_key "inscripcionsecciones", "estudiantes", primary_key: "usuario_id", name: "inscripcionsecciones_ibfk_4", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inscripcionsecciones", "grados", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inscripcionsecciones", "inscripcionescuelaperiodos", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inscripcionsecciones", "secciones", name: "inscripcionsecciones_ibfk_6", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inscripcionsecciones", "tipo_calificaciones", name: "inscripcionsecciones_ibfk_2", on_update: :cascade, on_delete: :nullify

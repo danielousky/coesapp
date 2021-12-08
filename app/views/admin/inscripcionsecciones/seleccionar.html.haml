@@ -3,8 +3,7 @@
 	 
 	%h5.pt-2= @label_inscripcionperiodo
 = form_tag(inscribir_inscripcionsecciones_path) do
-	=hidden_field_tag :escuela_id, @escuela.id
-	=hidden_field_tag :id, @estudiante.usuario_id
+	=hidden_field_tag :id, @grado.id
 
 	= render '/admin/secciones/facultad/estructura_nav'
 	=# render partial: '/admin/horarios/horario_secciones'

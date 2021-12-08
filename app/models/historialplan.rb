@@ -1,15 +1,17 @@
 class Historialplan < ApplicationRecord
 	# self.table_name = 'historiales_planes'
 
-	belongs_to :estudiante, primary_key: :usuario_id
 	belongs_to :periodo
 	belongs_to :plan
 
-	belongs_to :grado, primary_key: ['estudiante_id', 'escuela_id'], foreign_key: ['estudiante_id', 'escuela_id']
-
+	belongs_to :grado
+	has_one :estudiante, through: :grado
+	has_one :escuela, through: :grado
 
 	# OJO: Esta debe ser la validación: Que un estudiante no tenga más de un plan para un mismo periodo
-	validates_uniqueness_of :estudiante_id, scope: [:periodo_id], message: 'El estudiante ya tiene un plan para el periodo', field_name: false
+	validates_uniqueness_of :grado_id, scope: [:periodo_id], message: 'El estudiante ya tiene un plan para el periodo y escuela', field_name: false
+
+	validates :grado_id, presence: true
 
 	scope :por_escuela, lambda { |escuela_id| joins(:plan).where("planes.escuela_id = '#{escuela_id}'")}
 

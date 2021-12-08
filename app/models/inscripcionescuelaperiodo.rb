@@ -9,6 +9,7 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	belongs_to :estudiante, primary_key: 'usuario_id'
 	belongs_to :escuelaperiodo
 	belongs_to :tipo_estado_inscripcion
+	belongs_to :grado
 
 	has_one :escuela, through: :escuelaperiodo
 	has_one :periodo, through: :escuelaperiodo
@@ -24,10 +25,6 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	scope :preinscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO)}
 	scope :inscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)}
 	scope :con_reportepago, -> {joins(:reportepago)}
-
-	def grado
-		Grado.where(escuela_id: self.escuela.id, estudiante_id: self.estudiante_id).first 
-	end
 
 	def limite_creditos_permitidos
 		self.escuelaperiodo.limite_creditos_permitidos
@@ -63,17 +60,21 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	end
 
 
-	def self.find_or_new(escuela_id, periodo_id, estudiante_id)
+	def self.find_or_new(grado_id, periodo_id)
 
+		grado = Grado.find grado_id
+		escuela_id = grado.escuela_id
+		estudiante_id = grado.estudiante_id
 		escupe = Escuelaperiodo.where(periodo_id: periodo_id, escuela_id: escuela_id).first
 		# ins_periodo = estudiante.inscripcionescuelaperiodos.de_la_escuela_y_periodo(escupe.id).first
 
-		ins_escuelaperiodo = Inscripcionescuelaperiodo.where(estudiante_id: estudiante_id, escuelaperiodo_id: escupe.id).first
+		ins_escuelaperiodo = Inscripcionescuelaperiodo.where(grado_id: grado_id, escuelaperiodo_id: escupe.id).first
 
 		if ins_escuelaperiodo.nil?
 			ins_escuelaperiodo = Inscripcionescuelaperiodo.new
 			ins_escuelaperiodo.estudiante_id = estudiante_id
 			ins_escuelaperiodo.escuelaperiodo_id = escupe.id
+			ins_escuelaperiodo.grado_id = grado_id
 		end
 
 		return ins_escuelaperiodo

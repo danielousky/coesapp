@@ -10,8 +10,9 @@ module Admin
 
 		before_action :filtro_autorizado, except: [:reservar_cupo]
 		before_action :set_inscripcionseccion, only: [:cambiar_seccion]
-		before_action :set_estudiante, only: [:seleccionar, :inscribir]
-		before_action :set_escuela, only: [:buscar_estudiante,:seleccionar, :inscribir]
+		before_action :set_grado, only: [:inscribir]
+
+		before_action :set_escuela, only: [:buscar_estudiante]
 		before_action :set_inscripcionescuelaperiodo, only: [:resumen]
 		before_action :get_inscripcionperiodo, only: [:seleccionar]
 		before_action :set_label_inscripcionperiodo, only: [:seleccionar]
@@ -24,12 +25,11 @@ module Admin
 		def reservar_cupo
 			begin
 				asignatura = Asignatura.find params[:asignatura_id]
-				grado = Grado.find params[:grado_id].split("-")
+				grado = Grado.find params[:grado_id]
 
 				periodo = grado.escuela.periodo_inscripcion
 				limite_creditos = periodo.anual? ? 49 : 25
 				inscripcion = Inscripcionseccion.joins(:asignatura).joins(:periodo).where("estudiante_id = #{params[:estudiante_id]} AND asignaturas.id = '#{params[:asignatura_id]}' AND periodos.id = '#{periodo.id}'").first
-
 				
 				if params[:seccion_id].eql? ''
 					if inscripcion and inscripcion.destroy
@@ -54,11 +54,11 @@ module Admin
 							estado = 'error'
 						else
 							ins = Inscripcionseccion.new
-							ins.estudiante_id = params[:estudiante_id]
+							ins.estudiante_id = grado.estudiante.id
 							ins.seccion_id = sec.id
+							ins.grado = grado
 							ins.escuela_id = grado.escuela.id 
-							ins.pci_escuela_id = sec.escuela.id if (params[:pci].eql? 'true')
-							
+							ins.pci_escuela_id = sec.escuela.id if (params[:pci].eql? 'true')							
 
 							if ins.save
 								info_bitacora "Cupo Reservado para la sección #{ins.seccion.descripcion_simple}.", Bitacora::CREACION, ins
@@ -418,28 +418,29 @@ module Admin
 		end
 
 		def seleccionar
-			session[:inscripcion_estudiante_id] = @estudiante.id
-			@asignatura = Asignatura.find session[:asignatura] if session[:asignatura]
-			
-			inscripciones = @estudiante.inscripciones.de_la_escuela(@escuela.id)
-			@inscripciones = inscripciones.del_periodo(current_periodo.id) 
+			@grado = Grado.where(escuela_id: params[:escuela_id], estudiante_id: params[:id]).first
 
-			if inscripciones
-				@ids_asignaturas = @inscripciones.collect{|i| i.seccion.asignatura_id} 
-				@ids_aprobadas = inscripciones.aprobadas.collect{|i| i.seccion.asignatura_id}
-				@incritar_o_aprobadas = ((@ids_aprobadas and (@ids_aprobadas.include? session[:asignatura])) or (@ids_asignaturas and (@ids_asignaturas.include? session[:asignatura])))
+			if @grado.nil?
+				flash[:danger] = "Estudiante no registrado para la escuela seleccionada"
+				redirect_back fallback_location: principal_admin_index_path
+			else
+				session[:inscripcion_estudiante_id] = @grado.estudiante.id
+				@asignatura = Asignatura.find session[:asignatura] if session[:asignatura]
+				@escuela = @grado.escuela
+				@estudiante = @grado.estudiante
+				
+				if @inscripciones = @grado.inscripciones.del_periodo(current_periodo.id) 
+					@ids_asignaturas = @inscripciones.collect{|i| i.seccion.asignatura_id} 
+					@ids_aprobadas = @inscripciones.aprobadas.collect{|i| i.seccion.asignatura_id}
+					@incritar_o_aprobadas = ((@ids_aprobadas and (@ids_aprobadas.include? session[:asignatura])) or (@ids_asignaturas and (@ids_asignaturas.include? session[:asignatura])))
+				end
+
+				@titulo = "Inscripción en #{@escuela.descripcion} para el período #{current_periodo.id} - Seleccionar Secciones"
+				@escuelas = current_admin.escuelas.merge Escuela.where(id: @escuela.id)
+
+				escupe = @escuela.escuelaperiodos.where(periodo_id: current_periodo.id).first
+				@creditLimits = escupe.limite_creditos_permitidos
 			end
-
-			@titulo = "Inscripción en #{@escuela.descripcion} para el período #{current_periodo.id} - Seleccionar Secciones"
-			@escuelas = Escuela.where(id: @escuela.id)
-			@escuelas = current_admin.escuelas.merge @escuelas
-
-			@creditLimits = current_periodo.anual? ? 49 : 25
-
-			aux = current_periodo.escuelas.merge @estudiante.escuelas
-
-			# @creditLimits = 31 if aux.ids.include? 'COMU'
-			@creditLimits *= aux.count
 		end
 
 		def inscribir
@@ -468,15 +469,18 @@ module Admin
 				# 	se_preinscribio = true if inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? 'PRE'
 				# end
 
-				inscripcion_del_periodo = Inscripcionescuelaperiodo.find_or_new(@escuela.id, current_periodo.id, @estudiante.id)
+				escuela = @grado.escuela
+				estudiante = @grado.estudiante
+
+				inscripcion_del_periodo = Inscripcionescuelaperiodo.find_or_new(@grado.id, current_periodo.id)
 
 				se_preinscribio = true if inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? TipoEstadoInscripcion::PREINSCRITO
 				
 				inscripcion_del_periodo.tipo_estado_inscripcion_id = TipoEstadoInscripcion::INSCRITO
 
-				flash[:success] = "Inscripción en el período #{current_periodo.id} para la escuela #{@escuela.descripcion} realizada con éxito." if inscripcion_del_periodo.save
+				flash[:success] = "Inscripción en el período #{current_periodo.id} para la escuela #{escuela.descripcion} realizada con éxito." if inscripcion_del_periodo.save
 
-				inscripcionsecciones = @estudiante.inscripciones.del_periodo(current_periodo.id).where(inscripcionescuelaperiodo_id: nil)
+				inscripcionsecciones = estudiante.inscripciones.del_periodo(current_periodo.id).where(inscripcionescuelaperiodo_id: nil)
 				if inscripcionsecciones.any?
 					if inscripcionsecciones.update(inscripcionescuelaperiodo_id: inscripcion_del_periodo.id)
 						flash[:success] += "  | Confirmas #{inscripcion_del_periodo.inscripcionsecciones.count} preinscripciones"
@@ -489,7 +493,9 @@ module Admin
 
 						ins = Inscripcionseccion.new
 						ins.seccion_id = seccion.id
-						ins.estudiante_id = @estudiante.id
+						ins.grado_id = @grado.id
+						ins.estudiante_id = @grado.estudiante_id
+						ins.escuela_id = @grado.escuela_id
 						ins.inscripcionescuelaperiodo_id = inscripcion_del_periodo.id
 
 						if pci_escuela_id and !(pci_escuela_id.eql? 'on')
@@ -498,15 +504,13 @@ module Admin
 								# Error:
 								asignaturas_pci_error << seccion.asignatura_id
 							else
-								escuela = Escuela.find pci_escuela_id
-								ins.pci_escuela_id = escuela.id 
-								ins.escuela_id = escuela.id
+								# escuela = Escuela.find pci_escuela_id
+								ins.pci_escuela_id = pci_escuela_id
+								# ins.escuela_id = escuela.id
 								ins.pci = true 
 							end
 
-						elsif ins.estudiante.escuelas.include? seccion.escuela
-							ins.escuela_id = seccion.escuela.id
-						else
+						elsif !(estudiante.escuelas.include? seccion.escuela)
 							asignaturas_impropias << seccion.asignatura_id
 						end
 						volumen = seccion.capacidad.to_i - seccion.total_estudiantes.to_i
@@ -521,7 +525,7 @@ module Admin
 								flash[:danger] += ins.errors.full_messages.to_sentence
 							end
 						end
-						flash[:info] = "Para mayor información vaya al detalle del estudiante haciendo clic <a href='#{usuario_path(@estudiante.id)}' class='btn btn-primary btn-sm'>aquí</a> "
+						flash[:info] = "Para mayor información vaya al detalle del estudiante haciendo clic <a href='#{usuario_path(estudiante.id)}' class='btn btn-primary btn-sm'>aquí</a> "
 					end 
 
 					flash[:success] += " |  Estudiante inscrito desde admin en #{guardadas} seccion(es)"
@@ -543,7 +547,7 @@ module Admin
 					info_bitacora "Confirmación inscripción estudiante #{inscripcion_del_periodo.estudiante_id} en periodo #{inscripcion_del_periodo.periodo.id} en #{inscripcion_del_periodo.escuela.descripcion}.", Bitacora::CREACION, inscripcion_del_periodo
 
 
-					if EstudianteMailer.confirmado(@estudiante, inscripcion_del_periodo).deliver
+					if EstudianteMailer.confirmado(estudiante, inscripcion_del_periodo).deliver
 						info_bitacora "Se envió correo de confirmacion de inscripción estudiante #{inscripcion_del_periodo.estudiante_id} en periodo #{inscripcion_del_periodo.periodo.id} en #{inscripcion_del_periodo.escuela.descripcion}.", Bitacora::CREACION, inscripcion_del_periodo
 					end
 				rescue Exception => e
@@ -682,8 +686,17 @@ module Admin
 		def set_label_inscripcionperiodo
 			@label_inscripcionperiodo = "Estado de Inscripción:<div class= 'badge badge-info'>#{@inscripcionperiodo.tipo_estado_inscripcion.descripcion.titleize}</div>".html_safe if (@inscripcionperiodo and @inscripcionperiodo.tipo_estado_inscripcion)
 		end
+
+
+		def set_grado
+			@grado = Grado.find params[:id]
+			if @grado.nil?
+				flash[:danger] = "Estudiante no registrado para la escuela seleccionada"
+				redirect_back fallback_location: principal_admin_index_path
+			end
+		end
 		def set_estudiante
-			@estudiante = Estudiante.where(usuario_id: params[:id]).limit(1).first
+			@estudiante = Estudiante.find params[:id]
 		end
 
 		def set_inscripcionseccion

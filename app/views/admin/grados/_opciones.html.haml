@@ -17,7 +17,7 @@
     - elsif estado.eql? 4
       - anterior = 'Graduandos'
 
-    = btn_toggle 'btn-outline-danger mr-2 ml-2', 'chevron-left', 'javascript:void(0)', "Enviar a #{anterior}", '', "moveRow('#{cambiar_estado_grado_path(registro.id.join('-'))}', '#{estado-1}', $(this))"
+    = btn_toggle 'btn-outline-danger mr-2 ml-2', 'chevron-left', 'javascript:void(0)', "Enviar a #{anterior}", '', "moveRow('#{cambiar_estado_grado_path(registro.id)}', '#{estado-1}', $(this))"
 
   - if estado < 4
-    = btn_toggle 'btn-outline-success mr-2 ml-2', 'chevron-right', 'javascript:void(0)', "Promover a #{posterior}", '', "moveRow('#{cambiar_estado_grado_path(registro.id.join('-'))}', '#{estado+1}', $(this))"
+    = btn_toggle 'btn-outline-success mr-2 ml-2', 'chevron-right', 'javascript:void(0)', "Promover a #{posterior}", '', "moveRow('#{cambiar_estado_grado_path(registro.id)}', '#{estado+1}', $(this))"

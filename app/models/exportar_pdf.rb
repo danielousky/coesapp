@@ -351,7 +351,7 @@ class ExportarPdf
 
 		pdf = Prawn::Document.new(top_margin: 20)
 
-		grado = Grado.find id.split("-")
+		grado = Grado.find id
 		estudiante = grado.estudiante #Estudiante.find id
 		# periodos = estudiante.escuela.periodos.order("inicia DESC")
 		escuela = grado.escuela #Escuela.find escuela_id

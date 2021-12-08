@@ -7,12 +7,8 @@ class Estudiante < ApplicationRecord
 
 	has_one :direccion#, foreign_key: :estudiante_id
 
-	has_many :grados#, dependent: :destroy
+	has_many :grados, dependent: :destroy
 	has_many :escuelas, through: :grados
-
-	has_many :historialplanes	
-	accepts_nested_attributes_for :historialplanes
-	has_many :planes, through: :historialplanes, source: :plan
 
 	has_many :bitacoras
 	accepts_nested_attributes_for :bitacoras

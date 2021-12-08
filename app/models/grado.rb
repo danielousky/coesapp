@@ -1,8 +1,5 @@
 class Grado < ApplicationRecord
 	#CONSTANTES:
-
-	self.primary_keys = :estudiante_id, :escuela_id
-
 	TIPO_INGRESOS = ['OPSU', 'OPSU/COLA', 'SIMADI', 'ACTA CONVENIO (DOCENTE)', 'ACTA CONVENIO (ADMIN)', 'ACTA CONVENIO (OBRERO)', 'DISCAPACIDAD', 'DIPLOMATICO', 'COMPONENTE DOCENTE', 'EQUIVALENCIA', 'ART. 25 (CULTURA)', 'ART. 25 (DEPORTE)', 'CAMBIO: 158', 'ART. 6', 'EGRESADO', 'SAMUEL ROBINSON', 'DELTA AMACURO', 'AMAZONAS', 'PRODES', 'CREDENCIALES', 'SIMULTANEOS']
 
 	# ASOCIACIONES:
@@ -16,9 +13,11 @@ class Grado < ApplicationRecord
 	
 	belongs_to :reportepago, optional: true, dependent: :destroy
 
-	has_many :historialplanes, foreign_key: [:escuela_id, :estudiante_id]
+	has_many :historialplanes
 	
-	has_many :inscripciones, class_name: 'Inscripcionseccion', foreign_key: [:estudiante_id, :escuela_id] 
+	has_many :inscripciones, class_name: 'Inscripcionseccion'#, foreign_key: [:estudiante_id, :escuela_id] 
+	
+	has_many :inscripcionescuelaperiodos
 
 	has_many :secciones, through: :inscripciones, source: :seccion
 
@@ -29,7 +28,9 @@ class Grado < ApplicationRecord
 
 	# VALIDACIONES
 	validates :tipo_ingreso, presence: true 
-	validates :estado_inscripcion, presence: true 
+	validates :estado_inscripcion, presence: true
+	validates_uniqueness_of :estudiante_id, scope: [:escuela_id], message: 'Estudiante ya inscrito en la escuela', field_name: false
+
 	# validates :inscrito_ucv, presence: true 
 	# has_many :inscripcionsecciones, foreign_key: [:escuela_id, :estudiante_id]
 
@@ -191,11 +192,6 @@ class Grado < ApplicationRecord
 
 	def inscrito_en_periodo? periodo_id
 		(inscripciones.del_periodo(periodo_id)).count > 0
-	end
-
-
-	def id_flat
-		id.join("-") #{}"#{escuela_id}-#{estudiante_id}"
 	end
 
 	def ultimo_plan

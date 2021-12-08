@@ -86,8 +86,8 @@ class ExportarExcel
 
 	def self.registro_inscripciones grado_id
 		require 'csv'
-		estudiante_id, escuela_id = grado_id.split('-')
-		grado = Grado.where(escuela_id: escuela_id, estudiante_id: estudiante_id).first
+		
+		grado = Grado.find(grado_id)
 
 		csv_data =CSV.generate(headers: true, col_sep: ";") do |csv|
 

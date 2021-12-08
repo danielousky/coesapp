@@ -64,8 +64,6 @@ module Admin
     def create
 
       @reportepago = Reportepago.new(reportepago_params)
-      params[:reportable][:id] = params[:reportable][:id].split if params[:reportable][:type].eql? 'Grado'
-
       begin
         clazz = params[:reportable][:type].constantize
         obj = clazz.find params[:reportable][:id]

@@ -9,15 +9,16 @@
 
     .modal.hideble.fade{'aria-hidden': false, id: "nuevo_plan_periodo_#{@escuela.id}"}
       - @hp = Historialplan.new
-      - @hp.estudiante_id = @estudiante.id
-      - @hp.escuela_id = @escuela.id
+      -# @hp.estudiante_id = @estudiante.id
+      -# @hp.escuela_id = @escuela.id
+      - @hp.grado = @grado
       = render '/admin/historialplanes/form'
   .text-center= "Planes: (actual: #{grado.plan_descripcion})"
 
 %table.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md
   -# @estudiante.historialplanes.order("periodo_id DESC").each do |hp|
   -# @estudiante.historialplanes.joins(:plan).where("planes.escuela_id = '#{@escuela.id}'").order("periodo_id DESC").each do |hp|
-  - @estudiante.historialplanes.por_escuela(@escuela.id).order("periodo_id DESC").each do |hp|
+  - @grado.historialplanes.order("periodo_id DESC").each do |hp|
     %tr
       %th
         = hp.descripcion

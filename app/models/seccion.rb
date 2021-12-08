@@ -7,20 +7,21 @@ class Seccion < ApplicationRecord
 	belongs_to :profesor, optional: true 
 	has_one :departamento, through: :asignatura
 	has_one :escuela, through: :departamento
+	has_one :horario, dependent: :delete
+	accepts_nested_attributes_for :horario
 
 	# En realdiad esta relación no es posible porque no existe una relación directa con la clase bitacoras. Es parte del diseño de polimorfismo de clases (Bitacorables) porque el campo id_objeto no está asociado explicitamente a una sección sino a cualquier clase.
 	has_many :bitacoras#, dependent: :delete_all # Sí se coloca esta dependencia al eliminar se genera un error
 
-	has_one :horario, dependent: :delete
-	accepts_nested_attributes_for :horario
-
 	has_many :inscripcionsecciones, dependent: :delete_all
 	accepts_nested_attributes_for :inscripcionsecciones
+
 	has_many :estudiantes, through: :inscripcionsecciones, source: :estudiante
 
 	has_many :secciones_profesores_secundarios,
 		class_name: 'SeccionProfesorSecundario', dependent: :delete_all
 	accepts_nested_attributes_for :secciones_profesores_secundarios
+
 	has_many :profesores, through: :secciones_profesores_secundarios, source: :profesor
 
     # VALIDACIONES:

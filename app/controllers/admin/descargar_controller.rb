@@ -111,7 +111,7 @@ module Admin
 
 		def constancia_preinscripcion_facultad
 
-			grado = Grado.find params[:id].split("-")
+			grado = Grado.find params[:id]
 			if grado.nil?
 				flash[:danger] = "No se encontró la inscripción en la facultad solicitada"
 				redirect_back fallback_location: root_path
