@@ -12,7 +12,7 @@ module Admin
     def show
       respond_to do |format|
         format.html # show.html.erb
-        format.json { render json: @cal_estudiante_tipo_plan }
+        format.json { render json: @historialplan }
       end
     end
 
@@ -22,7 +22,7 @@ module Admin
       @historialplan = Historialplan.new
       respond_to do |format|
         format.html # new.html.erb
-        format.json { render json: @cal_estudiante_tipo_plan }
+        format.json { render json: @historialplan }
       end
     end
 
@@ -114,7 +114,7 @@ module Admin
     end    
 
     def historialplan_params
-      params.require(:historialplan).permit(:estudiante_id, :plan_id, :periodo_id, :escuela_id)
+      params.require(:historialplan).permit(:plan_id, :periodo_id, :grado_id)
     end
 
 
