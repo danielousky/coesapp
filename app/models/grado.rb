@@ -197,7 +197,7 @@ class Grado < ApplicationRecord
 	def ultimo_plan
 		aux = plan
 		if plan.nil?
-			hp = estudiante.historialplanes.por_escuela(escuela_id).order('periodo_id DESC').first	
+			hp = self.historialplanes.por_escuela(escuela_id).order('periodo_id DESC').first	
 			aux = hp ? hp.plan : nil
 		else
 			aux = plan
