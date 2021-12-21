@@ -106,14 +106,23 @@
                 .col-md-6
                   = render partial: '/admin/grados/info_inscripcion', locals: {grado: grado}
                 .col-md-6
-                  - if @estudiante.citahoraria
-                    %h6.titulo.mb-md-2.text-center Cita Horaria:
-                    %p.pl-2
-                      %b Fecha:
-                      =(I18n.localize(@estudiante.citahoraria.fecha, :format => "%A, %d de %B de %Y")).capitalize()
-                      = "-"
-                      %b Hora:
-                      =(I18n.localize(@estudiante.citahoraria.fecha, :format => "%I:%M %p")).capitalize()
+                  %h6.titulo.mb-md-2.text-center 
+                    - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion')) and grado.citahoraria.nil?
+                      .float-left.tooltip-btn{'data_toggle': :tooltip, title: 'Agregar Nueva Cita Horaria'}
+                        = link_to('javascript:void(0)', { class: 'update_grado_btn text-success m-1', 'data_toggle': :modal, id: 'citahoraria'}) do
+                          = glyph :plus
+                    Cita Horaria:
+                  - if grado.citahoraria
+                    %b.pl-2=(I18n.localize(grado.citahoraria, :format => "Fecha: %A, %d de %B de %Y - Hora: %I:%M %p")).capitalize()
+                    - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
+
+                      .float-left.tooltip-btn{'data_toggle': :tooltip, title: 'Cita Horaria'}
+                        = link_to('javascript:void(0)', { class: 'update_grado_btn text-success m-1', 'data_toggle': :modal, id: 'citahoraria'}) do
+                          = glyph :pencil
+
+                      %td
+                        = link_to "#{cambiar_inscripcion_grado_path(grado)}?[grado]citahoraria=nil", method: 'post', class: 'text-danger'  do
+                          = glyph :trash
 
                   = render partial: '/admin/historialplanes/index', locals: {grado: grado}
                   = render '/admin/combinaciones/index' if @escuela.id.eql? 'IDIO'

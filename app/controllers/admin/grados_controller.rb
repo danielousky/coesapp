@@ -3,7 +3,8 @@ module Admin
     # Privilegios
     before_action :filtro_logueado
     before_action :filtro_administrador
-    before_action :filtro_autorizado, only: [:agregar, :cambiar_inscripcion, :eliminar, :index]
+    before_action :filtro_autorizado, only: [:agregar, :update, :eliminar, :index]
+    before_action :set_grado, only: [:update, :eliminar]
 
     def citas_horarias
       # Colocar un mensaje que si en el periodo actual no está dentro de los periodos de la escuela debe cambiarlos
@@ -15,16 +16,28 @@ module Admin
         aux = params[:criterios][:periodo_ids] ? params[:criterios][:periodo_ids].to_sentence : 'Todos'
         flash[:success] = "<b>Criterios de Búsqueda: </b> Escuela: #{@escuela.descripcion}. Períodos: #{aux}"
 
-        periodo_anterior = @escuela.periodo_anterior current_periodo.id
+        @periodo_anterior = @escuela.periodo_anterior current_periodo.id
+        
+        ep = Escuelaperiodo.where(escuela_id: @escuela.id, periodo_id: current_periodo.id)
 
-        @grados = @escuela.grados.reject{|grado| !grado.inscrito_en_periodo? periodo_anterior}
+        # Criterios temporales para la generacion de la cita horaria de EIM 2019-02A
+        # PARA LOS QUE TIENEN SOLO INSCRIPCIONES DEL 2019-02A
+        # @grados = @escuela.grados.con_inscripciones.where(iniciado_periodo_id: '2019-02A').distinct
+
+        # PARA LOS QUE TIENEN INSCRIPCIONES ANTERIORES AL 2019-02A
+        ## @grados = @escuela.grados.reject{|gr| !gr.inscripciones.map{ |ins| ins.seccion.periodo_id}.include? '2019-02A'}
+
+        # @grados = @escuela.grados.con_inscripciones.where("iniciado_periodo_id != '2019-02A'").distinct
+        
+        @grados = @escuela.grados.con_inscripciones.iniciados_en_periodos(@periodos_ids) if params[:criterios][:iniciados_en]
+
+        # @grados = @grados.reject{|grado| !grado.inscrito_en_periodo? @periodo_anterior} if params[:criterios][:sin_inscripciones_periodo_anterior]
 
         if params[:criterios][:criterio1].eql? 'EFICIENCIA'
           # @grados = @grdos.order_by{|o| o.eficiencia @periodos_ids}
           @grados = @grados.sort {|a,b| a.eficiencia(@periodos_ids) <=> b.eficiencia(@periodos_ids)}
         end
 
-        # @grados = Grado.de_las_escuelas(@escuelas.ids).limit 50
       end
     end
 
@@ -131,28 +144,24 @@ module Admin
     end
     # Fin Index
 
-    def cambiar_inscripcion
-      grado = Grado.where(estudiante_id: params[:estudiante_id], escuela_id: params[:escuela_id]).first
+    def update
       params[:grado]['inscrito_ucv'] = true if (params[:grado]['estado_inscripcion'] and params[:grado]['estado_inscripcion'].eql? 'reincorporado')
 
       params[:grado]['autorizar_inscripcion_en_periodo_id'] = nil if params[:grado]['autorizar_inscripcion_en_periodo_id'].blank?
 
-      if grado.update(grado_params.to_hash)
-        info_bitacora "Actualización de Datos para la Inscripcion en #{grado.escuela_id} de #{grado.estudiante_id}: #{params[:grado]}", Bitacora::ACTUALIZACION, grado
+      if @grado.update(grado_params.to_hash)
+        info_bitacora "Actualización de #{@grado.estudiante_id} en #{@grado.escuela.descripcion}: #{params[:grado]}", Bitacora::ACTUALIZACION, @grado
         flash[:success] = 'Actualización exitosa' 
       else
         flash[:success] = 'No se pudo completar la actualización. Por favor verifique e inténtelo nuevamente.'
       end
-      redirect_back fallback_location: usuario_path(params[:estudiante_id])
+      redirect_back fallback_location: usuario_path(@grado.estudiante_id)
     end
 
     def eliminar
-
-      grado = Grado.find params[:id]
-      estudiante_id = grado.estudiante_id
-      escuela = grado.escuela
+      estudiante_id = @grado.estudiante_id
       usuario = Usuario.find estudiante_id
-      inscripciones = grado.inscripciones
+      inscripciones = @grado.inscripciones
       total = 0
       if params[:escuela_destino_id] and inscripciones.any?
         inscripciones.each do |inscrip|
@@ -161,9 +170,9 @@ module Admin
         end
       end
 
-      info_bitacora_crud Bitacora::ELIMINACION, grado
+      info_bitacora_crud Bitacora::ELIMINACION, @grado
 
-      if grado.destroy
+      if @grado.destroy
         flash[:info] = '¡Escuela Eliminada con éxito!'
         flash[:info] += " Se transfirieró un total de #{total} asignatura(s) como pci a #{params[:escuela_destino_id]}" if params[:escuela_destino_id]
       else
@@ -175,8 +184,12 @@ module Admin
     # Fin Eliminar
     private
 
+      def set_grado
+        @grado = Grado.find params[:id]
+      end
+
       def grado_params
-        params.require(:grado).permit(:escuela_id, :estudiante_id, :estado, :culminacion_periodo_id, :tipo_ingreso, :inscrito_ucv, :estado_inscripcion, :iniciado_periodo_id, :plan_id, :autorizar_inscripcion_en_periodo_id, :region)
+        params.require(:grado).permit(:escuela_id, :estudiante_id, :estado, :culminacion_periodo_id, :tipo_ingreso, :inscrito_ucv, :estado_inscripcion, :iniciado_periodo_id, :plan_id, :autorizar_inscripcion_en_periodo_id, :region, :citahoraria)
       end
 
   end

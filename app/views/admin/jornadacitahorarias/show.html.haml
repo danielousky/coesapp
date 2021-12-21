@@ -1,0 +1,16 @@
+- grados = @jornadacitahoraria.escuelaperiodo.escuela.grados.con_cita_horaria_igual_a(@jornadacitahoraria.inicio.strftime "%Y-%m-%d")
+%table.table
+  %thead
+    %tr
+      %th Fecha
+      %th Duración
+      %th Estud (Max/Total)
+      %th Total Franjas
+  %tbody
+    %tr
+      %td= @jornadacitahoraria.inicio.strftime('%d de %B de %Y - %H:%m%p')
+      %td= @jornadacitahoraria.duracion_total_horas
+      %td= "#{@jornadacitahoraria.max_grados}/#{grados.count}"
+      %td= @jornadacitahoraria.total_franjas
+
+= render partial: 'jornadacitahorarias/grados', locals: {grados: grados}

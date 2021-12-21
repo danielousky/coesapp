@@ -122,6 +122,7 @@ module Admin
     # GET /escuelas/1.json
     def show
       @titulo = "Escuela #{@escuela.descripcion.titleize}"
+      @escuelaperiodo = @escuela.escuelaperiodos.where(periodo_id: current_periodo.id).first
     end
 
     # GET /escuelas/new

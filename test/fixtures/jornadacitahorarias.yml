@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  escuelaperiodo: one
+  inicio: 2021-12-08 19:44:23
+  cierre: 2021-12-08 19:44:23
+  max_grados: 1
+  duracion_franja_horaria: 1
+
+two:
+  escuelaperiodo: two
+  inicio: 2021-12-08 19:44:23
+  cierre: 2021-12-08 19:44:23
+  max_grados: 1
+  duracion_franja_horaria: 1

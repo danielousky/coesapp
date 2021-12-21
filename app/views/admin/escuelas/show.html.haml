@@ -1,5 +1,5 @@
 
-.form-group
+.form-group.float-right
   = link_to t('.back', default: t("helpers.links.back")), escuelas_path, class: 'btn btn-outline-secondary btn-sm'
 
   - if (current_admin and current_admin.autorizado? 'Escuelas', 'update')
@@ -12,11 +12,20 @@
     .btn.btn-sm.disabled.btn-outline-secondary.tooltip-btn{'data-toggle': :tooltip, title: 'Elimine las inscripciones para activar la opción', 'data-placement': :left}
       = glyph 'trash'
       Eliminar
-
-%nav
-  .nav.nav-tabs
-    = link_to 'Profesores', "#profes", "data-toggle": :tab, class: "nav-item nav-link active"
-  .tab-content
-    .tab-pane#profes.border.p-3.border-top-0.active
-      = render partial: '/admin/profesores/index', locals: {profesores: @escuela.profesores}
+- if @escuelaperiodo
+  = link_to "#{jornadacitahorarias_path}?escuelaperiodo_id=#{@escuelaperiodo.id}", class: 'btn btn-sm btn-success' do
+    = glyph 'calendar'
+    Jornanda de Cita Horaria
+- else
+  %p.alert.alert-warning 
+    Para generar 
+    %b Citas Horarias
+    escoja y seleccione a un Período Actual perteneciente a la escuela
+- if false
+  %nav
+    .nav.nav-tabs
+      = link_to 'Profesores', "#profes", "data-toggle": :tab, class: "nav-item nav-link active"
+    .tab-content
+      .tab-pane#profes.border.p-3.border-top-0.active
+        = render partial: '/admin/profesores/index', locals: {profesores: @escuela.profesores}
 

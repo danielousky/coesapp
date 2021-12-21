@@ -11,46 +11,50 @@
               = glyph 'search'
 
       %tr
-        %th 
-          .badge.text-success.tooltip-btn{'data-toggle': :tooltip, title: 'Nueva función'}
-            = glyph 'star'
-          Autorizar Inscripción en Periodo: 
+        %th
+          Autorizar Inscripción Especial en Periodo: 
         %td= grado.autorizar_inscripcion_en_periodo_decrip_badge
         - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
           %td
-            = link_to 'javascript:void(0)', onclick: "$('#autorizarInscripcion#{grado.id}').modal()" do
-              = glyph 'pencil'
+            .tooltip-btn{'data_toggle': :tooltip, title: 'Periodo de Inscripción Especial Autorizado'}
+              = link_to('javascript:void(0)', { class: 'text-success m-1', 'data_toggle': :modal, id: 'autorizar_inscripcion_en_periodo_id', class: 'update_grado_btn' }) do
+                = glyph :pencil
+
       %tr
         %th Periodo de Ingreso: 
         %td= grado.iniciado_periodo_id
         - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
           %td
-            = link_to 'javascript:void(0)', onclick: "$('#cambiarPeriodoInscripcion#{grado.id}').modal()" do
-              = glyph 'pencil'
+            .tooltip-btn{'data_toggle': :tooltip, title: 'Período de Ingreso'}
+              = link_to('javascript:void(0)', { class: 'text-success m-1', 'data_toggle': :modal, id: 'iniciado_periodo_id', class: 'update_grado_btn' }) do
+                = glyph :pencil
+
       %tr
         %th Estado del Ingreso: 
         %td
           .badge.badge-info= grado.estado_inscripcion.upcase
         - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
           %td
-            = link_to 'javascript:void(0)', onclick: "$('#cambiarEstadoInscripcion#{grado.id}').modal()" do
-              = glyph 'pencil'
+            .tooltip-btn{'data_toggle': :tooltip, title: 'Estado del Ingreso'}
+              = link_to('javascript:void(0)', { class: 'text-success m-1', 'data_toggle': :modal, id: 'estado_inscripcion', class: 'update_grado_btn' }) do
+                = glyph :pencil
       %tr
         %th Tipo de Ingreso:
         %td
           .badge.badge-info= grado.tipo_ingreso
         - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
           %td
-            = link_to 'javascript:void(0)', onclick: "$('#cambiarTipoIngreso#{grado.id}').modal()" do
-              = glyph 'pencil'
+            .tooltip-btn{'data_toggle': :tooltip, title: 'Tipo de Ingreso'}
+              = link_to('javascript:void(0)', { class: 'text-success m-1', 'data_toggle': :modal, id: 'tipo_ingreso', class: 'update_grado_btn' }) do
+                = glyph :pencil
       %tr
         %th Región:
         %td= grado.region.titleize
         - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
           %td
-            = link_to 'javascript:void(0)', onclick: "$('#cambiarRegion#{grado.id}').modal()" do
-              = glyph 'pencil'
-
+            .tooltip-btn{'data_toggle': :tooltip, title: 'Región'}
+              = link_to('javascript:void(0)', { class: 'text-success m-1', 'data_toggle': :modal, id: 'region', class: 'update_grado_btn' }) do
+                = glyph :pencil
 
       %tr
         %th Inscrito en la UCV:
@@ -61,36 +65,42 @@
             .badge.badge-danger No
         - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
           %td
-            = link_to "#{cambiar_inscripcion_grado_path}?estudiante_id=#{@estudiante.id}&escuela_id=#{@escuela.id}&[grado]inscrito_ucv=#{!grado.inscrito_ucv}", method: 'post'  do
+            = link_to "#{grado_path(grado)}?[grado]inscrito_ucv=#{!grado.inscrito_ucv}", method: 'put'  do
               = glyph 'pencil'
-
-
 
 %br
 - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
-  - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Autorizar Inscripción en el Período:', group: 'autorizar_inscripcion_periodo', field_name: 'autorizar_inscripcion_en_periodo_id', grade: grado}
-  - url = cambiar_inscripcion_grado_path
-  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "autorizarInscripcion#{grado.id}", title: 'Autorizar Inscripción', content: content, width: nil}
-
-  - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Estado de Inscripción:', group: Grado.estado_inscripciones, field_name: 'estado_inscripcion', grade: grado}
-  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarEstadoInscripcion#{grado.id}", title: 'Cambiar Inscripción', content: content, width: nil}
-
-  - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Tipo Inscripción:', group: Grado.tipos_ingreso, field_name: 'tipo_ingreso', grade: grado}
-  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarTipoIngreso#{grado.id}", title: 'Cambiar Tipo Ingreso', content: content, width: nil}
-  
-  - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Período de Inicio:', group: 'periodos', field_name: '', grade: grado}
-  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarPeriodoInscripcion#{grado.id}", title: 'Cambiar Periodo', content: content, width: nil}
-
-  - content = render partial: '/admin/grados/form_cambiar_inscripcion', locals: {title: 'Región:', group: Grado.regiones, field_name: 'region', grade: grado}
-  = render partial: '/layouts/modal_layout', locals: {url: url, id_modal: "cambiarRegion#{grado.id}", title: 'Cambiar Región', content: content, width: nil}
-
-
+  - content = render partial: '/admin/grados/form_grado'
+  - title = 'Actualizar Inscripción'
+  = render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "actualizarInscripcion#{grado.id}", title: title, content: content, width: nil}
 
   - if grado.reportepago
     = # Agregar model para el detalle de pago: Puede der un partial del show 
     - if false
       - content = render file: "/admin/reportepagos/show?id=#{grado.reportepago.id}"
       = render partial: '/layouts/modal_layout_with_form', locals: {url: url, id_modal: "cambiarPeriodoInscripcion#{grado.id}", title: 'Ver detalle de pago Escuela', content: content, width: nil}
+
+:javascript
+  $(document).on('turbolinks:load', function(){
+    $('.update_grado_btn').on('click', function() {
+
+      let grado_field = $(`#edit_grado_#{grado.id} .field_grado`)
+      grado_field.hide();
+      grado_field.prop('required', false);
+      grado_field.prop('disabled', true);
+      let elem = $(this);
+      let tooltip = $(elem.parent()[0]).prop('dataset').originalTitle
+      $("#actualizarInscripcion#{grado.id}Title").text('Actualizar ' + tooltip);
+
+      let field = $(`#edit_grado_#{grado.id} #grado_${elem.prop('id')}`);
+      if (elem.prop('id') != 'autorizar_inscripcion_en_periodo_id') field.prop('required', true);
+      field.prop('disabled', false);
+      if (field.prop('type') == 'radio') field.parent().show();
+      field.show();
+
+      return $(`#actualizarInscripcion#{grado.id}`).modal({show: true, backdrop: 'static'});
+    });
+  })   
 
 
 

@@ -15,14 +15,22 @@
     .row.form-group
       %b.control-label.col-md-1.text-lg-right Períodos:
       .col-md-11
+        - if false
+          .mr-3.mb-2
+            = check_box_tag 'criterios[sin_inscripciones_periodo_anterior]', nil
+            = "Excluir si no tiene Inscripciones en el Periodo Anterior #{@periodo_anterior.id if @periodo_anterior}" 
+        .mr-3.mb-2
+          = check_box_tag 'criterios[iniciados_en]', nil
+          = "Solo Estudiantes que iniciados en el (los) Periodo(s) indicados #{@periodo_anterior.id if @periodo_anterior}"
+
         = check_box_tag 'todos', nil
         Todos los Períodos
         = select_tag 'criterios[periodo_ids]', nil, class: 'form-control form-control-sm', prompt: '-- Seleccione --', required: true, multiple: true
         =# collection_select :criterios, :periodo_ids, @periodos.order(inicia: :desc), :id, :id, {prompt: '-- Seleccione --', required: true}, class: 'form-control form-control-sm', multiple: true
 
     .float-right
-      = submit_tag 'Enviar', class: 'btn btn-outline-success'
+      = submit_tag 'Enviar', class: 'btn btn-outline-success', disabled_with: 'Procesando...'
 
-  - # Colocar Valores Para mostrar: Apellidos y Nombres, promedio ponderado, pormedio simple, eficiencia
+  - # Colocar Valores Para mostrar: Apellidos y Nombres, promedio ponderado, pormedio simple, eficiencia
   %br
   %br

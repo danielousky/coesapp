@@ -3,7 +3,7 @@ class Estudiante < ApplicationRecord
 	belongs_to :usuario, foreign_key: :usuario_id 
 	# belongs_to :tipo_estado_inscripcion
 
-	belongs_to :citahoraria, optional: true
+	# belongs_to :citahoraria, optional: true
 
 	has_one :direccion#, foreign_key: :estudiante_id
 
@@ -32,7 +32,7 @@ class Estudiante < ApplicationRecord
 	validates :usuario_id, presence: true, uniqueness: true
 
 	# SCOPES:
-	scope :con_cita_horaria, -> {where "citahoraria_id IS NOT NULL"}
+	# scope :con_cita_horaria, -> {where "citahoraria_id IS NOT NULL"}
 
 	scope :con_inscripcion_en_periodo, lambda{|periodo_id| joins(:inscripcionsecciones).joins(:secciones).where("secciones.periodo_id = ?", periodo_id)} 
 

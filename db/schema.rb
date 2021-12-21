@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_08_131419) do
+ActiveRecord::Schema.define(version: 2021_12_10_152346) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -256,6 +256,10 @@ ActiveRecord::Schema.define(version: 2021_12_08_131419) do
     t.bigint "reportepago_id"
     t.string "autorizar_inscripcion_en_periodo_id"
     t.integer "region", default: 0, null: false
+    t.decimal "eficiencia", precision: 4, scale: 2, default: "0.0", null: false
+    t.decimal "promedio_simple", precision: 4, scale: 2, default: "0.0", null: false
+    t.decimal "promedio_ponderado", precision: 4, scale: 2, default: "0.0", null: false
+    t.datetime "citahoraria"
     t.index ["culminacion_periodo_id"], name: "fk_rails_fef4486ce7"
     t.index ["escuela_id", "estudiante_id"], name: "index_grados_on_escuela_id_and_estudiante_id", unique: true
     t.index ["escuela_id"], name: "index_grados_on_escuela_id"
@@ -390,6 +394,17 @@ ActiveRecord::Schema.define(version: 2021_12_08_131419) do
     t.index ["tipo_estado_calificacion_id"], name: "index_inscripcionsecciones_on_tipo_estado_calificacion_id"
     t.index ["tipo_estado_inscripcion_id"], name: "index_inscripcionsecciones_on_tipo_estado_inscripcion_id"
     t.index ["tipoasignatura_id"], name: "index_inscripcionsecciones_on_tipoasignatura_id"
+  end
+
+  create_table "jornadacitahorarias", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "escuelaperiodo_id"
+    t.datetime "inicio"
+    t.integer "duracion_total_horas", limit: 1
+    t.integer "max_grados", limit: 2
+    t.integer "duracion_franja_minutos", limit: 1
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["escuelaperiodo_id"], name: "index_jornadacitahorarias_on_escuelaperiodo_id"
   end
 
   create_table "parametros_generales", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -617,6 +632,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_131419) do
   add_foreign_key "inscripcionsecciones_copy1", "tipo_estado_calificaciones", name: "inscripcionsecciones_copy1_ibfk_5", on_update: :cascade, on_delete: :nullify
   add_foreign_key "inscripcionsecciones_copy1", "tipo_estado_inscripciones", name: "inscripcionsecciones_copy1_ibfk_7", on_update: :cascade, on_delete: :nullify
   add_foreign_key "inscripcionsecciones_copy1", "tipoasignaturas", name: "inscripcionsecciones_copy1_ibfk_3", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "jornadacitahorarias", "escuelaperiodos"
   add_foreign_key "perfiles_restringidas", "perfiles", name: "perfiles_restringidas_perfile_id_fk", on_update: :cascade, on_delete: :cascade
   add_foreign_key "perfiles_restringidas", "restringidas", name: "perfiles_restringidas_restringida_id_fk", on_update: :cascade, on_delete: :cascade
   add_foreign_key "planes", "escuelas", on_update: :cascade, on_delete: :cascade

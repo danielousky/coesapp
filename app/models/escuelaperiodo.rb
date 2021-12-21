@@ -4,11 +4,18 @@ class Escuelaperiodo < ApplicationRecord
 	belongs_to :periodo
 	belongs_to :escuela
 
+	has_many :jornadacitahorarias, dependent: :destroy
+
 	has_many :inscripcionescuelaperiodos
 	accepts_nested_attributes_for :inscripcionescuelaperiodos
 	# VALIDACIONES:
 	# validates :id, presence: true, uniqueness: true
 	validates_uniqueness_of :periodo_id, scope: [:escuela_id], message: 'La escuela ya está en este período', field_name: false
+
+	def grados_sin_cita_horaria_ordenados
+		self.escuela.grados.no_preinscrito.sin_cita_horarias.order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc])		
+	end
+
 
 	def total_secciones
 		secciones.count

@@ -1,0 +1,40 @@
+
+= form_for @jornadacitahoraria do |f|
+  = f.hidden_field :escuelaperiodo_id
+  .form-group
+    = f.label :inicio, value: 'Inicio:'
+    = f.datetime_field :inicio, class: 'form-control', required: true
+
+  .form-group
+    = f.label :duracion_total_horas, class: 'control-label', value: 'Duración Total del Proceso:'
+    %br
+    =# f.number_field :duracion_total_horas, required: true, style: 'width:0; border-color:white', class: 'form-control'
+    %div{'data-toggle': :buttons}
+      .btn-group
+        - for a in [2,4,5,8,10, 24] do
+          %label.btn.btn-secondary
+            =# f.radio_button :duracion_total_horas, required: true, class: 'sr-only', value: a
+            %input.sr-only{type: :radio, value: a, name: 'jornadacitahoraria[duracion_total_horas]', id: 'jornadacitahoraria_duracion_total_horas', required: true}
+            = "#{a} Horas"
+
+  .form-group.mt-3
+    = f.label :max_grados, class: 'control-label', value: 'Máximo Estudiantes:'
+    = f.number_field :max_grados, class: 'form-control', value: @total_grados_sin_cita, min: 10, max: @total_grados_sin_cita, step: 10, required: true
+
+  .form-group
+    = f.label :duracion_franja_minutos, class: 'control-label', value: 'Duración Cada Franja Horaria:'
+    = f.hidden_field :duracion_franja_minutos, required: true, value: nil
+    %br
+
+    %div{'data-toggle': :buttons}
+      .btn-group
+        - for a in [30,60,120] do
+          %label.btn.btn-secondary
+            =# f.radio_button :duracion_total_horas, required: true, class: 'sr-only', value: a
+            %input.sr-only{type: :radio, value: a, name: 'jornadacitahoraria[duracion_franja_minutos]', id: 'jornadacitahoraria_duracion_franja_minutos', required: true}
+            = "#{a} Minutos"
+
+  .actions
+    = f.submit 'Save', class: 'btn btn-primary'
+
+

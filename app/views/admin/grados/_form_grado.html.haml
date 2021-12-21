@@ -1,0 +1,41 @@
+= form_for @grado do |f|  
+  .form-group.row
+    %label.col-form-label.col-md-12#title
+  .form-group.row
+    .col-md-12
+      = f.datetime_field :citahoraria, class: "form-control field_grado", required: true
+
+      = f.collection_select :autorizar_inscripcion_en_periodo_id, @grado.escuela.periodos.order(inicia: :desc), :id, :id, {include_blank: '--- Sin Autorización Especial ---' }, { class: "form-control field_grado"}
+      
+      = f.collection_select :iniciado_periodo_id, @grado.escuela.periodos.order(inicia: :desc), :id, :id, {}, { class: "form-control field_grado", required: true}
+
+      %div{'data-toggle': :buttons}
+        .btn-group
+          - Grado.estado_inscripciones.map do |v, k| 
+            - checked = (@grado and @grado.estado_inscripcion.eql? v)
+            - setValue = checked ? 'focus active' : ''
+            %label.btn.btn-secondary.field_grado{class: setValue}
+              %input.sr-only.field_grado{type: :radio, value: v, name: 'grado[estado_inscripcion]', id: 'grado_estado_inscripcion', required: true, checked: checked}
+              = v.humanize.titleize
+
+      %div{'data-toggle': :buttons}
+        - Grado.tipos_ingreso.map do |v, k| 
+          - checked = (@grado and @grado.tipo_ingreso.eql? v)
+          - setValue = checked ? 'focus active' : ''
+          %label.btn.btn-secondary.field_grado{class: setValue}
+            =# f.radio_button :duracion_total_horas, required: true, class: 'sr-only', value: a
+            %input.sr-only.field_grado{type: :radio, value: v, name: 'grado[tipo_ingreso]', id: 'grado_tipo_ingreso', required: true, checked: checked}
+            = v.humanize.titleize
+      %div{'data-toggle': :buttons}
+        .btn-group
+          - Grado.regiones.map do |v, k| 
+            - checked = (@grado and @grado.region.eql? v)
+            - setValue = checked ? 'focus active' : ''
+            %label.btn.btn-secondary.field_grado{class: setValue}
+              =# f.radio_button :region, k, required: true, class: 'sr-only field_grado'
+              %input.sr-only.field_grado{type: :radio, value: v, name: 'grado[region]', id: 'grado_region', required: true, checked: checked}
+              = v.humanize.titleize
+
+  .modal-footer
+    = f.submit 'Guardar', class: 'btn btn-sm btn-primary'
+    %a.btn.btn-sm.btn-outline-secondary.float-right{data: {dismiss: :modal}, onclick: "$('.modal').modal('hide')"} Cancelar

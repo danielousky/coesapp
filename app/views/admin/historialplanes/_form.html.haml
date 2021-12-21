@@ -19,5 +19,5 @@
             = f.select(:periodo_id, @periodos.collect{|o| [ o.id, o.id ] }, { include_blank: 'Selecciona Periodo...'}, {class: "form-control text_field", required: true})
 
         .modal-footer
-          %a.btn{data: {dismiss: 'modal'}} Cancelar
-          = f.submit class: 'btn btn-primary', value: 'Guardar'
+          = f.submit class: 'btn btn-sm btn-primary', value: 'Guardar'
+          %a.btn.btn-sm.btn-outline-secondary{data: {dismiss: 'modal'}} Cancelar

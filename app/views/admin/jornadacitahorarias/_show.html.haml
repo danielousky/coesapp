@@ -1,0 +1,23 @@
+- grados = jornadacitahoraria.grados_propios_ordenados
+%table.table.table-sm.table-bordered.responsive-table.mt-3
+  %thead
+    %tr
+      %th.text-center.align-middle Fecha
+      %th.text-center.align-middle Duración
+      %th.text-center.align-middle Estud
+      %th.text-center.align-middle Franjas
+      %th
+  %tbody
+    %tr
+      %td.text-center.align-middle= I18n.l(jornadacitahoraria.inicio, format: '%d de %B de %Y - %I:%M%p')
+
+      %td.text-center.align-middle= "#{jornadacitahoraria.duracion_total_horas} Horas"
+      %td.text-center.align-middle= grados.count
+      %td.text-center.align-middle= "#{jornadacitahoraria.total_franjas} de #{jornadacitahoraria.duracion_franja_minutos} minutos c/u "
+      %td.text-center.align-middle
+        = link_to jornadacitahoraria, method: :delete, data: {confirm: 'Esta acción limpiará las citas horarias asociadas ¿Está seguro?'}, class: 'btn btn-sm btn-danger' do
+          = glyph 'trash'
+          Eliminar
+
+
+= render partial: '/admin/jornadacitahorarias/grados', locals: {grados: grados}

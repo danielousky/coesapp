@@ -1,0 +1,27 @@
+%h5.titulo.text-center.mb-2 Jornadas de Citas Horarias 
+%nav
+  .nav.nav-tabs  
+    = link_to "#sinCita", "data-toggle": :tab, class: "nav-item nav-link active" do
+      Estudiantes Sin Citas
+      .badge.badge-dark= @grados_sin_cita.count
+    - @jornadacitahorarias.each do |cita| 
+      = link_to "#cita#{cita.id}", "data-toggle": :tab, class: "nav-item nav-link" do
+        =# l(cita.inicio, format: :short)
+        = I18n.l(cita.inicio, format: "%d/%m/%Y")
+        .badge.badge-dark= cita.grados_propios_ordenados.count
+    .tooltip-btn{'data-toggle': :tooltip, title: 'Agregar Nueva Jornada Horaria'}
+      = link_to "#{new_jornadacitahoraria_path}?escuelaperiodo_id=#{@escuelaperiodo.id}", class: "nav-item nav-link bg-success text-white" do
+        = glyph 'plus'
+        = glyph 'calendar'
+        Nueva Cita Horaria
+
+  .tab-content
+    .tab-pane#sinCita.active.border.border-top-0.p-3      
+      - if @grados_sin_cita and @grados_sin_cita.any?
+        = render partial: '/admin/jornadacitahorarias/grados', locals: {grados: @grados_sin_cita}
+      - else
+        %h5.alert.alert-info Sin estudiantes por asignar cita horaria
+    - @jornadacitahorarias.each do |cita| 
+      .tab-pane.border.border-top-0.p-3{id: "cita#{cita.id}"}
+        = render partial: '/admin/jornadacitahorarias/show', locals: {jornadacitahoraria: cita}
+

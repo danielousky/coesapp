@@ -32,6 +32,8 @@ class Inscripcionseccion < ApplicationRecord
 	after_initialize :set_default, :if => :new_record?
 	before_validation :set_estados
 	after_save :actualizar_estados
+	after_save :calcular_numeros_del_grado, if: :will_save_change_to_calificacion_final?
+	after_save :calcular_numeros_del_grado, if: :will_save_change_to_calificacion_posterior?
 
 	before_destroy :set_bitacora
 	after_destroy :destroy_inscripcionescuelaperiodo
@@ -161,14 +163,9 @@ class Inscripcionseccion < ApplicationRecord
 		end
 	end
 
+	# Funciones Generales
 	def ultimo_plan
 		grado ? grado.ultimo_plan : nil
-	end
-
-	# Funciones Generales
-
-	def grado_id
-		grado.id
 	end
 
 	# Este método no debe ir ya que es una relación belong_to definida arriba
@@ -176,7 +173,6 @@ class Inscripcionseccion < ApplicationRecord
 	# 	# escuela_id = self.pci_escuela_id ? self.pci_escuela_id : self.escuela.id
 	# 	Grado.where(estudiante_id: self.estudiante_id, escuela_id: escuela_id).first
 	# end
-
 
 	def descripcion_asignatura_pdf
 		aux = seccion.asignatura.descripcion
@@ -625,6 +621,10 @@ class Inscripcionseccion < ApplicationRecord
 		self.pci = self.inscrita_como_pci?
 
 		agregar_inscripcionescuelaperiodo
+	end
+
+	def calcular_numeros_del_grado
+		self.grado.update(eficiencia: self.grado.calcular_eficiencia, promedio: self.grado.calcular_promedio, ponderado: self.calcular_ponderado)
 	end
 
 	def actualizar_estado_grado

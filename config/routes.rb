@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   end
 
   scope module: :admin do
-    resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas, :bitacoras, :reportepagos, :bancos
+    resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas, :bitacoras, :reportepagos, :bancos, :jornadacitahorarias
 
 
     resources :escuelaperiodos, only: :show do
@@ -46,6 +46,7 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :citahorarias, only: :index
     resources :escuelaperiodos, only: :show
 
     resources :horarios do
@@ -60,7 +61,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :grados, only: :index do
+    resources :grados, only: [:index, :update] do
       member do
         post 'agregar'
         post 'eliminar'

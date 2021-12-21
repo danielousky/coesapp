@@ -17,7 +17,7 @@
               Combinación:
             .controls
               - idiomas = @escuela.departamentos.reject{|i| i.id.eql? 'EG' or i.id.eql? 'TRA'; }
-              = f.collection_select :idioma1_id, idiomas, :id, :descripcion, {}, { class: 'form-control text_field', required: true}
+              = f.collection_select :idioma1_id, idiomas, :id, :descripcion, {}, { class: 'form-control text_field mb-2', required: true}
 
               = f.collection_select :idioma2_id, idiomas, :id, :descripcion, {}, { class: 'form-control text_field', required: true}
 
@@ -28,5 +28,5 @@
               = f.collection_select :periodo_id, @periodos, :id, :id, {}, {class: 'form-control text_field'}
 
         .modal-footer
-          %a.btn{data: {dismiss: 'modal'}} Cancelar
-          = f.submit class: 'btn btn-primary', value: 'Guardar', id: 'actualizar_btn'
+          = f.submit class: 'btn btn-sm btn-primary', value: 'Guardar', id: 'actualizar_btn'
+          %a.btn.btn-sm.btn-outline-secondary{data: {dismiss: 'modal'}} Cancelar

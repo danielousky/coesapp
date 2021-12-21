@@ -9,7 +9,6 @@ class Grado < ApplicationRecord
 	belongs_to :periodo_ingreso, optional: true, class_name: 'Periodo', foreign_key: :iniciado_periodo_id
 	belongs_to :reportepago, optional: true, dependent: :destroy
 	belongs_to :autorizar_inscripcion_en_periodo, optional: true, class_name: 'Periodo', foreign_key: :autorizar_inscripcion_en_periodo_id
-	belongs_to :citahoraria, optional: true
 
 	has_many :historialplanes
 	has_many :inscripciones, class_name: 'Inscripcionseccion'
@@ -52,8 +51,12 @@ class Grado < ApplicationRecord
 
 
 	scope :con_inscripciones, -> { where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0') }
-	scope :con_cita_horarias, -> { where('(SELECT COUNT(*) FROM citahorarias WHERE citahorarias.estudiante_id = grados.estudiante_id) > 0') }
+	
 
+	# scope :con_cita_horarias, -> { where('(SELECT COUNT(*) FROM citahorarias WHERE citahorarias.estudiante_id = grados.estudiante_id) > 0') }
+	scope :con_cita_horarias, -> { where("citahoraria IS NOT NULL")}
+	scope :con_cita_horaria_igual_a, -> (dia){ where("citahoraria LIKE '%#{dia}%'")}
+	scope :sin_cita_horarias, -> { where(citahoraria: nil)}
 
 
 	# scope :con_inscripciones_en_periodo, -> (periodo_id) { joins(inscripciones: :seccion).where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0 and secciones.periodo_id = ?', periodo_id) }
@@ -173,13 +176,13 @@ class Grado < ApplicationRecord
  		end
 	end
 
-	def eficiencia periodos_ids = nil 
+	def calcular_eficiencia periodos_ids = nil 
         cursados = self.total_creditos_cursados periodos_ids
         aprobados = self.total_creditos_aprobados periodos_ids
 		(cursados and cursados > 0) ? (aprobados.to_f/cursados.to_f).round(4) : 0.0
 	end
 
-	def promedio_simple periodos_ids = nil
+	def calcular_promedio_simple periodos_ids = nil
 		if periodos_ids
 			aux = inscripciones.de_los_periodos(periodos_ids).cursadas
 		else
@@ -190,7 +193,7 @@ class Grado < ApplicationRecord
 
 	end
 
-	def promedio_ponderado periodos_ids = nil
+	def calcular_promedio_ponderado periodos_ids = nil
 		if periodos_ids
 			aux = inscripciones.de_los_periodos(periodos_ids).ponderado
 		else
