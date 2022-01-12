@@ -224,7 +224,7 @@ class Grado < ApplicationRecord
 			aux = plan
 		end
 		return aux 
-		# hp = estudiante.historialplanes.por_escuela(escuela_id).order('periodo_id DESC').first
+		# hp = self.historialplanes.por_escuela(escuela_id).order('periodo_id DESC').first
 		# hp ? hp.plan : nil
 	end
 

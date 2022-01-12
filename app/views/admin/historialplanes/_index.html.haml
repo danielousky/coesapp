@@ -16,8 +16,8 @@
   .text-center= "Planes: (actual: #{grado.plan_descripcion})"
 
 %table.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md
-  -# @estudiante.historialplanes.order("periodo_id DESC").each do |hp|
-  -# @estudiante.historialplanes.joins(:plan).where("planes.escuela_id = '#{@escuela.id}'").order("periodo_id DESC").each do |hp|
+  -# @grado.historialplanes.order("periodo_id DESC").each do |hp|
+  -# @grado.historialplanes.joins(:plan).where("planes.escuela_id = '#{@escuela.id}'").order("periodo_id DESC").each do |hp|
   - @grado.historialplanes.order("periodo_id DESC").each do |hp|
     %tr
       %th
