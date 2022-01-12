@@ -94,7 +94,7 @@ module Admin
       grado = @historialplan.grado
 
       if @historialplan.destroy
-        aux = grado.estudiante.historialplanes.por_escuela(grado.escuela_id).order('periodo_id DESC').first
+        aux = grado.historialplanes.por_escuela(grado.escuela_id).order('periodo_id DESC').first
         grado.plan_id = aux ? aux.plan_id : nil
         if grado.save
           info_bitacora "Estudiante desvinculado del plan #{@historialplan.plan_id}", Bitacora::ELIMINACION, @historialplan.estudiante
