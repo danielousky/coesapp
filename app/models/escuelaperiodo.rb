@@ -12,10 +12,19 @@ class Escuelaperiodo < ApplicationRecord
 	# validates :id, presence: true, uniqueness: true
 	validates_uniqueness_of :periodo_id, scope: [:escuela_id], message: 'La escuela ya está en este período', field_name: false
 
-	def grados_sin_cita_horaria_ordenados
-		self.escuela.grados.no_preinscrito.sin_cita_horarias.order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc])		
-	end
+	
+	# def grados_sin_cita_horaria
 
+	# end
+
+	# def grados_sin_cita_horaria_ordenados
+	# 	self.escuela.grados.no_preinscrito.sin_cita_horarias.order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc])
+	# end
+
+	def escuelaperiodo_anterior
+		periodo_anterior = escuela.periodo_anterior periodo_id
+		Escuelaperiodo.where(periodo_id: periodo_anterior.id, escuela_id: escuela_id).first
+	end
 
 	def total_secciones
 		secciones.count

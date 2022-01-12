@@ -17,8 +17,10 @@ class Jornadacitahoraria < ApplicationRecord
   #CALLBACK
   after_destroy :limpiar_grados_cita_horaria
 
+  #SCOPE
+  scope :actual, -> (escuelaperiodo_id) { where("escuelaperiodo_id = '#{escuelaperiodo_id}' and inicio LIKE '%#{Date.today}%'")}
+  
   #MÉTODOS
-
   def puede_inscribir? citahoraria
     Time.now < citahoraria and Time.now < citahoraria+self.duracion_franja_minutos.minutes 
   end

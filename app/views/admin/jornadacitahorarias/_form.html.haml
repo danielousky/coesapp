@@ -19,7 +19,7 @@
 
   .form-group.mt-3
     = f.label :max_grados, class: 'control-label', value: 'Máximo Estudiantes:'
-    = f.number_field :max_grados, class: 'form-control', value: @total_grados_sin_cita, min: 10, max: @total_grados_sin_cita, step: 10, required: true
+    = f.number_field :max_grados, class: 'form-control', value: @total_grados_sin_cita, min: 10, max: @total_grados_sin_cita+1, step: 1, required: true
 
   .form-group
     = f.label :duracion_franja_minutos, class: 'control-label', value: 'Duración Cada Franja Horaria:'
@@ -35,6 +35,8 @@
             = "#{a} Minutos"
 
   .actions
-    = f.submit 'Save', class: 'btn btn-primary'
+    = f.submit 'Guardar', class: 'btn btn-primary'
+    = link_to 'Cancelar', jornadacitahorarias_path, class: 'btn btn-secondary'
+
 
 

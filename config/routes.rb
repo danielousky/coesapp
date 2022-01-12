@@ -70,7 +70,7 @@ Rails.application.routes.draw do
       end
       collection do
         get 'index_nuevos'
-        get 'citas_horarias'
+        # get 'citas_horarias'
         post 'citas_horarias'
       end
     end

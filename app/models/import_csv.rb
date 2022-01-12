@@ -200,9 +200,9 @@ class ImportCsv
 
 							end
 
-							# estudiante.historialplanes.destroy_all
+							# historialplanes.destroy_all
 
-							# if plan_id and !estudiante.historialplanes.where(plan_id: plan_id, periodo_id: periodo_id).any?
+							# if plan_id and !historialplanes.where(plan_id: plan_id, periodo_id: periodo_id).any?
 							# 	hp = Historialplan.new
 							# 	p "ESTUDIANTE CI: #{estudiante.id}"
 							# 	hp.plan_id = plan_id

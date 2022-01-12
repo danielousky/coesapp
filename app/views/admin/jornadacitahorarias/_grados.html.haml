@@ -1,8 +1,9 @@
-%table#tableData.table.table-striped.table-sm.table-hover.table-bordered.responsive-table
+%table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table.tableDataMia
   %thead
     %tr
       %th #
       %th Franja Horaria
+      %th Escuela
       %th Cédula
       %th Nombre y Apellido
       %th Eficiencia
@@ -11,19 +12,10 @@
   %tbody
     - anterior_cita = nil
     - grados.each_with_index do |grado, i|
-      - @cita_horaria = I18n.l(grado.citahoraria, format: '%I:%M%p') if grado.citahoraria
-      - if (anterior_cita != @cita_horaria) and i != 0
-        %tr.table-success
-          %td
-          %td
-          %td
-          %td
-          %td
-          %td
-          %td
       %tr
         %td= i+1
         %td= I18n.l(grado.citahoraria, format: '%I:%M%p') if grado.citahoraria
+        %td= grado.escuela.descripcion
         %td= grado.estudiante_id
         %td= link_to grado.estudiante.usuario.nombre_completo, usuario_path(grado.estudiante), target: '_black'
         %td= grado.eficiencia

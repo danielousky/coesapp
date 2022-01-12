@@ -104,6 +104,7 @@ class Escuela < ApplicationRecord
 		indice = 0 if indice.nil? or indice < 0
 		
 		return Periodo.find todos[indice]
+
 	end
 
 	def periodos_anteriores periodo_id

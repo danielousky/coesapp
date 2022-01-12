@@ -39,7 +39,11 @@
 					- @totalAsignaturasReservadas = @inscripcionperiodo ? @inscripcionperiodo.total_asignaturas : 0
 					- periodo_anterior = @escuela.periodo_anterior @periodo_inscripcion.id
 					-# periodo_anteanterior = @escuela.periodo_anterior periodo_anterior.id
-					-if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or (@inscripcionperiodo and @inscripcionperiodo.reservado?) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? ))
+					
+					- jornada_horaria_actual = Jornadacitahoraria.actual(@escupe.id).first
+
+					-if (jornada_horaria_actual and @grado.citahoraria and jornada_horaria_actual.puede_inscribir? @grado.citahoraria) or (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or (@inscripcionperiodo and @inscripcionperiodo.reservado?) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? ))
+
 						- # if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
 						- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
 
@@ -82,16 +86,16 @@
 
 
 
-			-if @estudiante.citahoraria
+			-if @grado.citahoraria
 				.border.p-md-3
 					%h5 Cita Horaria:
 					%p
 						%b Fecha:
 						=#(I18n.localize(Time.now, :format => "%A, %d de %B de %Y - Hora: %I:%M "))#.capitalize()
-						=(I18n.localize(@estudiante.citahoraria.fecha, :format => "%A, %d de %B de %Y")).capitalize()
+						=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y")).capitalize()
 						= "-"
 						%b Hora:
-						=(I18n.localize(@estudiante.citahoraria.fecha, :format => "%I:%M %p")).capitalize()
+						=(I18n.localize(@grado.citahoraria, :format => "%I:%M %p")).capitalize()
 						=# @estudiante.cita_horaria.hora
 
 			- if @grado.historialplanes.any?
