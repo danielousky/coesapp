@@ -102,12 +102,13 @@
 						= "Estimad#{@estudiante.usuario.genero} #{@estudiante.usuario.nickname.titleize}, le informamos que su Cita Horaria es el"
 						%b
 							=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y")).capitalize()
-							de
-							=(I18n.localize(@grado.citahoraria, :format => "%I:%M %p")).capitalize()
-							a
-							=(I18n.localize(@grado.citahoraria+jornada_horaria_actual.duracion_franja_minutos.minutes, :format => "%I:%M %p")).capitalize()
+							a las
 
-						= "y usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. Por favor, piense muy bien las asignaturas que va inscribir porque para este período no se va a permitir el retiro de materias.".html_safe
+							=(I18n.localize(@grado.citahoraria, :format => "%I:%M %p")).capitalize()
+							- if jornada_horaria_actual
+								= "y tiene una duración de #{jornada_horaria_actual.duracion_franja_minutos.minutes/60} minutos, "
+
+						= "usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. Por favor, piense muy bien las asignaturas que va inscribir porque para este período no se va a permitir el retiro de materias.".html_safe
 
 			- if @grado.historialplanes.any?
 				.border.p-md-3
