@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_10_152346) do
+ActiveRecord::Schema.define(version: 2022_01_14_171854) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -260,6 +260,7 @@ ActiveRecord::Schema.define(version: 2021_12_10_152346) do
     t.decimal "promedio_simple", precision: 4, scale: 2, default: "0.0", null: false
     t.decimal "promedio_ponderado", precision: 4, scale: 2, default: "0.0", null: false
     t.datetime "citahoraria"
+    t.integer "duracion_franja_horaria"
     t.index ["culminacion_periodo_id"], name: "fk_rails_fef4486ce7"
     t.index ["escuela_id", "estudiante_id"], name: "index_grados_on_escuela_id_and_estudiante_id", unique: true
     t.index ["escuela_id"], name: "index_grados_on_escuela_id"

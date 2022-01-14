@@ -4,6 +4,9 @@
   .form-group.row
     .col-md-12
       = f.datetime_field :citahoraria, class: "form-control field_grado", required: true
+      %b#duracion_franja_horaria_label.control-label.mt-4
+        Duración en minutos
+      = f.number_field :duracion_franja_horaria, class: "form-control field_grado", required: true, step: 30, max: 120, min: 30
 
       = f.collection_select :autorizar_inscripcion_en_periodo_id, @grado.escuela.periodos.order(inicia: :desc), :id, :id, {include_blank: '--- Sin Autorización Especial ---' }, { class: "form-control field_grado"}
       

@@ -87,6 +87,10 @@ class Grado < ApplicationRecord
 	# 	Inscripcionseccion.where("estudiante_id = ? and escuelas_id = ?", estudiante_id, escuela_id)
 	# end
 
+	def franja_horaria
+		(citahoraria and duracion_franja_horaria) ? citahoraria+duracion_franja_horaria.minutes : nil
+		
+	end
 
 	def inscripciones_en_periodo_activo
 		escupe_activo = escuela.escuelaperiodos.where(periodo_id: escuela.periodo_activo_id).first

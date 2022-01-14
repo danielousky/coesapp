@@ -42,7 +42,7 @@ class Jornadacitahoraria < ApplicationRecord
   end
 
   def limpiar_grados_cita_horaria
-    self.grados_propios_ordenados.update_all(citahoraria: nil)
+    self.grados_propios_ordenados.update_all(citahoraria: nil, duracion_franja_horaria: nil)
   end
 
 end

@@ -50,7 +50,7 @@ class Escuela < ApplicationRecord
 	end
 
 	def limpiar_todas_las_citashorarias
-		grados.update_all(citahoraria: nil)
+		grados.update_all(citahoraria: nil, duracion_franja_horaria: nil)
 	end
 
 	def self.actualizar_numeros_grados_idiomas_201902A

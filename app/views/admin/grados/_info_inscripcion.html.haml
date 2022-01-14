@@ -90,10 +90,22 @@
       grado_field.prop('disabled', true);
       let elem = $(this);
       let tooltip = $(elem.parent()[0]).prop('dataset').originalTitle
+        
+      let franja_horaria_label = $(`#edit_grado_#{grado.id} #duracion_franja_horaria_label`);
+
+      franja_horaria_label.hide();
       $("#actualizarInscripcion#{grado.id}Title").text('Actualizar ' + tooltip);
 
       let field = $(`#edit_grado_#{grado.id} #grado_${elem.prop('id')}`);
       if (elem.prop('id') != 'autorizar_inscripcion_en_periodo_id') field.prop('required', true);
+      if (elem.prop('id') == 'citahoraria'){
+        let franja_horaria_field = $(`#edit_grado_#{grado.id} #grado_duracion_franja_horaria`);
+        franja_horaria_field.prop('disabled', false);
+        franja_horaria_field.prop('required', true);
+        franja_horaria_field.show();
+        franja_horaria_label.show();
+      }
+
       field.prop('disabled', false);
       if (field.prop('type') == 'radio') field.parent().show();
       field.show();

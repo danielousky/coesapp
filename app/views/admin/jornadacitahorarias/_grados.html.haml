@@ -14,7 +14,10 @@
     - grados.each_with_index do |grado, i|
       %tr
         %td= i+1
-        %td= I18n.l(grado.citahoraria, format: '%I:%M%p') if grado.citahoraria
+        %td
+          - if grado.citahoraria and grado.duracion_franja_horaria
+            = I18n.l(grado.citahoraria, format: 'De %I:%M%p ')
+            = I18n.l(grado.citahoraria+grado.duracion_franja_horaria.minutes, format: 'a %I:%M%p')
         %td= grado.escuela.descripcion
         %td= grado.estudiante_id
         %td= link_to grado.estudiante.usuario.nombre_completo, usuario_path(grado.estudiante), target: '_black'

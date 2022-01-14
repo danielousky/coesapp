@@ -112,8 +112,11 @@
                         = link_to('javascript:void(0)', { class: 'update_grado_btn text-success m-1', 'data_toggle': :modal, id: 'citahoraria'}) do
                           = glyph :plus
                     Cita Horaria:
-                  - if grado.citahoraria
-                    %b.pl-2=(I18n.localize(grado.citahoraria, :format => "Fecha: %A, %d de %B de %Y - Hora: %I:%M %p")).capitalize()
+                  - if grado.citahoraria and grado.duracion_franja_horaria
+                    %b.pl-2
+                      =(I18n.localize(grado.citahoraria, :format => "Fecha: %A, %d de %B de %Y de %I:%M %p")).capitalize()
+                      =(I18n.localize(grado.franja_horaria, :format => "a %I:%M %p")).capitalize()
+
                     - if current_admin and (current_admin.autorizado?('Grados', 'cambiar_inscripcion'))
 
                       .float-left.tooltip-btn{'data_toggle': :tooltip, title: 'Cita Horaria'}
