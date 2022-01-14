@@ -25,13 +25,13 @@
   .tab-content
     .tab-pane#sinCita.active.border.border-top-0.p-3
       - if @grados_sin_cita and @grados_sin_cita.any?
-        - ep = @escuelaperiodo.escuela.periodo_anterior @escuelaperiodo.periodo_id
-        %h6.text-center.alert.alert-warning= "Estudiantes sin Cita Horaria e inscritos en Periodo Anterior: #{ep.id}"
+        -# ep = @escuelaperiodo.escuela.periodo_anterior @escuelaperiodo.periodo_id
+        %h6.text-center.alert.alert-warning= "Estudiantes sin Cita Horaria e inscritos en Periodo Anterior: #{@escuelaperiodo_anterior.periodo_id}"
         = render partial: '/admin/jornadacitahorarias/grados', locals: {grados: @grados_sin_cita}
       - else
         %h5.alert.alert-info Sin estudiantes por asignar cita horaria
         = # AGREGAR BOTÓN LIMPIAR CITAS HORARIAS DE LOS GRADOS
-        = link_to '#', 'Limpiar todas las citas horarias', class: 'btn btn-sm btn-danger'
+        =# link_to 'Limpiar todas las citas horarias', '', class: 'btn btn-sm btn-danger'
     - @jornadacitahorarias.each do |cita| 
       .tab-pane.border.border-top-0.p-3{id: "cita#{cita.id}"}
         = render partial: '/admin/jornadacitahorarias/show', locals: {jornadacitahoraria: cita}

@@ -41,11 +41,18 @@
 					-# periodo_anteanterior = @escuela.periodo_anterior periodo_anterior.id
 					
 					- jornada_horaria_actual = Jornadacitahoraria.actual(@escupe.id).first
+					- if false #jornada_horaria_actual
+						.alert.alert-info
+							%b Jornada Actual de Inscripción
+							%p= "Hora de Inicio: #{jornada_horaria_actual.inicio.strftime('%I:%M%P')}"
 
-					-if (jornada_horaria_actual and @grado.citahoraria and jornada_horaria_actual.puede_inscribir? @grado.citahoraria) or (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or (@inscripcionperiodo and @inscripcionperiodo.reservado?) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? ))
+					- inscripcion_abierta_por_citahoraria = (jornada_horaria_actual and @grado.citahoraria and jornada_horaria_actual.puede_inscribir? @grado.citahoraria)
 
-						- # if (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
-						- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
+					- inscripcion_abierta_por_regular = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or (@inscripcionperiodo and @inscripcionperiodo.reservado?) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any?))
+					- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
+					- # inscripcion_abierta_por_regular = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
+
+					-if inscripcion_abierta_por_citahoraria or (!inscripcion_abierta_por_citahoraria and inscripcion_abierta_por_regular)
 
 						- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc )
 						-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
@@ -61,7 +68,7 @@
 							:javascript
 								$(`##{idModal}`).modal();
 
-					- else
+					- elsif !jornada_horaria_actual
 						.alert.alert-warning
 							%b Atención: 
 							Verifique alguna de las siguientes opciones con el personal administrativo para habilitar su inscripción:
@@ -89,14 +96,18 @@
 			-if @grado.citahoraria
 				.border.p-md-3
 					%h5 Cita Horaria:
-					%p
-						%b Fecha:
-						=#(I18n.localize(Time.now, :format => "%A, %d de %B de %Y - Hora: %I:%M "))#.capitalize()
-						=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y")).capitalize()
-						= "-"
-						%b Hora:
-						=(I18n.localize(@grado.citahoraria, :format => "%I:%M %p")).capitalize()
-						=# @estudiante.cita_horaria.hora
+
+					%h5.alert.alert-warning 
+						%b Atención:
+						= "Estimad#{@estudiante.usuario.genero} #{@estudiante.usuario.nickname.titleize}, le informamos que su Cita Horaria es el"
+						%b
+							=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y")).capitalize()
+							de
+							=(I18n.localize(@grado.citahoraria, :format => "%I:%M %p")).capitalize()
+							a
+							=(I18n.localize(@grado.citahoraria+jornada_horaria_actual.duracion_franja_minutos.minutes, :format => "%I:%M %p")).capitalize()
+
+						= "y usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. Por favor, piense muy bien las asignaturas que va inscribir porque para este período no se va a permitir el retiro de materias.".html_safe
 
 			- if @grado.historialplanes.any?
 				.border.p-md-3

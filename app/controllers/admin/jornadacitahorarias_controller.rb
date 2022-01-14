@@ -5,12 +5,14 @@ module Admin
     before_action :filtro_autorizado
 
     before_action :set_jornadacitahoraria, only: %i[ show edit update destroy ]
-    before_action :set_escuelaperiodo, only: %i[ index new ]
+    before_action :set_escuelaperiodo, only: %i[ index new create]
+    before_action :set_grados_sin_cita, only: %i[ index new ]
 
     # GET /jornadacitahorarias or /jornadacitahorarias.json
     def index
 
       @jornadacitahorarias = @escuelaperiodo.jornadacitahorarias
+      @confirmados_periodo
       # @grados_sin_cita = escuelaperiodo_anterior.inscripcionescuelaperiodos.inscritos.joins(:grado).where('grados.citahoraria IS NULL').map{|iep| iep.grado}
 
       # Completed 200 OK in 7329ms (Views: 4233.9ms | ActiveRecord: 1526.0ms)
@@ -36,38 +38,35 @@ module Admin
       @total_grados_sin_cita = @grados_sin_cita.count
     end
 
-    # GET /jornadacitahorarias/1/edit
-    # def edit
-    # end
-
     # POST /jornadacitahorarias or /jornadacitahorarias.json
     def create
       @jornada = Jornadacitahoraria.new(jornadacitahoraria_params)
 
-      respond_to do |format|
-        if @jornada.save
-          # grados_a_asignar_cita = @jornada.escuelaperiodo.grados_sin_cita_horaria_ordenados
-          esc = Escuela.find 'IDIO'
-          @grados_sin_cita = esc.grados.sin_cita_horarias.order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc])
+      if @jornada.save
 
-          total_franjas = @jornada.total_franjas
-          grados_x_franja = @jornada.grado_x_franja
+        # grados_sin_cita = escuelaperiodo.escuela.grados.sin_cita_horarias.includes(estudiante: :usuario).joins(inscripcionescuelaperiodos: :escuelaperiodo).where("inscripcionescuelaperiodos.tipo_estado_inscripcion_id = '#{TipoEstadoInscripcion::INSCRITO}' AND escuelaperiodos.periodo_id = '2019-02A'").order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc])
 
-          total_grados_actualizados = 0
-          for a in 0..(total_franjas-1) do
-            grados_limitados = @grados_sin_cita.limit(grados_x_franja)
-            total_grados_actualizados += grados_limitados.count if grados_limitados.update_all(citahoraria: @jornada.inicio+(a*@jornada.duracion_franja_minutos).minutes)
-            @grados_sin_cita = @grados_sin_cita.sin_cita_horarias
-          end
+        total_franjas = @jornada.total_franjas
+        grados_x_franja = @jornada.grado_x_franja
+        total_grados_actualizados = 0
+        for a in 0..(total_franjas-1) do
+          # limitado = escuelaperiodo.escuela.grados.sin_cita_horarias.joins(inscripcionescuelaperiodos: :escuelaperiodo).where("inscripcionescuelaperiodos.tipo_estado_inscripcion_id = '#{TipoEstadoInscripcion::INSCRITO}' AND escuelaperiodos.periodo_id = '#{escuelaperiodo_anterior.periodo_id}'").order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc]).limit(grados_x_franja)
 
-          format.html { redirect_to jornadacitahorarias_path, flash: {success: "Jornada de Cita Horaria guardada con éxito. Se asignaron #{total_grados_actualizados} citas horarias en total"}}
-          format.json { render :show, status: :created, location: @jornada }
-        else
+          # limitado = escuelaperiodo.escuela.grados.sin_cita_horarias.con_inscripciones_en_periodo(@escuelaperiodo_anterior.periodo_id).includes(estudiante: :usuario).order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc]).group('grados.id').having('count(*) > 0')
 
-          format.html { redirect_back fallback_location: jornadacitahorarias_path,flash: {danger: "Inconvenientes para guardar la Jornada: #{@jornada.errors.full_messages.to_sentence}"}  }
-          format.json { render json: @jornada.errors, status: :unprocessable_entity }
+          limitado = @escuelaperiodo.escuela.grados.sin_cita_horarias.con_inscripciones_en_periodo(@escuelaperiodo_anterior.periodo_id).includes(estudiante: :usuario).order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc]).uniq
+
+          limitado[0..grados_x_franja].each{|gr| total_grados_actualizados += 1 if gr.update(citahoraria: @jornada.inicio+(a*@jornada.duracion_franja_minutos).minutes)}
+
         end
+        flash[:success] = "Jornada de Cita Horaria guardada con éxito. Se asignaron #{total_grados_actualizados} citas horarias de un total esperado de #{@jornada.max_grados}."
+        
+        redirect_to jornadacitahorarias_path
+      else
+        flash[:danger] = "Inconvenientes para guardar la Jornada: #{@jornada.errors.full_messages.to_sentence}"
+        redirect_back fallback_location: jornadacitahorarias_path
       end
+      
     end
 
     # PATCH/PUT /jornadacitahorarias/1 or /jornadacitahorarias/1.json
@@ -108,15 +107,24 @@ module Admin
             flash[:danger] = 'Periodo para la escuela no encontrado. Por favor, elija un periodo activo asociado a la escuela'
             redirect_back fallback_location: principal_admin_index_path
           else
-            set_grados_sin_cita
+            @escuelaperiodo_anterior = @escuelaperiodo.escuelaperiodo_anterior
           end
         end  
       end
 
       def set_grados_sin_cita
-        escuelaperiodo_anterior = @escuelaperiodo.escuelaperiodo_anterior
-        @grados_sin_cita = @escuelaperiodo.escuela.grados.sin_cita_horarias.includes(estudiante: :usuario).joins(inscripcionescuelaperiodos: :escuelaperiodo).where("inscripcionescuelaperiodos.tipo_estado_inscripcion_id = '#{TipoEstadoInscripcion::INSCRITO}' AND escuelaperiodos.periodo_id = '#{escuelaperiodo_anterior.periodo_id}'").order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc])
+
+        # @grados_sin_cita = @escuelaperiodo_anterior.inscripcionescuelaperiodos.inscritos.joins(:grado).joins(:escuelaperiodo).where("inscripcionescuelaperiodos.tipo_estado_inscripcion_id = '#{TipoEstadoInscripcion::INSCRITO}' AND escuelaperiodos.periodo_id = '#{@escuelaperiodo_anterior.periodo_id}' AND grados.citahoraria IS NULL").map{|iep| iep.grado}
+
+        # grados_con_cita_ids = Grado.con_cita_horarias.ids
+        # @grados_sin_cita = @escuelaperiodo.escuela.grados.sin_cita_horarias.includes(estudiante: :usuario).joins(inscripcionescuelaperiodos: :escuelaperiodo).where("inscripcionescuelaperiodos.tipo_estado_inscripcion_id = '#{TipoEstadoInscripcion::INSCRITO}' AND escuelaperiodos.periodo_id = '#{@escuelaperiodo_anterior.periodo_id}' AND grados.id NOT IN (#{grados_con_cita_ids.to_sentence last_word_connector: ' , '})").order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc])
+
+        # @grados_sin_cita = @escuelaperiodo.escuela.grados.sin_cita_horarias.includes(estudiante: :usuario).joins(inscripcionescuelaperiodos: :escuelaperiodo).where("inscripcionescuelaperiodos.tipo_estado_inscripcion_id = '#{TipoEstadoInscripcion::INSCRITO}' AND escuelaperiodos.periodo_id = '#{@escuelaperiodo_anterior.periodo_id}'").order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc])  
+
+        @grados_sin_cita = @escuelaperiodo.escuela.grados.sin_cita_horarias.con_inscripciones_en_periodo(@escuelaperiodo_anterior.periodo_id).includes(estudiante: :usuario).order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc]).uniq
+
       end
+
 
       # Only allow a list of trusted parameters through.
       def jornadacitahoraria_params

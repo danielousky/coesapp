@@ -59,7 +59,7 @@ class Grado < ApplicationRecord
 	scope :sin_cita_horarias, -> { where(citahoraria: nil)}
 
 
-	# scope :con_inscripciones_en_periodo, -> (periodo_id) { joins(inscripciones: :seccion).where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0 and secciones.periodo_id = ?', periodo_id) }
+	scope :con_inscripciones_en_periodo, -> (periodo_id) { joins(inscripciones: :seccion).where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0 and secciones.periodo_id = ?', periodo_id) }
 	
 	# scope :con_inscripcionescuelaperiodos, -> (escuelaperiodo_id) { joins(:inscripcionescuelaperiodos).where('inscripcionescuelaperiodos.escuelaperiodo_id = ?', escuelaperiodo_id) }
 

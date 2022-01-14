@@ -33,11 +33,7 @@
       = sidebar_sub_item 'report', 'Reportes', 'stats'
       #reportSubMenu.list-subgroup-item.list-subgroup.list-group-flush.d-none
         = sidebar_link_to_item 'Reporte PIC', secciones_path if (current_admin.autorizado? 'Grados', 'cita_horaria') if (current_admin.autorizado? 'Secciones', 'index')
-
-        = sidebar_link_to_item 'Citas Horarias', citas_horarias_grados_path if (current_admin.autorizado? 'Grados', 'cita_horaria')
         = sidebar_link_to_item 'Tipos de Estudiante', index_nuevos_grados_path if (current_admin.autorizado? 'Grados', 'index_nuevo')
-
-
     - if (current_admin.autorizado? 'Importador', 'importar_estudiantes') or (current_admin.autorizado? 'Importador', 'importar_profesores') or (current_admin.autorizado? 'Importador', 'importar_seccion')      
       = sidebar_sub_item 'import', 'Migraciones', 'import'
       #importSubMenu.list-subgroup-item.list-subgroup.d-none

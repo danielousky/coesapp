@@ -22,7 +22,7 @@ class Jornadacitahoraria < ApplicationRecord
   
   #MÉTODOS
   def puede_inscribir? citahoraria
-    Time.now < citahoraria and Time.now < citahoraria+self.duracion_franja_minutos.minutes 
+    Time.now > citahoraria and Time.now < citahoraria+self.duracion_franja_minutos.minutes 
   end
 
   def total_franjas
