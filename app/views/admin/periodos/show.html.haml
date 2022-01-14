@@ -54,7 +54,7 @@
                 %td= bita.id
                 %td= bita.descripcion
                 %td= bita.usuario.descripcion
-                %td= "Hace #{distance_of_time_in_words(Time.zone.now.hours,bita.created_at.hours )}"
+                %td= "Hace #{distance_of_time_in_words(Time.zone.now.hour,bita.created_at.hour )}"
 
   .form-group
     = btn_atras(periodos_path)
