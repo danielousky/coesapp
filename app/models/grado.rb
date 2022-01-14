@@ -55,7 +55,7 @@ class Grado < ApplicationRecord
 
 	# scope :con_cita_horarias, -> { where('(SELECT COUNT(*) FROM citahorarias WHERE citahorarias.estudiante_id = grados.estudiante_id) > 0') }
 	scope :con_cita_horarias, -> { where("citahoraria IS NOT NULL")}
-	scope :con_cita_horaria_igual_a, -> (dia){ where("citahoraria LIKE '%#{dia}%'")}
+	scope :con_cita_horaria_igual_a, -> (dia){ where("date(citahoraria) = '#{dia}'")}
 	scope :sin_cita_horarias, -> { where(citahoraria: nil)}
 
 
