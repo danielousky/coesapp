@@ -106,9 +106,9 @@
 
 							=(I18n.localize(@grado.citahoraria, :format => "%I:%M %p")).capitalize()
 							- if jornada_horaria_actual
-								= "y tiene una duración de #{jornada_horaria_actual.duracion_franja_minutos.minutes/60} minutos, "
+								= "y tiene una duración de #{jornada_horaria_actual.duracion_franja_minutos.minutes/60} minutos "
 
-						= "usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. Por favor, piense muy bien las asignaturas que va inscribir porque para este período no se va a permitir el retiro de materias.".html_safe
+						= ", usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. Por favor, piense muy bien las asignaturas que va inscribir porque para este período no se va a permitir el retiro de materias.".html_safe
 
 			- if @grado.historialplanes.any?
 				.border.p-md-3
