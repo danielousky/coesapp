@@ -60,6 +60,10 @@ class Grado < ApplicationRecord
 
 
 	scope :con_inscripciones_en_periodo, -> (periodo_id) { joins(inscripciones: :seccion).where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0 and secciones.periodo_id = ?', periodo_id) }
+
+	scope :con_inscripciones_en_periodos, -> (periodo_ids) { joins(inscripciones: :seccion).where("(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0 and secciones.periodo_id IN (?)", periodo_ids)}
+	
+	scope :con_inscripciones_en_periodo_2019_mas_otros, -> (periodo_ids) { joins(inscripciones: :seccion).where("(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0 and secciones.periodo_id = '2019-02A' and secciones.periodo_id IN (?)", periodo_ids)}
 	
 	# scope :con_inscripcionescuelaperiodos, -> (escuelaperiodo_id) { joins(:inscripcionescuelaperiodos).where('inscripcionescuelaperiodos.escuelaperiodo_id = ?', escuelaperiodo_id) }
 
@@ -117,7 +121,6 @@ class Grado < ApplicationRecord
 		end
 		"<span class='badge badge-#{tipo}'>#{valor}</span>".html_safe
 	end
-
 
 	def printHorario periodo_id
 	data = Bloquehorario::DIAS
@@ -180,6 +183,30 @@ class Grado < ApplicationRecord
  		end
 	end
 
+	def total_creditos
+		self.inscripciones.total_creditos
+	end
+
+	def update_all_eficiencia
+
+		Grados.each do |gr| 
+			inscripciones = gr.inscripciones
+			cursados = inscripciones.total_creditos_cursados
+			aprobados = inscripciones.total_creditos_aprobados
+
+
+			eficiencia = (cursados and cursados > 0) ? (aprobados.to_f/cursados.to_f).round(4) : 0.0
+
+			aux = inscripciones.cursadas
+
+			promedio_simple = (aux and aux.any? and !aux.average('calificacion_final').nil?) ? aux.average('calificacion_final').round(4) : 0.0
+
+			aux = inscripciones.ponderado
+			ponderado = cursados > 0 ? (aux.to_f/cursados.to_f).round(4) : 0.0
+		end
+
+	end
+
 	def calcular_eficiencia periodos_ids = nil 
         cursados = self.total_creditos_cursados periodos_ids
         aprobados = self.total_creditos_aprobados periodos_ids
@@ -205,7 +232,20 @@ class Grado < ApplicationRecord
 		end
 		cursados = self.total_creditos_cursados periodos_ids
 
-		cursados > 0 ? (aux.to_f/cursados.to_f).round(4) : 0.0
+		(cursados > 0) ? (aux.to_f/cursados.to_f).round(4) : 0.0
+	end
+
+	def calcular_promedio_ponderado_aprobado
+
+		aprobados = self.inscripciones.total_creditos_aprobados
+		aux = self.inscripciones.ponderado_aprobadas
+		(aprobados > 0) ? (aux.to_f/aprobados.to_f).round(4) : 0.0
+		
+	end
+
+	def calcular_promedio_simple_aprobado
+		aux = self.inscripciones.aprobadas
+		(aux and aux.count > 0 and !aux.average('calificacion_final').nil?) ? aux.average('calificacion_final').round(4) : 0.0
 	end
 
 

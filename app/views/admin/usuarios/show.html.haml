@@ -91,8 +91,8 @@
             - activeTab = (session[:tabEscuela].eql? escuela.id) ? 'active' : ''
             - @escuela = escuela
             .tab-pane.border.p-3.border-top-0{id: "pane_#{escuela.id}", class: activeTab}
-              - @inscripciones = @estudiante.inscripcionsecciones.joins(:escuela).where("escuelas.id = :e or pci_escuela_id = :e", e: @escuela.id)
-              -# @inscripciones = grado.inscripcionsecciones # ¡¡¡ Probar !!!
+              -# @inscripciones = @estudiante.inscripcionsecciones.joins(:escuela).where("escuelas.id = :e or pci_escuela_id = :e", e: @escuela.id)
+              - @inscripciones = grado.inscripciones # ¡¡¡ Probar !!!
               - escupe = escuela.escuelaperiodos.where(periodo_id: current_periodo.id).first
               - @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: escupe.id).first if escupe
 

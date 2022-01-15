@@ -56,9 +56,10 @@ class Escuela < ApplicationRecord
 	def self.actualizar_numeros_grados_idiomas_201902A
 		e = Escuela.find 'IDIO'
 		periodos_ids = e.periodos.ids-["2019-02A", "2020-02A"]
-		e.grados.con_inscripciones_en_periodo('2019-02A').group(:id).having('count(*) > 0').each{|gr|
+		e.grados.con_inscripciones_en_periodo('2019-02A').con_inscripciones_en_periodos(periodos_ids).group(:id).having('count(*) > 0').each{|gr|
 			gr.update(eficiencia: gr.calcular_eficiencia(periodos_ids), promedio_simple: gr.calcular_promedio_simple(periodos_ids), promedio_ponderado: gr.calcular_promedio_ponderado(periodos_ids))
 		} 
+
 	end
 
 	def self.actualizar_parciales_201802A

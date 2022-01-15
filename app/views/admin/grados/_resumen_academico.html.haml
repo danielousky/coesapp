@@ -1,25 +1,12 @@
 = render partial: '/admin/grados/opciones_descargables'
 %b Resumen Académico:
+
+- cursados = @inscripciones.total_creditos_cursados
+- aprobados = @inscripciones.total_creditos_aprobados
 %table.table.table-sm.table-hover
-	- cursados = @inscripciones.total_creditos_cursados
-	- aprobados = @inscripciones.total_creditos_aprobados
-	- eficiencia = (cursados and cursados > 0) ? (aprobados.to_f/cursados.to_f).round(4) : 0.0
-
-	- aux = @inscripciones.cursadas
-	- promedio_simple = (aux and aux.count > 0 and !aux.average('calificacion_final').nil?) ? aux.average('calificacion_final').round(4) : 0.0
-
-	- aux = @inscripciones.aprobadas
-	- promedio_simple_aprob = (aux and aux.count > 0 and !aux.average('calificacion_final').nil?) ? aux.average('calificacion_final').round(4) : 0.0
-	
-	- aux = @inscripciones.ponderado_aprobadas
-	- ponderado_apro = aprobados > 0 ? (aux.to_f/aprobados.to_f).round(4) : 0.0
-
-	- aux = @inscripciones.ponderado
-	- ponderado = cursados > 0 ? (aux.to_f/cursados.to_f).round(4) : 0.0
-	
 	%tr
 		%td Créditos Inscritos:
-		%th= @inscripciones.total_creditos
+		%th= @grado.total_creditos
 	%tr
 		%td Créditos Cursados:
 		%th= cursados
@@ -34,16 +21,16 @@
 		%th= aprobados
 	%tr
 		%td Eficiencia:
-		%th= eficiencia
+		%th= @grado.eficiencia
 	%tr
 		%td Promedio Simple:
-		%th= promedio_simple
+		%th= @grado.promedio_simple
 	%tr
 		%td Promedio Simple Aprobado:
-		%th= promedio_simple_aprob
+		%th= @grado.calcular_promedio_simple_aprobado
 	%tr
 		%td Promedio Ponderado Aprobado:
-		%th= ponderado_apro
+		%th= @grado.calcular_promedio_ponderado_aprobado
 	%tr
 		%td Promedio Ponderado:
-		%th= ponderado
+		%th= @grado.promedio_ponderado
