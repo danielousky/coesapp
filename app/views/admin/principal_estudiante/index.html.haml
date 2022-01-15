@@ -81,19 +81,22 @@
 									%li= "Ya ha realizado su inscripción en #{@periodo_inscripcion.id} (Nuevo Ingreso)." 
 				- else
 					- if @inscripcionperiodo.reportepago.nil? and @periodo_inscripcion.es_mayor_al_anno? 2019
-						.alert.alert-warning
-							%h6
-								%b Atención: 
-								Aún no ha reporta el pago de su inscripción. Recuerde que es un paso indispensable para completar el proceso. Haga clic 
-								= link_to 'aquí', new_reportepago_path(reportable_id: @inscripcionperiodo.id, reportable_type: @inscripcionperiodo.class.name)
-								para reportar el pago.
+						.alert.alert-warning.text-justify
+							- @asignaturas = @inscripcionperiodo.inscripcionsecciones.map { |ins| ins.asignatura}
+							- @escuela_desc = @inscripcionperiodo.escuela.descripcion
+							- @periodo_id = @inscripcionperiodo.periodo.id
+							- @nombre = @inscripcionperiodo.estudiante.usuario.primer_nombre_apellido
+							- @genero = @inscripcionperiodo.estudiante.usuario.genero
+
+							= render template: 'estudiante_mailer/preinscrito'
+
 						= link_to new_reportepago_path(reportable_id: @inscripcionperiodo.id, reportable_type: @inscripcionperiodo.class.name), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
 							= glyph 'chevron-right'
 							= "Reportar pago de inscripción el periodo #{@periodo_inscripcion.id}"
 
 
 
-			-if @grado.citahoraria and @grado.duracion_franja_horaria
+			-if @grado.citahoraria and @grado.duracion_franja_horaria and @inscripcionperiodo.nil?
 				.border.p-md-3
 					%h5 Cita Horaria:
 

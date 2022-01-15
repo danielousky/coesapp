@@ -29,6 +29,21 @@ class ParametroGeneral < ApplicationRecord
   	director_academico_estudio.present? ? director_academico_estudio.valor : 'Prof. PEDRO BARRIOS MOTA'
   end
 
+  def self.mensaje_nuevo_ingreso
+    ParametroGeneral.where(id: "MENSAJE_NUEVO_INGRESO").first
+  end
+
+  def self.mensaje_nuevo_ingreso_valor
+    mensaje_nuevo_ingreso.present? ? mensaje_nuevo_ingreso.valor : 'Por definir'
+  end
+
+  def self.mensaje_teres
+    ParametroGeneral.where(id: "MENSAJE_TERES").first
+  end
+
+  def self.mensaje_teres_valor
+    mensaje_teres.present? ? mensaje_teres.valor : 'Por definir'
+  end
 
   def self.arancel_ingreso_facultad
     ParametroGeneral.where(id: "ARANCEL_INGRESO_FACULTAD").first

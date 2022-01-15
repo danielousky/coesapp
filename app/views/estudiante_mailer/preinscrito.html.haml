@@ -1,13 +1,32 @@
 - link_coes = link_to 'COESFHE.COM', 'https://coesfhe.com/'
 
-= "Estimad#{@genero}: <b>#{@nombre}</b>,".html_safe
-	
-%p= "Usted ha preinscrito en #{@escuela_desc} para el período #{@periodo_id} en las siguientes asignaturas:".html_safe
+%h1{style: 'text-align:center'} ATENCIÓN
 
-%ol
+= "Estimad#{@genero} <b>#{@nombre}</b>,".html_safe
+
+= "usted ha preinscrito las siguientes asignaturas en la Escuela de #{@escuela_desc} para el período académico #{@periodo_id}:"
+
+%ul
 	- @asignaturas.each do |asig| 
-		%li= asig.descripcion_id
+		%li{style: 'list-style-type: square;margin-bottom: 10px'}= asig.descripcion_id
 
-%p El personal de COES validará su solicitud y recibirá más información posteriormente.
+
+Usted debe cancelar uno de los siguientes montos, dependiendo de su caso:
+
+%ul
+	%li{style: 'list-style-type: square;margin-bottom: 10px'}= "#{ParametroGeneral.mensaje_nuevo_ingreso_valor.html_safe}."
+
+	%li{style: 'list-style-type: square;'}= "#{ParametroGeneral.mensaje_teres_valor.html_safe}."
+
+%p= "Realice un depósito o transferencia únicamente de los Bancos: <b>#{Banco.all.map{|b| b.nombre}.to_sentence(last_word_connector: ' ó ')}</b> en la <b>#{ParametroGeneral.cuenta_facultad_tipo_valor}</b> del banco <b>#{ParametroGeneral.cuenta_facultad_banco_valor}</b>  Nº <b>#{ParametroGeneral.cuenta_facultad_numero_valor}</b>, a nombre de <b>'#{ParametroGeneral.cuenta_facultad_titular_valor}'</b>, RIF:. <b>#{ParametroGeneral.rif_facultad_valor}</b>.".html_safe
+
+
+%p Una vez realizada la preinscripción de asignaturas, usted debe realizar el pago del arancel de inscripción y posteriormente deberá generar el reporte de pago de ese arancel. En ese reporte, usted deberá indicar el banco del cual realizó el pago del arancel, el número de la operación, el día, entre otros y deberá subir una foto legible del depósito, transferencia o comprobante de pago.
+
+%p= "Recuerde que usted debe realizar y reportar su pago hasta el #{ParametroGeneral.max_fecha_ingreso_nuevos_valor}."
+
+%p
+	%b NOTA IMPORTANTE: 
+	El estudiante es el único responsable de su inscripción ante Secretaría, Facultad y Escuela. Cualquier error o imprecisión en los datos, falta de documentos, así como la violación del régimen de prelaciones y el exceso en el número de créditos a inscribir, que sean imputables al estudiante, invalidarán su inscripción sin posibilidad de apelación. Otra causal para invalidar esta inscripción es no cumplir con los lapsos de tiempo establecidos para realizar y reportar su pago. Para asegurarse de que la (s) materia (s) seleccionada (s) no está (n) afectada (s) por ese régimen, el Estudiante deberá consultar su récord académico (Kardex) y el listado de asignaturas y sus códigos en COES.
  
-%p Saludos cordiales.
+Saludos cordiales.

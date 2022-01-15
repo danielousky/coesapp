@@ -121,7 +121,9 @@ module Admin
 				rescue Exception => e
 					flash[:warning] = "Correo de completación de proceso de preinscripción no enviado: #{e}" 
 				end
-				flash[:success] = "Proceso de preinscripción completado con éxito. El personal administrativo revisará su expediente y confirmará su inscripción."
+				flash[:success] = "Proceso de preinscripción completado con éxito. Un correo con el resumen del proceso le ha sido enviado."
+
+
 				flash[:info] = "Asignaturas Inscritas: #{inscripcionescuelaperiodo.total_asignaturas}. Créditos Inscritos: #{inscripcionescuelaperiodo.total_creditos}"
 			else
 				flash[:danger] = "Error al intentar completar el procesos de preinscripción: #{inscripcionescuelaperiodo.errors.full_messages.to_sentence}"
