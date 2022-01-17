@@ -6,12 +6,14 @@
 				= escuela.grados.confirmado.inscritos_ucv.count
 
 		- total_inscritos = escupe.inscripcionescuelaperiodos
-		- pre = total_inscritos.preinscritos.count
-		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), pre, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=#{TipoEstadoInscripcion::PREINSCRITO}", class: 'tooltip-btn badge badge-primary', 'data-toggle': :tooltip, title: "Total Preinscritos #{periodo.id}", 'data-placement': :right)
+		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), total_inscritos.count, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}", class: 'tooltip-btn badge badge-secondary', 'data-toggle': :tooltip, title: "Total Preinscritos #{periodo.id}", 'data-placement': :right)
+		=" = "
+		- pre_sin = total_inscritos.preinscritos.sin_reportepago.count
+		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), pre_sin, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=#{TipoEstadoInscripcion::PREINSCRITO}", class: 'tooltip-btn badge badge-primary', 'data-toggle': :tooltip, title: "Total Preinscritos (Sin Reporte Pago) #{periodo.id}", 'data-placement': :right)
+		- rep = total_inscritos.preinscritos.con_reportepago.count 
+		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), rep, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=reported", class: 'tooltip-btn badge badge-warning', 'data-toggle': :tooltip, title: "Total Preinscritos con Reporte de Pago #{periodo.id}", 'data-placement': :right )
 		- rat = total_inscritos.inscritos.count 
-		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), rat, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=#{TipoEstadoInscripcion::INSCRITO}", class: 'tooltip-btn badge badge-success', 'data-toggle': :tooltip, title: "Total Inscritos #{periodo.id}", 'data-placement': :right )
-		- rep = total_inscritos.con_reportepago.count 
-		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), rep, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=reported", class: 'tooltip-btn badge badge-warning', 'data-toggle': :tooltip, title: "Total con Reporte de Pago #{periodo.id}", 'data-placement': :right )
+		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), rat, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=#{TipoEstadoInscripcion::INSCRITO}", class: 'tooltip-btn badge badge-success', 'data-toggle': :tooltip, title: "Total Confirmados #{periodo.id}", 'data-placement': :right )
 	- elsif periodo.id.eql? '2019-02A' and escuela.id.eql? 'IDIO'
 		- ins = escuela.inscripcionsecciones.del_periodo(periodo.id).por_confirmar.group(:estudiante_id).count
 		=# (escuela.inscripcionsecciones.del_periodo(periodo.id).group(:estudiante_id).count).count

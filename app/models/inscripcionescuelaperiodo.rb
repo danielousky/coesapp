@@ -25,6 +25,7 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	scope :preinscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO)}
 	scope :inscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)}
 	scope :con_reportepago, -> {joins(:reportepago)}
+	scope :sin_reportepago, -> {where(reportepago_id: nil)}
 
 	def limite_creditos_permitidos
 		self.escuelaperiodo.limite_creditos_permitidos

@@ -5,16 +5,25 @@ module Admin
 		before_action :filtro_autorizado
 
 		def index
+			
 			if @escuelaperiodo = Escuelaperiodo.find(params[:escuelaperiodo_id])
-				if params[:status].eql? TipoEstadoInscripcion::PREINSCRITO or params[:status].eql? TipoEstadoInscripcion::INSCRITO
-					@inscripciones = @escuelaperiodo.inscripcionescuelaperiodos.where(tipo_estado_inscripcion_id: params[:status])
-				elsif params[:status].eql? 'reported'
-					@inscripciones = @escuelaperiodo.inscripcionescuelaperiodos.con_reportepago
-				else
-					@inscripciones = @escuelaperiodo.inscripcionescuelaperiodos
-				end
+				@inscripciones = @escuelaperiodo.inscripcionescuelaperiodos
 				@titulo = "Inscripciones para el #{@escuelaperiodo.periodo_id} en #{@escuelaperiodo.escuela.descripcion}"
-				@titulo += " <span class='badge badge-warning'>#{@inscripciones.count}</span>"
+				@titulo += " <span class='badge badge-secondary'>#{@inscripciones.count}</span>"
+				if params[:status].eql? TipoEstadoInscripcion::PREINSCRITO
+					@inscripciones = @inscripciones.sin_reportepago.preinscritos
+					@titulo = "Preinscritos Sin Reporte #{@escuelaperiodo.periodo_id} en #{@escuelaperiodo.escuela.descripcion}"
+					@titulo += " <span class='badge badge-primary'>#{@inscripciones.count}</span>"
+				elsif params[:status].eql? 'reported'
+					@inscripciones = @inscripciones.con_reportepago.preinscritos
+					@titulo = "Preinscritos Con Reporte #{@escuelaperiodo.periodo_id} en #{@escuelaperiodo.escuela.descripcion}"
+					@titulo += " <span class='badge badge-warning'>#{@inscripciones.count}</span>"
+				elsif params[:status].eql? TipoEstadoInscripcion::INSCRITO
+					@inscripciones = @inscripciones.inscritos
+					@titulo = "Preinscritos Confirmados #{@escuelaperiodo.periodo_id} en #{@escuelaperiodo.escuela.descripcion}"
+					@titulo += " <span class='badge badge-success'>#{@inscripciones.count}</span>"
+
+				end
 			else
 				flash[:danger] = 'Debe seleccionar una escuela'
 				redirect_back fallback_location: escuelas_path
