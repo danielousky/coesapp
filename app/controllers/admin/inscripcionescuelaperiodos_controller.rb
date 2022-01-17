@@ -8,7 +8,7 @@ module Admin
 			
 			if @escuelaperiodo = Escuelaperiodo.find(params[:escuelaperiodo_id])
 				@inscripciones = @escuelaperiodo.inscripcionescuelaperiodos
-				@titulo = "Inscripciones - #{@escuelaperiodo.periodo_id} - #{@escuelaperiodo.escuela.id}"
+				@titulo = "Total Estudiantes #{@escuelaperiodo.periodo_id} - #{@escuelaperiodo.escuela.id}"
 				@titulo += " <span class='badge badge-secondary'>#{@inscripciones.count}</span>"
 				if params[:status].eql? TipoEstadoInscripcion::PREINSCRITO
 					@inscripciones = @inscripciones.sin_reportepago.preinscritos
