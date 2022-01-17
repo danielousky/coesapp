@@ -83,8 +83,6 @@ module Admin
       #   flash[:danger] = "No es posible actualizar el plan. por favor verifique: #{e}"
       # end
 
-      # redirect_to controller: "cal_principal_admin", action: "detalle_usuario", ci: ci
-
     end
 
     # DELETE /historialplan/1

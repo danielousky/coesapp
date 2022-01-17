@@ -27,7 +27,7 @@
 								- if ins_esc_per.tipo_estado_inscripcion
 									.badge.badge-info= ins_esc_per.tipo_estado_inscripcion.descripcion.singularize
 
-								- if periodo.es_mayor_al_anno? 2018
+								- if periodo.es_mayor_al_anno? 2019
 									= render partial: '/admin/inscripcionescuelaperiodos/descripcion_opciones', locals: {ins_esc_per: ins_esc_per}
 
 					.collapse{id: "collapse#{periodo.id}", "aria-labelledby": "heading#{periodo.id}", "data-parent": "#accordion", "data-toggle": false}
