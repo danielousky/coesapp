@@ -7,7 +7,6 @@
 
 		- total_inscritos = escupe.inscripcionescuelaperiodos
 		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), total_inscritos.count, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}", class: 'tooltip-btn badge badge-secondary', 'data-toggle': :tooltip, title: "Total Preinscritos #{periodo.id}", 'data-placement': :right)
-		=" = "
 		- pre_sin = total_inscritos.preinscritos.sin_reportepago.count
 		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), pre_sin, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=#{TipoEstadoInscripcion::PREINSCRITO}", class: 'tooltip-btn badge badge-primary', 'data-toggle': :tooltip, title: "Total Preinscritos (Sin Reporte Pago) #{periodo.id}", 'data-placement': :right)
 		- rep = total_inscritos.preinscritos.con_reportepago.count 
