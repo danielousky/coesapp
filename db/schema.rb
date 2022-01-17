@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_14_171854) do
+ActiveRecord::Schema.define(version: 2022_01_17_165551) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -397,7 +397,7 @@ ActiveRecord::Schema.define(version: 2022_01_14_171854) do
     t.index ["tipoasignatura_id"], name: "index_inscripcionsecciones_on_tipoasignatura_id"
   end
 
-  create_table "jornadacitahorarias", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "jornadacitahorarias", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "escuelaperiodo_id"
     t.datetime "inicio"
     t.integer "duracion_total_horas", limit: 1
@@ -467,7 +467,7 @@ ActiveRecord::Schema.define(version: 2022_01_14_171854) do
 
   create_table "reportepagos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "numero"
-    t.decimal "monto", precision: 10
+    t.float "monto"
     t.integer "tipo_transaccion"
     t.date "fecha_transaccion"
     t.datetime "created_at", null: false

@@ -21,7 +21,7 @@
         
         .col-md-10
           .input-group
-            = f.text_field :monto, class: 'form-control onlyNumber', placeholder: 'Monto', required: true
+            = f.number_field :monto, class: 'form-control', placeholder: 'Monto', required: true, decimal: true, step: '0.01'
             .input-group-append
               .input-group-text Bs.
 

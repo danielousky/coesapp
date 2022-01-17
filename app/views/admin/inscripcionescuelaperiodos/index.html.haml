@@ -26,6 +26,7 @@
 			%th Asig. Inscritas
 			%th Región
 			%th Créditos
+			%th Resumen 
 			%th C. Aprob.
 			%th Total Créditos Plan
 			%th Ingreso
@@ -63,13 +64,13 @@
 				%td= ins.inscripcionsecciones.count
 				
 				%td= grado.region.titleize if grado and grado.region
-				- if false
+				%td= ins.inscripcionsecciones.total_creditos
+				%td
 					%table
 						%tbody
 							- ins.inscripcionsecciones.each do |aux| 
 								%tr
 									%td= aux.seccion.desc_asig_numero
-				%td= ins.inscripcionsecciones.total_creditos
 				%td= ins.inscripcionsecciones.aprobado.total_creditos
 				%td= plan.creditos if plan
 				%td= grado.tipo_ingreso if grado
