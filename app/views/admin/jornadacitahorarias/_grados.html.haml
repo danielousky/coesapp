@@ -1,9 +1,9 @@
 %table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table.tableDataMia
   %thead
     %tr
-      %th #
       %th Franja Horaria
       %th Escuela
+      %th.text-center.align-middle Estado Insc
       %th Cédula
       %th Nombre y Apellido
       %th Eficiencia
@@ -11,14 +11,16 @@
       %th Ponderado
   %tbody
     - anterior_cita = nil
-    - grados.each_with_index do |grado, i|
+    - grados.each do |grado, i|
       %tr
-        %td= i+1
         %td
           - if grado.citahoraria and grado.duracion_franja_horaria
             = I18n.l(grado.citahoraria, format: 'De %I:%M%p ')
             = I18n.l(grado.citahoraria+grado.duracion_franja_horaria.minutes, format: 'a %I:%M%p')
         %td= grado.escuela.descripcion
+        %td.text-center.align-middle 
+          - if iep = grado.inscripcionescuelaperiodos.de_la_escuela_y_periodo(@escuelaperiodo.id).first
+            = iep.label_estado_inscripcion        
         %td= grado.estudiante_id
         %td= link_to grado.estudiante.usuario.nombre_completo, usuario_path(grado.estudiante), target: '_black'
         %td= grado.eficiencia

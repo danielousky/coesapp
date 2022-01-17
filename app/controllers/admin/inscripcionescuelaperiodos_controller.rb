@@ -13,11 +13,15 @@ module Admin
 				if params[:status].eql? TipoEstadoInscripcion::PREINSCRITO
 					@inscripciones = @inscripciones.sin_reportepago.preinscritos
 					@titulo = "Preinscritos Sin Reporte - #{@escuelaperiodo.periodo_id} - #{@escuelaperiodo.escuela.id}"
-					@titulo += " <span class='badge badge-primary'>#{@inscripciones.count}</span>"
+					@titulo += " <span class='badge badge-info'>#{@inscripciones.count}</span>"
 				elsif params[:status].eql? 'reported'
 					@inscripciones = @inscripciones.con_reportepago.preinscritos
 					@titulo = "Preinscritos Con Reporte - #{@escuelaperiodo.periodo_id} - #{@escuelaperiodo.escuela.id}"
 					@titulo += " <span class='badge badge-warning'>#{@inscripciones.count}</span>"
+				elsif params[:status].eql? TipoEstadoInscripcion::RESERVADO
+					@inscripciones = @inscripciones.reservados
+					@titulo = "Inscribiéndose - #{@escuelaperiodo.periodo_id} - #{@escuelaperiodo.escuela.id}"
+					@titulo += " <span class='badge badge-secondary'>#{@inscripciones.count}</span>"
 				elsif params[:status].eql? TipoEstadoInscripcion::INSCRITO
 					@inscripciones = @inscripciones.inscritos
 					@titulo = "Confirmados - #{@escuelaperiodo.periodo_id} - #{@escuelaperiodo.escuela.id}"

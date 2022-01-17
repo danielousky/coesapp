@@ -1,5 +1,8 @@
 class Inscripcionescuelaperiodo < ApplicationRecord
 
+	# Tipo Estado Inscripciones
+	# ["CO", "INS", "NUEVO", "PRE", "REINC", "RES", "RET", "VAL"] 
+
 	has_many :inscripcionsecciones, dependent: :destroy
 	accepts_nested_attributes_for :inscripcionsecciones
 
@@ -24,8 +27,30 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	scope :del_estudiante, -> (estudiante_id) {where('usuario_id = ?', estudiante_id)}
 	scope :preinscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::PREINSCRITO)}
 	scope :inscritos, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)}
-	scope :con_reportepago, -> {joins(:reportepago)}
+	scope :reservados, -> {where(tipo_estado_inscripcion_id: TipoEstadoInscripcion::RESERVADO)}
+	# scope :con_reportepago, -> {joins(:reportepago)}
+	scope :con_reportepago, -> {where('reportepago_id IS NOT NULL')}
 	scope :sin_reportepago, -> {where(reportepago_id: nil)}
+
+	def label_estado_inscripcion
+		# ["CO", "INS", "NUEVO", "PRE", "REINC", "RES", "RET", "VAL"] 
+
+		if self.tipo_estado_inscripcion
+			case self.tipo_estado_inscripcion_id
+			when TipoEstadoInscripcion::INSCRITO
+				label_color = 'success'
+			when TipoEstadoInscripcion::PREINSCRITO
+				label_color = 'info'
+			when TipoEstadoInscripcion::RETIRADA
+				label_color = 'danger'
+			else
+				label_color = 'secondary'
+			end
+			return " <span class='badge badge-#{label_color} text-center'>#{self.tipo_estado_inscripcion.descripcion.titleize}</span>".html_safe
+		else
+			return ''
+		end
+	end
 
 	def limite_creditos_permitidos
 		self.escuelaperiodo.limite_creditos_permitidos
