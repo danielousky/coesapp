@@ -55,8 +55,21 @@
         .col-md-2{style: 'text-align: right;'}= f.label :respaldo, nil, value: 'Imagen de respaldo'
 
         .col-md-10
-          = f.file_field 'respaldo', {class: 'btn btn-sm btn-secondary form-control form-control-file', accept: "image/*", size: "1", id: 'fileUpload', required: true}
-          .text-muted= "<b>Atención:</b> Solo se perimiten imágenes. Sí su soporte se encuentra en formato PDF, por favor haga una captura de la pantalla y luego suba la imagen correspondiente.".html_safe
+          - displayField = ''
+          - disabled = false
+          - if @reportepago.respaldo and @reportepago.respaldo.attached?
+            = image_tag main_app.url_for(@reportepago.respaldo), class: 'imagen-perfil', alt: @reportepago.respaldo.blob.filename
+            %b= @reportepago.respaldo.blob.filename
+            = link_to 'javascript:void(0)', class: 'text-primary', onclick: "setRespaldo(true);", id: 'pencil' do
+              = glyph 'pencil'
+            = link_to 'javascript:void(0)', class: 'text-danger d-none', onclick: "setRespaldo(false);", id: 'minus' do
+              = glyph 'minus'
+
+            - disabled = true
+            - displayField =  'd-none'
+          = f.file_field :respaldo, {class: "btn btn-sm btn-secondary form-control form-control-file #{displayField}", accept: "image/*", size: "1", id: 'fileUpload', required: !disabled, readonly: disabled, disabled: disabled}
+          #msgFile.d-none.text-muted= "<b>Atención:</b> Solo se perimiten imágenes. Sí su soporte se encuentra en formato PDF, por favor haga una captura de la pantalla y luego suba la imagen correspondiente.".html_safe
+
 
     .form-group.row
       .col-md-2{style: 'text-align: right;'}
@@ -70,42 +83,26 @@
         = button_tag 'reportepago[commit]', type: :submit, class: 'btn btn-sm btn-success', id: 'submitReportePago' do
           = glyph 'chevron-right'
           Guargar Reporte
-
-- if false
-  :javascript
-    $('#submitReportPago').click(function(e){
-            
-        let form = $(this).parents('form')[0] 
-            
-        if (form.checkValidity() == true) {   
-          let = confi = confirm('Una vez que guardes las calificaciones no podrás cambiar su valor, ¿Estás Seguro?')  
-          if (confi === false) {
-            e.preventDefault()
-            e.stopPropagation()
-          } 
-        }   
-      })  
-
-
-
-    $('#file_upload').fileupload({
-        processQueue: [
-            {
-                action: 'loadImage',
-                fileTypes: /^image\/(jpeg|png)$/,
-                maxFileSize: 5000000 // 500kB
-            },
-            {
-                action: 'resizeImage',
-                maxWidth: 400,
-                maxHeight: 400
-            },
-            {action: 'saveImage'}
-        ]
-    });
-
  
 :javascript
+
+  function setRespaldo(value){
+    let fileUpload = $('#fileUpload');
+    fileUpload.toggleClass('d-none');
+    $('#msgFile').toggleClass('d-none');
+    fileUpload.prop('disabled', !value);
+    fileUpload.prop('readonly', !value);
+    fileUpload.prop('required', value);
+    if (value == true) {
+      $('#minus').removeClass('d-none');
+      $('#pencil').addClass('d-none');
+    }else{
+      $('#minus').addClass('d-none');
+      $('#pencil').removeClass('d-none');
+    }
+  }
+
+
   $('.onlyNumber').on('input',function(evt){ 
     var node = $(this);
     node.val(node.val().replace(/[^0-9]/g,'') );
