@@ -23,8 +23,8 @@
 				- @reportable = @grado
 				- @reportepago = Reportepago.new
 				- content = render partial: "/admin/reportepagos/form"
-				= render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "reportarPagoGrado#{@grado.id_flat}", content: content, title: 'Reportar Pago a la Facultad de Ingreso a Escuela', width: "modal-lg"}
-				= link_to 'javascript:void(0)', onclick: "$('#reportarPagoGrado#{@grado.id_flat}').modal()", class: 'm-3 btn btn-success' do
+				= render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "reportarPagoGrado#{@grado.id}", content: content, title: 'Reportar Pago a la Facultad de Ingreso a Escuela', width: "modal-lg"}
+				= link_to 'javascript:void(0)', onclick: "$('#reportarPagoGrado#{@grado.id}').modal()", class: 'm-3 btn btn-success' do
 					= glyph 'plus'
 					= "Reportar Pago Ingreso a #{@escuela.descripcion}"
 
