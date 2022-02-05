@@ -6,7 +6,7 @@
 		= btn_success 'download-alt', "#{kardex_descargar_path(@grado.id)}", "Descargar Kardex de #{@nickname}", 'Kardex'
 		- if current_admin
 			= btn_success 'download-alt', exportar_historial_grado_descargar_path(@grado.id), "Descargar registro academico en scv (Excel)", 'Record Excel'
-			- if current_admin.maestros?
+			- if current_admin.maestros? and @inscripcionperiodo
 				= btn_success 'download-alt', "#{constancia_estudio_descargar_path(@inscripcionperiodo.id, :pdf)}", "Constancia de Estudio de #{@nickname}", 'C. Estudio'
 				= btn_success 'download-alt', "#{constancia_inscripcion_descargar_path(@inscripcionperiodo.id, :pdf)}", "Constancia de Inscripción en #{@inscripcionperiodo.periodo.id}", 'C. Inscripción'
 
