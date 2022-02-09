@@ -4,7 +4,7 @@
 - presente = @escuelas.include? e
 %td= check_box_tag "escuelas[]", e.id, (@escuelas.include? e), {required: presente, class: 'incluir'}
 %td= e.descripcion
-%td= number_field_tag "max_creditos[#{e.id}]", {}, {value: max_cred, class: "form-control form-control-sm input#{e.id}", required: presente, disabled: !presente, step: 1, in: 0...61}
+%td= number_field_tag "max_creditos[#{e.id}]", {}, {value: max_cred, class: "form-control form-control-sm input#{e.id}", required: presente, disabled: !presente, step: 1, in: 0...101}
 %td= number_field_tag "max_asignaturas[#{e.id}]", {}, {value: max_asig, class: "form-control form-control-sm input#{e.id} ", required: presente, disabled: !presente, step: 1, in: 0...21}
 :javascript
 

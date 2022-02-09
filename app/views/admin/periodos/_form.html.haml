@@ -35,8 +35,8 @@
                   %th Límite Creditos
                   %th Límite Asignaturas
               %tbody
-              - Escuela.all.each do |e|
-                %tr= render partial: '/admin/escuelaperiodos/form', locals: {e: e}
+                - Escuela.all.each do |e|
+                  %tr= render partial: '/admin/escuelaperiodos/form', locals: {e: e}
 
     .form-group.m-md-3
       .col-md-offset-2.col-md-10
