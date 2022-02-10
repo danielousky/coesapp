@@ -10,6 +10,7 @@
   .nav.nav-tabs
     - if secciones.any?
       = link_to 'Periodo Actual', "#seccionesActual", "data-toggle"=> "tab", class: "nav-item nav-link active show"
+    = link_to 'Dependencias', "#dependencias", "data-toggle": "tab", class: "nav-item nav-link"
     - if @asignatura.secciones.any?
       = link_to 'Histórico de secciones', "#secciones", "data-toggle"=> "tab", class: "nav-item nav-link"
     - if @bitacoras.any? and (current_admin.autorizado? 'Bitacoras', 'index')
@@ -24,10 +25,11 @@
 
           .col-md-5
             = render '/admin/horarios/horario_secciones'
-
+    .tab-pane#dependencias
+      = render template: '/admin/dependencias/index'
     - if @asignatura.secciones.any?
       .tab-pane#secciones
-        = render partial: '/admin/secciones/index_to_asinatura', locals: {secciones: @asignatura.secciones.where("periodo_id != '#{current_periodo.id}'"), historico: true}
+        = render partial: '/admin/secciones/index_to_asinatura', locals: {secciones: @asignatura.secciones.where("periodo_id != '#{current_periodo.id}'").order(periodo_id: :desc).limit(5), historico: true}
     - if @bitacoras.any? and (current_admin.autorizado? 'Bitacoras', 'index')
 
       .tab-pane#bitacora

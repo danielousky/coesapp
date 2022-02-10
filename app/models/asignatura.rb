@@ -5,6 +5,11 @@ class Asignatura < ApplicationRecord
 	belongs_to :departamento
 	belongs_to :tipoasignatura
 
+	has_many :dependencias
+	# has_many :dependientes, class_name: 'Dependencia', foreign_key: 'asignatura_dependiente_id'
+
+	# has_many :asignaturas, through: :dependientes, class_name: 'Dependencia'
+
 	has_many :programaciones, dependent: :destroy
 	has_many :periodos, through: :programaciones
 

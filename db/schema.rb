@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_17_165551) do
+ActiveRecord::Schema.define(version: 2022_02_07_150628) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -186,6 +186,15 @@ ActiveRecord::Schema.define(version: 2022_01_17_165551) do
     t.datetime "updated_at", null: false
     t.index ["escuela_id"], name: "index_departamentos_on_escuela_id"
     t.index ["id"], name: "index_departamentos_on_id"
+  end
+
+  create_table "dependencias", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "asignatura_id", null: false
+    t.string "asignatura_dependiente_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["asignatura_dependiente_id"], name: "index_dependencias_on_asignatura_dependiente_id"
+    t.index ["asignatura_id"], name: "index_dependencias_on_asignatura_id"
   end
 
   create_table "direcciones", primary_key: "estudiante_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -589,6 +598,8 @@ ActiveRecord::Schema.define(version: 2022_01_17_165551) do
   add_foreign_key "combinaciones", "estudiantes", primary_key: "usuario_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "combinaciones", "periodos", on_update: :cascade, on_delete: :cascade
   add_foreign_key "departamentos", "escuelas", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "dependencias", "asignaturas"
+  add_foreign_key "dependencias", "asignaturas", column: "asignatura_dependiente_id"
   add_foreign_key "direcciones", "estudiantes", primary_key: "usuario_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "escuelaperiodos", "escuelas", on_update: :cascade, on_delete: :cascade
   add_foreign_key "escuelaperiodos", "periodos", on_update: :cascade, on_delete: :cascade

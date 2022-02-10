@@ -9,6 +9,7 @@ module Admin
     before_action :filtro_autorizado#, except: [:new, :edit]
 
     before_action :set_asignatura, only: [:show, :edit, :update, :destroy, :set_activa, :set_pci]
+    before_action :set_escuela_and_dptos, only: [:new]
 
     def set_activa
         progs = @asignatura.programaciones.where(periodo_id: current_periodo.id)
@@ -61,12 +62,15 @@ module Admin
     # GET /asignaturas/1.json
     def show
       @titulo = "Asignatura: #{@asignatura.descripcion.upcase}"
-      @bitacoras = Bitacora.search(@asignatura.id).order(created_at: :desc).limit(50)
+      @bitacoras = Bitacora.search(@asignatura.id).order(created_at: :desc).limit(30)
 
+      @escuela = @asignatura.escuela
+      @departamentos = @escuela.departamentos.includes(:departamento)
+      @dependientes = @asignatura.dependencias
       if @asignatura.escuela.id.eql? 'POST'
-        @profesores = Profesor.all.joins(:usuario).order('usuarios.apellidos')
+        @profesores = Profesor.all.includes(:usuario).order('usuarios.apellidos')
       else
-        @profesores = @asignatura.escuela.profesores.joins(:usuario).all.order('usuarios.apellidos')
+        @profesores = @asignatura.escuela.profesores.includes(:usuario).all.order('usuarios.apellidos')
       end
 
     end
@@ -75,26 +79,18 @@ module Admin
     def new
       @titulo = 'Nueva Asignatura'
       @asignatura = Asignatura.new
-      @departamentos = current_admin.departamentos
-      @departamentos = Departamento.all unless @departamentos
-      
-      @escuelas = current_admin.escuelas
-      
-      @escuelas = @escuelas.where(id: params[:escuela_id]) if params[:escuela_id]
     end
 
     # GET /asignaturas/1/edit
     def edit
       @titulo = "Editando #{@asignatura.descripcion}"
-      @departamentos = current_admin.departamentos
-      @departamentos = Departamento.all unless @departamentos
-      @escuelas = current_admin.escuelas
+      @escuela = @asignatura.escuela
+      @departamentos = @escuela.departamentos
     end
 
     # POST /asignaturas
     # POST /asignaturas.json
     def create
-
       @asignatura = Asignatura.new(asignatura_params)
       catdep = Catedradepartamento.where(departamento_id: asignatura_params[:departamento_id], catedra_id: asignatura_params[:catedra_id]).limit(1).first
       unless catdep
@@ -166,9 +162,21 @@ module Admin
         @asignatura = Asignatura.find(params[:id])
       end
 
+      def set_escuela_and_dptos
+        unless params[:escuela_id]
+          flash[:danger] = 'Para agregar una asignatura debe asociarla a una escuela, por favor inténtelo nuevamente desde el medio aducuado.'
+          redirect_back fallback_location: root_path
+        else
+          @escuela = Escuela.find params[:escuela_id]
+          @departamentos = @escuela.departamentos
+        end
+
+      end
+
       # Never trust parameters from the scary internet, only allow the white list through.
       def asignatura_params
         params.require(:asignatura).permit(:id, :descripcion, :catedra_id, :departamento_id, :anno, :orden, :id_uxxi, :creditos, :tipoasignatura_id, :calificacion)
       end
+
   end
 end

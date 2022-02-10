@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  asignatura: one
+  asignatura_dependiente_id: MyString
+
+two:
+  asignatura: two
+  asignatura_dependiente_id: MyString

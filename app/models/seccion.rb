@@ -162,6 +162,9 @@ class Seccion < ApplicationRecord
 	def inscripciones
 		self.inscripcionsecciones
 	end
+	def inscripciones_incluidas
+		self.inscripcionsecciones.includes(:inscripcionseccion)
+	end
 
 	def promedio
 		self.inscripcionsecciones.average("calificacion_final").to_i#f.round(2)
@@ -284,31 +287,31 @@ class Seccion < ApplicationRecord
 	end
 
 	def total_estudiantes
-		inscripcionsecciones.count
+		inscripciones_incluidas.count
 	end
 
 	def total_confirmados
-		inscripcionsecciones.confirmados.count
+		inscripciones_incluidas.confirmados.count
 	end
 
 	def total_aprobados
-		inscripcionsecciones.aprobado.count
+		inscripciones_incluidas.aprobado.count
 	end
 
 	def total_reprobados
-		inscripcionsecciones.aplazado.count
+		inscripciones_incluidas.aplazado.count
 	end
 
 	def total_retirados
-		inscripcionsecciones.retirado.count
+		inscripciones_incluidas.retirado.count
 	end
 
 	def total_perdidos
-		inscripcionsecciones.perdidos.count
+		inscripciones_incluidas.perdidos.count
 	end
 
 	def total_sin_calificar
-		inscripcionsecciones.sin_calificar.count
+		inscripciones_incluidas.sin_calificar.count
 	end
 
 

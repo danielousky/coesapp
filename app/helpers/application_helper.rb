@@ -279,7 +279,7 @@ module ApplicationHelper
 	end
 
 	def btn_toggle_modal icon, title_tooltip, value, id_modal
-		btn_toggle 'btn-outline-success', icon, 'javascript:void(0)', title_tooltip, value, "$('##{id_modal}').modal();"
+		btn_toggle 'btn-success', icon, 'javascript:void(0)', title_tooltip, value, "$('##{id_modal}').modal();"
 	end
 
 	def btn_plus_seccion_modal a

@@ -11,7 +11,7 @@
 
     %tbody
 
-      - @bitacoras.each do |bita| 
+      - @bitacoras.includes(:usuario).each do |bita| 
         %tr
           %td= bita.id
           %td= "Hace #{distance_of_time_in_words(Time.zone.now.hour, bita.created_at.hour)} (#{(bita.created_at-4.hours).strftime('%d/%m/%Y %H:%M %p')})"

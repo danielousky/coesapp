@@ -1,0 +1,22 @@
+.modal-body.border.p-2
+  = form_for @dependencia, html: { class: 'form-horizontal' } do |f|
+    = f.hidden_field :asignatura_id
+
+    .form-group
+      = f.label :dependencia, class: 'control-label', value: 'Dependencias'
+      .text-muted.font-italic= "Seleccione la o las asignaturas que dependen de la asignatura #{@asignatura.descripcion}. Recuerde que puede seleccionar más de una."
+      %br
+      - asignatura_dependientes_ids = @asignatura.dependencias.map{|dep| dep.asignatura_dependiente_id}
+      - asignatura_dependientes_ids << @asignatura.id
+      = collection_select(:dependencia, :asignatura_dependiente_id, @asignatura.escuela.asignaturas.reject{|a| asignatura_dependientes_ids.include? a.id}, :id, :descripcion_id, {prompt: "-- Seleccione Asignaturas --"}, {required: true, class: 'selects2', multiple: true, style: 'width:100%'})
+
+
+    .modal-footer
+      = f.submit nil, class: 'btn btn-outline-primary'
+      %a.btn.btn-sm.btn-outline-secondary{data: {dismiss: 'modal'}} Cancelar
+
+
+:javascript
+  $(document).ready(function() {
+    $( ".selects2" ).select2();
+  });
