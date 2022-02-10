@@ -1,6 +1,7 @@
 .float-right
   =# simple_icon_toggle_modal 'Agregar Asignaturas dependientes', 'success', 'plus'
-  = btn_toggle_modal :plus, 'Agregar Asignaturas dependientes', 'Agregar', 'agregarDependencias'
+  .m-3
+    = btn_toggle_modal :plus, 'Agregar Asignaturas dependientes', 'Agregar', 'agregarDependencias'
 - if @dependientes.any?
 
   %h4.titulo.mt-3 Asignaturas Dependientes
@@ -15,7 +16,8 @@
               = glyph :trash
 
 - else
-  %p.m-3.alert.alert-warning Sin asignaturas dependientes
+  .row
+    .m-3.alert.alert-warning.col-11 Sin asignaturas dependientes
 
 
 - @dependencia = Dependencia.new
