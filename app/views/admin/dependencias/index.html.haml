@@ -4,15 +4,17 @@
       = btn_toggle_modal :plus, 'Agregar Asignaturas dependientes', 'Agregar', 'agregarDependencias'
 
   %h6.titulo.text-center.m-2= "Arbol de dependencia #{@asignatura.descripcion}"
-  .row
+  .m-3
     - if @dependencia_hacia_atras.any?
-      .col-md-6
-        .titulo.m-2= "Hacia Atrás"
-        = render partial: '/admin/dependencias/tabla_depen_hacia_atras', locals: {dependientes: @dependencia_hacia_atras}
+      %table.table-striped.table-sm.table-hover.table-bordered{style: 'width: 50%;'}
+        %tbody
+          = render partial: '/admin/dependencias/tabla_depen_hacia_atras', locals: {dependientes: @dependencia_hacia_atras}
+    %table.table-striped.table-sm.table-hover.table-bordered{style: 'width: 50%;'}
+      %tbody
+        %tr.table-success
+          %td= @asignatura.descripcion_id
     - if @dependientes.any?
-      .col-md-6
-        .titulo.m-2= "Hacia Adelante"
-        = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: @dependientes}
+      = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: @dependientes}
 
 - else
   .row

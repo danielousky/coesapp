@@ -1,16 +1,16 @@
 - if dependientes.any?
-  .ml-5
-    %table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md
-      %tbody
-        - dependientes.each do |dep| 
-          %tr
-            %td
-              - if (current_admin and current_admin.autorizado? 'Dependencias', 'destroy')
-                = link_to dependencia_path(dep.id), method: :delete, class: 'text-danger tooltip-btn', data: {toggle: :tooltip}, title: 'Eliminar Relación de Dependencia', data: {confirm: 'Al eliminar una dependencia se eliminarán en cascadas todas sus dependencias ¿Está completamente seguro?'} do
-                  = glyph :trash
+  %table.table-striped.table-sm.table-hover.table-bordered{style: 'width: 50%;'}
+    %tbody
+      - dependientes.each do |dep| 
+        %tr
+          %td
+            - if (current_admin and current_admin.autorizado? 'Dependencias', 'destroy')
+              = link_to dependencia_path(dep.id), method: :delete, class: 'text-danger tooltip-btn', data: {toggle: :tooltip}, title: 'Eliminar Relación de Dependencia', data: {confirm: 'Al eliminar una dependencia se eliminarán en cascadas todas sus dependencias ¿Está completamente seguro?'} do
+                = glyph :trash
 
-              = link_to dep.asignatura_dependiente.descripcion_id, "#{asignatura_path(dep.asignatura_dependiente_id)}?dependencias=true"
+            = link_to dep.asignatura_dependiente.descripcion_id, "#{asignatura_path(dep.asignatura_dependiente_id)}?dependencias=true"
 
-              - if dep.asignatura_dependiente.dependencias.any?
-                = glyph 'chevron-right'
+            - if dep.asignatura_dependiente.dependencias.any?
+              = glyph 'chevron-right'
+              .ml-3
                 = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: dep.asignatura_dependiente.dependencias}
