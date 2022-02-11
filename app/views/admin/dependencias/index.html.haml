@@ -1,7 +1,6 @@
 - if (current_admin and current_admin.autorizado? 'Dependencias', 'create')
-  .float-right
-    .m-1
-      = btn_toggle_modal :plus, 'Agregar Asignaturas dependientes', 'Agregar', 'agregarDependencias'
+  .m-1
+    = btn_toggle_modal :plus, 'Agregar Asignaturas dependientes', 'Agregar', 'agregarDependencias'
 
 - if @dependencia_hacia_atras.any? or @dependientes.any?
   %h6.titulo.text-center.m-2= "Arbol de dependencia #{@asignatura.descripcion}"
