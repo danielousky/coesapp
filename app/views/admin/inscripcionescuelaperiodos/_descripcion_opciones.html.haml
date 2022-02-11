@@ -4,7 +4,7 @@
 			= link_to "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", class: "btn btn-sm btn-warning tooltip-btn mr-2", 'data_toggle': :tooltip,  title: "Confirmar Inscripción en el período #{ins_esc_per.periodo.id}" do
 				= glyph 'education'
 				¡Confirmar Inscripción!
-		- else
+		- elsif ins_esc_per.periodo.id.eql? current_periodo.id
 			- boton_nombre = (current_admin and ins_esc_per and ins_esc_per.inscrito?) ? 'Modificar Inscripción' : 'Inscribir'
 			= btn_inscribir "#{seleccionar_inscripcionseccion_path(@estudiante)}?escuela_id=#{@escuela.id}", "Inscripción en el periodo actual", boton_nombre
 
