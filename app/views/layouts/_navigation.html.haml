@@ -32,7 +32,7 @@
           = raw (@titulo ? @titulo : action_name.titleize)
       %li.nav-item
         - if current_admin
-          = link_to "Período Activo: #{current_periodo.id}", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold'}
+          = link_to "Período Actual de la Sesión: #{current_periodo.id}", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold'}
       = render 'layouts/nav_session_options' 
 
 

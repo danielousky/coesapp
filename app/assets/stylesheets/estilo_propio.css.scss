@@ -2,6 +2,17 @@
 // Do not use *= require in Sass or your other stylesheets will not be able to access the Bootstrap mixins and variables.
 @import "bootstrap";
 
+.gly-rotate-90 {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+  display: inline-block;
+}
+
+
+
 .btn-mini{
   height: 25px;
   font-size: 8px;

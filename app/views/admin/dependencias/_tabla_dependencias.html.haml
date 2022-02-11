@@ -9,7 +9,9 @@
         = link_to dep.asignatura_dependiente.descripcion_id, "#{asignatura_path(dep.asignatura_dependiente_id)}?dependencias=true"
 
         - if dep.asignatura_dependiente.dependencias.any?
-          =# glyph 'chevron-right'          
-          %table.table-striped.table-hover.table-bordered.ml-5.m-3
-            %tbody
-              = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: dep.asignatura_dependiente.dependencias}
+          = link_to 'javascript:void(0)', onclick: "$('#arbol#{dep.id}').toggleClass('d-none'); $(this).toggleClass('gly-rotate-90');" do
+            = glyph 'chevron-right'
+          %div{id: "arbol#{dep.id}", class: 'd-none'}
+            %table.table-striped.table-hover.table-bordered.ml-5.m-3
+              %tbody
+                = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: dep.asignatura_dependiente.dependencias}

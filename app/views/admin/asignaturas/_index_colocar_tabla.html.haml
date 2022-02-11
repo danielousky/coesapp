@@ -7,10 +7,6 @@
 = render partial: '/admin/escuelas/eliminar_programacion', locals: {escuela: escuela}
 .tab-content
   .border.p-3
-    -# total_secciones = escuela.secciones.del_periodo(current_periodo.id).count
-    /%span.badge.badge-info.mr-3
-    =# "#{total_secciones} #{'seccion'.pluralize(total_secciones)} en total"
-
     - if (current_admin and current_admin.autorizado? 'Asignaturas', 'create')
       = link_to "#{new_asignatura_path}?escuela_id=#{escuela.id}", class: "btn btn-outline-success btn-sm tooltip-btn float-left mr-2", 'data_toggle': :tooltip, title: "Agregar Nueva Asignatura en #{escuela.descripcion}" do
         = glyph 'plus'
@@ -30,7 +26,6 @@
         = glyph 'chevron-right'
         = glyph 'trash'
 
-
     %table.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3{id: "table#{escuela.id}"}
       %thead
         %tr
@@ -39,6 +34,9 @@
           %th Departamento
           %th Cátedra
           %th Tipo
+          %th Orden
+          %th T. de las q depende
+          %th T. dependencias
           %th Calif.
           %th U. Créditos
           %th Secciones
@@ -55,6 +53,9 @@
             %td= asignatura.departamento.descripcion
             %td= asignatura.catedra.descripcion
             %td= asignatura.tipoasignatura.descripcion.titleize
+            %td= asignatura.orden
+            %td= asignatura.dependencia_hacia_atras.count
+            %td= asignatura.dependencias.count
             %td= asignatura.calificacion.to_s
             %td= asignatura.creditos
             %td
