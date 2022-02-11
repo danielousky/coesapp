@@ -1,0 +1,17 @@
+- if dependientes.any?
+  .ml-5.p-2
+    %table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md
+      %tbody
+        - dependientes.each do |dep| 
+          %tr
+            %td
+
+              - if (current_admin and current_admin.autorizado? 'Dependencias', 'destroy')
+                = link_to dependencia_path(dep.id), method: :delete, class: 'text-danger tooltip-btn', data: {toggle: :tooltip}, title: 'Eliminar Relación de Dependencia', data: {confirm: 'Al eliminar una dependencia se eliminarán en cascadas todas sus dependencias ¿Está completamente seguro?'} do
+                  = glyph :trash
+              = link_to dep.asignatura.descripcion_id, "#{asignatura_path(dep.asignatura_id)}?dependencias=true"
+              - if dep.asignatura.dependencia_hacia_atras.any?
+                .align-middle= glyph 'chevron-down'
+                = render partial: '/admin/dependencias/tabla_depen_hacia_atras', locals: {dependientes: dep.asignatura.dependencia_hacia_atras}
+
+

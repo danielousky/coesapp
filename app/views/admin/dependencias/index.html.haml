@@ -1,28 +1,27 @@
-.float-right
-  =# simple_icon_toggle_modal 'Agregar Asignaturas dependientes', 'success', 'plus'
-  .m-3
-    = btn_toggle_modal :plus, 'Agregar Asignaturas dependientes', 'Agregar', 'agregarDependencias'
-- if @dependientes.any?
+- if (current_admin and current_admin.autorizado? 'Dependencias', 'create')
+  .float-right
+    .m-1
+      = btn_toggle_modal :plus, 'Agregar Asignaturas dependientes', 'Agregar', 'agregarDependencias'
 
-  %h4.titulo.mt-3 Asignaturas Dependientes
-  %table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md
-    %tbody
-      - @dependientes.each do |dep| 
-        %tr
-          %td= dep.asignatura_dependiente_id
-          %td= dep.asignatura_dependiente.descripcion
-          %td
-            = link_to dependencia_path(dep.id), method: :delete, class: 'btn btn-sm btn-danger tooltip-btn', data: {toggle: :tooltip}, title: 'Eliminar Relación de Dependencia' do
-              = glyph :trash
+  %h6.titulo.text-center.m-2= "Arbol de dependencia #{@asignatura.descripcion}"
+  .row
+    - if @dependencia_hacia_atras.any?
+      .col-md-6
+        .titulo.m-2= "Hacia Atrás"
+        = render partial: '/admin/dependencias/tabla_depen_hacia_atras', locals: {dependientes: @dependencia_hacia_atras}
+    - if @dependientes.any?
+      .col-md-6
+        .titulo.m-2= "Hacia Adelante"
+        = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: @dependientes}
 
 - else
   .row
     .m-3.alert.alert-warning.col-11 Sin asignaturas dependientes
 
+- if (current_admin and current_admin.autorizado? 'Dependencias', 'create')
+  - @dependencia = Dependencia.new
+  - @dependencia.asignatura = @asignatura
 
-- @dependencia = Dependencia.new
-- @dependencia.asignatura = @asignatura
-
-- content = render partial: '/admin/dependencias/form'
-- title = 'Agregar Asignaturas Dependientes'
-= render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "agregarDependencias", title: title, content: content, width: nil}
+  - content = render partial: '/admin/dependencias/form'
+  - title = 'Agregar Asignaturas Dependientes'
+  = render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "agregarDependencias", title: title, content: content, width: nil}

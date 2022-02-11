@@ -6,6 +6,10 @@ class Asignatura < ApplicationRecord
 	belongs_to :tipoasignatura
 
 	has_many :dependencias
+
+	def dependencia_hacia_atras
+		Dependencia.where(asignatura_dependiente_id: self.id)
+	end
 	# has_many :dependientes, class_name: 'Dependencia', foreign_key: 'asignatura_dependiente_id'
 
 	# has_many :asignaturas, through: :dependientes, class_name: 'Dependencia'

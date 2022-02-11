@@ -67,6 +67,12 @@ module Admin
       @escuela = @asignatura.escuela
       @departamentos = @escuela.departamentos.includes(:departamento)
       @dependientes = @asignatura.dependencias
+
+      @dependencia_hacia_atras = @asignatura.dependencia_hacia_atras
+      @secciones = @asignatura.secciones.del_periodo(current_periodo.id)
+
+
+
       if @asignatura.escuela.id.eql? 'POST'
         @profesores = Profesor.all.includes(:usuario).order('usuarios.apellidos')
       else
