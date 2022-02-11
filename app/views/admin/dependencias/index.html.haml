@@ -3,7 +3,7 @@
     = btn_toggle_modal :plus, 'Agregar Asignaturas dependientes', 'Agregar', 'agregarDependencias'
 
 - if @dependencia_hacia_atras.any? or @dependientes.any?
-  %h6.titulo.text-center.m-2= "Arbol de dependencia #{@asignatura.descripcion}"
+  %h6.titulo.text-center.m-2= "Árbol de dependencia #{@asignatura.descripcion}"
   .m-3
     %table.table-striped.table-sm.table-hover.table-bordered
       %tbody
