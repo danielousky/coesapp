@@ -27,7 +27,7 @@
   %label.control-label.col-md-12 Profesor Principal
   .col-md-12
 
-    = collection_select(:seccion, :profesor_id, @profesores, :id, :descripcion, {prompt: "-- Seleccione profesor --"}, {required: true, class: 'selects2', style: 'width:100%'})
+    = collection_select(:seccion, :profesor_id, @profesores, :id, :descripcion, {prompt: "-- Seleccione profesor --"}, {class: 'selects2', style: 'width:100%'})
 
     =# grouped_collection_select :seccion, :profesor_id, @departamentos, :profesores, :descripcion, :id, :descripcion, {include_blank: 'Selecciona Departamento...', required: true}, { class: 'selects2 form-control text_field form-control-sm'}
 
