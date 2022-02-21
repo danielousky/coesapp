@@ -45,8 +45,10 @@ module Admin
       @seccion = Seccion.new
       if params[:escuela_id]
         @escuelas = Escuela.where(id: params[:escuela_id])
+        @profesores = @escuelas.first.profesores
       else
-        @escuelas = current_admin.escuelas.joins(:escuelaperiodos).where('escuelaperiodos.periodo_id = ?', current_periodo.id )
+        flash[:success] = 'Por favor, seleccione una escuela haciendo uso de los enlaces en el menú'
+        redirect_back fallback_location: principal_admin_index_path
       end
 
       @vertical = 'flex-column'
