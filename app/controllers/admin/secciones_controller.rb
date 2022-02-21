@@ -414,6 +414,7 @@ module Admin
       @bitacoras = Bitacora.search_by_id(@seccion.id).limit(50)#.search(@seccion.id)
       @departamentos = current_admin.departamentos if current_admin
       @titulo = "Sección: #{@seccion.descripcion_escuela} - Período #{@seccion.periodo_id}"
+      @profesores = @seccion.asignatura.escuela.profesores
 
       if @seccion.asignatura.catedra_id.eql? 'IB' or @seccion.asignatura.catedra_id.eql? 'LIN' or @seccion.asignatura.catedra_id.eql? 'LE'
         @p1 = 25 
