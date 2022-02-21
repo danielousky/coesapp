@@ -26,29 +26,16 @@
 .form-group
   %label.control-label.col-md-12 Profesor Principal
   .col-md-12
-    = grouped_collection_select :seccion, :profesor_id, @departamentos, :profesores, :descripcion, :id, :descripcion, {include_blank: 'Selecciona Departamento...', required: true}, { class: 'selects2 form-control text_field form-control-sm'}
+
+    = collection_select(:seccion, :profesor_id, @profesores, :id, :descripcion, {prompt: "-- Seleccione profesor --"}, {required: true, class: 'selects2', style: 'width:100%'})
+
+    =# grouped_collection_select :seccion, :profesor_id, @departamentos, :profesores, :descripcion, :id, :descripcion, {include_blank: 'Selecciona Departamento...', required: true}, { class: 'selects2 form-control text_field form-control-sm'}
 
 :javascript
 
   $(document).ready(function() {
 
-    $( ".selects2" ).select2({
-      ajax: {
-      url: "#{busquedas_usuarios_path}?profesores=true",
-      dataType: 'json',
-      delay: 250,
-      processResults: function (data) {
-        return {
-          results: data
-        };
-      }     
-      },
-      placeholder: "--Escriba datos del profesor para buscarlo--",
-      theme: "bootstrap",
-      cache: true,
-      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))}
-
-    });
+    $( ".selects2" ).select2();
     
   });
 
