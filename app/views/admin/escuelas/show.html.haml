@@ -23,11 +23,11 @@
     escoja y seleccione a un 
     %b= link_to_if current_admin, "Período Activo", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold', style: "display:inline; padding:0px"}
     perteneciente a la escuela
-- if false
-  %nav
-    .nav.nav-tabs
-      = link_to 'Profesores', "#profes", "data-toggle": :tab, class: "nav-item nav-link active"
-    .tab-content
-      .tab-pane#profes.border.p-3.border-top-0.active
-        = render partial: '/admin/profesores/index', locals: {profesores: @escuela.profesores}
+
+%nav
+  .nav.nav-tabs
+    = link_to 'Profesores', "#profes", "data-toggle": :tab, class: "nav-item nav-link active"
+  .tab-content
+    .tab-pane#profes.border.p-3.border-top-0.active
+      = render partial: '/admin/profesores/index', locals: {profesores: @escuela.profesores}
 
