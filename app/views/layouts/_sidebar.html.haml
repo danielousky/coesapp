@@ -20,7 +20,8 @@
     = sidebar_item current_admin, 'Escuelas', 'index', escuelas_path, 'education'
     - if (current_admin.autorizado? 'Asignaturas', 'index')
       - if (current_admin.escuelas.count.eql? 1)
-        = sidebar_item current_admin, 'Asignaturas', 'index', asignaturas_path, 'modal-window'
+        - aux = current_admin.escuelas.first
+        = sidebar_item current_admin, 'Asignaturas', 'index', "#{asignaturas_path}?escuela_id=#{aux.id}", 'modal-window'
         
       - else
         = sidebar_sub_item 'asig', 'Asignaturas', 'modal-window'
