@@ -62,6 +62,10 @@ class Escuela < ApplicationRecord
 
 	end
 
+	def dependencias_habilitadas?
+		self.habilitar_dependencias
+	end
+
 	def self.actualizar_parciales_201802A
 		e = Escuela.find 'IDIO'
 		ss = e.secciones.calificadas.del_periodo ('2018-02A')

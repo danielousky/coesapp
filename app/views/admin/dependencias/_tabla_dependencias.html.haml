@@ -1,7 +1,10 @@
 - if dependientes.any?
   - dependientes.each do |dep| 
-    %tr
+    - aprobada = (@aprobadas_ids and @aprobadas_ids.include? dep.asignatura_id) ? 'table-success' : ''
+    %tr{class: aprobada}
       %td.pr-5
+        - unless aprobada.eql? ''
+          %span.badge.badge-success Aprobada
         - if (current_admin and current_admin.autorizado? 'Dependencias', 'destroy')
           = link_to dependencia_path(dep.id), method: :delete, class: 'text-danger tooltip-btn', data: {toggle: :tooltip}, title: 'Eliminar Relación de Dependencia', data: {confirm: 'Al eliminar una dependencia se eliminarán en cascadas todas sus dependencias ¿Está completamente seguro?'} do
             = glyph :trash
@@ -15,3 +18,4 @@
             %table.table-striped.table-hover.table-bordered.ml-5.m-3
               %tbody
                 = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: dep.asignatura_dependiente.dependencias}
+    

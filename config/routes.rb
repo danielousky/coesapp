@@ -117,6 +117,7 @@ Rails.application.routes.draw do
       member do
         get 'periodos'
         post 'set_periodo_inscripcion'
+        get 'update_dependencias'
         get 'set_habilitar_retiro_asignaturas'
         get 'set_habilitar_cambio_seccion'
         get 'limpiar_programacion'

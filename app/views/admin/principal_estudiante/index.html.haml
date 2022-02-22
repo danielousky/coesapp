@@ -17,6 +17,8 @@
 			- @escuela = grado.escuela
 			- @inscripciones = @estudiante.inscripcionsecciones.joins(:escuela).where("escuelas.id = :e or pci_escuela_id = :e", e: @escuela.id)
 			
+			- #@inscripciones = @grado.inscripciones.joins(:escuela).where("pci_escuela_id = :e", e: @escuela.id)
+			
 			- periodo_ids = @inscripciones.joins(:seccion).group("secciones.periodo_id").count.keys
 			- @periodos = Periodo.where(id: periodo_ids).order(inicia: :desc)
 			- if current_usuario.eql? @estudiante.usuario and @grado and (!@escuela.id.eql? 'POST') and @grado.reportepago.nil? and @grado.asignado? and !@grado.inscripciones.any? 
@@ -47,16 +49,44 @@
 							%p= "Hora de Inicio: #{jornada_horaria_actual.inicio.strftime('%I:%M%P')}"
 
 					- inscripcion_abierta_por_citahoraria = (jornada_horaria_actual and @grado.citahoraria and jornada_horaria_actual.puede_inscribir? @grado.citahoraria)
+					
+					-# con_inscripciones_en_periodo_anterior = @grado.inscripciones.del_periodo(periodo_anterior.id).any?)
+					- con_inscripciones_en_periodo_anterior = @grado.inscripciones.de_los_periodos(["2019-01S", "2019-02S", "2020-01U", "2021-01S", "2021-02S"]).any?
 
-					- inscripcion_abierta_por_regular = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or (@inscripcionperiodo and @inscripcionperiodo.reservado?) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any?))
+					- valido_inscripcion_regular = ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or con_inscripciones_en_periodo_anterior))
+
+					- autorizado_especial = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id)
+					- inscripcion_en_proceso = @inscripcionperiodo and @inscripcionperiodo.reservado?
+
+					- inscripcion_abierta_por_regular = valido_inscripcion_regular or autorizado_especial or inscripcion_en_proceso
+
 					- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
 					- # inscripcion_abierta_por_regular = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
 
 					-if inscripcion_abierta_por_citahoraria or (!inscripcion_abierta_por_citahoraria and inscripcion_abierta_por_regular)
 
-						- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc )
-						-# aprobadas_id = @inscripciones.aprobadas.joins(:seccion).group('secciones.asignatura_id').count.keys
-						- @aprobadas = @inscripciones.aprobadas.joins(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
+						- if @escuela.dependencias_habilitadas?
+							- asignaturas_ofertables_segun_dependencia = @grado.asignaturas_ofertables_segun_dependencia
+							- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc)
+							- if false #Numeros de dependencias
+								.alert.alert-info
+									= asignaturas_ofertables_segun_dependencia.ids
+									.badge.badge-dark= asignaturas_ofertables_segun_dependencia.count
+
+								.alert.alert-success
+									= asignaturas_ofertadas_x_escuela.ids
+									.badge.badge-dark= asignaturas_ofertadas_x_escuela.count
+								-# aux = asignaturas_ofertadas_x_escuela.reject{|a| asignaturas_ofertables_segun_dependencia.include? a}
+								- aux = asignaturas_ofertadas_x_escuela.merge(asignaturas_ofertables_segun_dependencia)
+								.alert.alert-warning
+									= aux.map{|a| a.id}
+									.badge.badge-dark= aux.count
+							- asignaturas_ofertadas_x_escuela = asignaturas_ofertadas_x_escuela.merge(asignaturas_ofertables_segun_dependencia)
+
+						- else
+							- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc )
+
+						- @aprobadas = @inscripciones.aprobadas.includes(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
 						-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
 						- titulo_modal = "Proceso de Preinscripción #{@periodo_inscripcion.id}"
 						- titulo_btn = "Preinscribirse"
@@ -94,8 +124,6 @@
 							= glyph 'chevron-right'
 							= "Reportar pago de inscripción el periodo #{@periodo_inscripcion.id}"
 
-
-
 			-if @grado.citahoraria and @grado.duracion_franja_horaria and @inscripcionperiodo.nil?
 				.border.p-md-3
 					%h5 Cita Horaria:
@@ -119,6 +147,9 @@
 					%h5 Combinación de Idiomas:
 					- @estudiante.combinaciones.each do |c| 
 						%p= c.descripcion
+
+			- if false #@escuela.dependencias_habilitadas? # Dependencias activas para la escuela
+				= render partial: '/admin/grados/dependencias'
 
 			= render partial: '/admin/grados/historial_academico'
 

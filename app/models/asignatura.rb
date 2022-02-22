@@ -6,13 +6,14 @@ class Asignatura < ApplicationRecord
 	belongs_to :tipoasignatura
 
 	has_many :dependencias
+	has_many :dependencia_hacia_atras, foreign_key: 'asignatura_dependiente_id', class_name: 'Dependencia'
+	# has_many :asignaturas, through: :dependencias
 
-	def dependencia_hacia_atras
-		Dependencia.where(asignatura_dependiente_id: self.id)
+	def asignaturas
+		depen_ids = asi.dependencias.map{|dep| dep.asignatura_dependiente_id}
+		Asignatura.where('id IN (?)', depen_ids)
 	end
-	# has_many :dependientes, class_name: 'Dependencia', foreign_key: 'asignatura_dependiente_id'
 
-	# has_many :asignaturas, through: :dependientes, class_name: 'Dependencia'
 
 	has_many :programaciones, dependent: :destroy
 	has_many :periodos, through: :programaciones
@@ -39,6 +40,17 @@ class Asignatura < ApplicationRecord
 	validates :tipoasignatura_id, presence: true
 
 	# SCOPE
+	scope :sin_dependencias, -> {joins('LEFT JOIN dependencias ON dependencias.asignatura_id = asignaturas.id').where('dependencias.asignatura_id IS NULL')}
+	scope :con_dependencias, -> {joins(:dependencias).distinct}
+
+	# Libres de dependencias hacia atrás
+	scope :independientes, -> {joins('LEFT JOIN dependencias ON dependencias.asignatura_dependiente_id = asignaturas.id').where('dependencias.asignatura_dependiente_id IS NULL')}
+
+	# PENDIENTE POR RESOLVER
+	# Con dependencias hacia atrás
+
+	# scope :dependientes, -> {joins('INNER JOIN dependencias ON dependencias.asignatura_dependiente_id = asignaturas.id').where('dependencias.asignatura_dependiente_id IS NULL')}
+
 	scope :del_departamento, lambda {|dpto_id| where(departamento_id: dpto_id)}
 
 	scope :activas, lambda { |periodo_id| joins(:programaciones).where('programaciones.periodo_id = ?', periodo_id) }

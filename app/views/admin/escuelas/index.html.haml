@@ -13,6 +13,7 @@
       - if current_admin.maestros?
         %th{style: 'width:190px'} Activo
         %th{style: 'width:190px'} Inscripción
+        %th Prelaciones
         %th Retiros
         %th Cambio Secciones
         %th= "Actas del #{current_periodo.id}"
@@ -49,6 +50,7 @@
                 = select_tag :periodo_inscripcion_id, options_from_collection_for_select(escuela.periodos.order(inicia: :desc), :id, :id, escuela.periodo_inscripcion_id), class: 'form-control select-mini', include_blank: '---INSCRIPCIÓN CERRADA ---', style: 'width: 120px;'
                 = submit_tag 'Guardar', class: 'ml-2 btn btn-sm btn-success btn-mini', data: {confirm: 'Esta acción establecerá las inscripciones para los ESTUDIANTES en el periodo seleccionado, ¿Está seguro?. Para cerrar la inscripción seleccione la opción "--- Inscripción Cerrada ---"'}
 
+            %td= agregar_onoffswitch 'Habilitar Uso de Prelaciones en inscripción', "prelaciones#{escuela.id}",update_dependencias_escuela_path(escuela.id), escuela.dependencias_habilitadas?
 
             %td= agregar_onoffswitch 'Habilitar Retiro y Eliminación Asignaturas', "retiro#{escuela.id}", set_habilitar_retiro_asignaturas_escuela_path(escuela.id), escuela.retiro_asignaturas_habilitado?
 

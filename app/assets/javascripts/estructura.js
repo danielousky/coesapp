@@ -176,6 +176,10 @@ function switches(url) {
 			toastr.error(json["responseJSON"].data)
 		}
 		$('#cargando').modal('hide')
+	},
+	error: function(json){
+		console.log(json["responseJSON"])
+		toastr.error(json["responseJSON"])
 	}
 	});
 }

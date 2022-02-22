@@ -14,6 +14,7 @@ class Grado < ApplicationRecord
 	has_many :inscripciones, class_name: 'Inscripcionseccion'
 	has_many :inscripcionescuelaperiodos
 	has_many :secciones, through: :inscripciones, source: :seccion
+	has_many :asignaturas, through: :secciones
 
 	# CALLBACKS
 	before_validation :set_default
@@ -90,6 +91,33 @@ class Grado < ApplicationRecord
 	# def inscripciones
 	# 	Inscripcionseccion.where("estudiante_id = ? and escuelas_id = ?", estudiante_id, escuela_id)
 	# end
+
+	def asignaturas_ofertables_segun_dependencia
+		# Buscamos los ids de las asignaturas aprobadas
+		aprobadas_ids = self.inscripciones.aprobado.includes(:asignatura).map{|ins| ins.asignatura.id}.uniq
+
+		# Buscamos por ids de las asignaturas que dependen de las aprobadas
+		asignaturas_dependientes_ids = Dependencia.where('asignatura_id IN (?)', aprobadas_ids).map{|dep| dep.asignatura_dependiente_id}
+
+		ids_asignaturas_positivas = []
+
+		# Ahora por cada asignatura habilitada miramos sus respectivas dependencias a ver si todas están aprobadas
+
+		asignaturas_dependientes_ids.each do |asig_id|
+			ids_aux = Dependencia.where(asignatura_dependiente_id: asig_id).map{|dep| dep.asignatura_id}
+			ids_aux.reject!{|id| aprobadas_ids.include? id}
+			ids_asignaturas_positivas << asig_id if (ids_aux.eql? []) #Si aprobó todas las dependencias
+		end
+
+		# Buscamos las asignaturas sin prelación
+		ids_asignaturas_independientes = self.escuela.asignaturas.independientes.ids
+
+		# Sumamos todas las ids ()
+		asignaturas_disponibles_ids = ids_asignaturas_positivas + ids_asignaturas_independientes
+
+		Asignatura.where('asignaturas.id IN (?)', asignaturas_disponibles_ids)
+	end
+
 
 	def franja_horaria
 		(citahoraria and duracion_franja_horaria) ? citahoraria+duracion_franja_horaria.minutes : nil

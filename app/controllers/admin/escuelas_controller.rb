@@ -214,6 +214,22 @@ module Admin
 
     end
 
+    def update_dependencias
+      begin
+        @escuela.habilitar_dependencias = !@escuela.dependencias_habilitadas?
+        if @escuela.save
+          aux = "¡Escuela actualizada!"
+          render json: {data: aux, status: :success}
+        else
+          render json: {data: "Error al intentar cambio: #{@escuela.errors.full_messages.to_sentence}", status: :error}
+        end
+      rescue Exception => e
+        render json: {data: "Error Excepcional: #{e}", status: :danger}
+      end
+
+    end
+
+
     # def set_inscripcion_abierta
     #   @escuela.inscripcion_abierta = !@escuela.inscripcion_abierta
     #   if @escuela.save
@@ -254,7 +270,7 @@ module Admin
 
       # Never trust parameters from the scary internet, only allow the white list through.
       def escuela_params
-        params.require(:escuela).permit(:descripcion, :id, :inscripcion_abierta, :habilitar_retiro_asignaturas, :habilitar_cambio_seccion, :periodo_inscripcion_id, :periodo_activo_id)
+        params.require(:escuela).permit(:descripcion, :id, :inscripcion_abierta, :habilitar_retiro_asignaturas, :habilitar_cambio_seccion, :periodo_inscripcion_id, :periodo_activo_id, :habilitar_dependencias)
       end
   end
 end

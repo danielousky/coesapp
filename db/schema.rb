@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_07_150628) do
+ActiveRecord::Schema.define(version: 2022_02_17_174930) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -230,6 +230,7 @@ ActiveRecord::Schema.define(version: 2022_02_07_150628) do
     t.boolean "habilitar_cambio_seccion", default: true
     t.string "periodo_inscripcion_id"
     t.string "periodo_activo_id"
+    t.boolean "habilitar_dependencias", default: false
     t.index ["id"], name: "index_escuelas_on_id"
     t.index ["periodo_activo_id"], name: "fk_rails_490583ce06"
     t.index ["periodo_inscripcion_id"], name: "fk_rails_5f0f1fec52"
