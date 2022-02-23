@@ -54,7 +54,10 @@ class Inscripcionseccion < ApplicationRecord
 	scope :inscritos, -> {joins(:inscripcionescuelaperiodo).where('inscripcionescuelaperiodos.tipo_estado_inscripcion_id = ?', TipoEstadoInscripcion::INSCRITO)}
 
 
-	scope :con_totales, ->(escuela_id, periodo_id) {joins(:escuela).where("escuelas.id = ?", escuela_id).del_periodo(periodo_id).joins(:usuario).order("usuarios.apellidos ASC").joins(:asignatura).group(:estudiante_id).select('estudiante_id, usuarios.apellidos apellidos, usuarios.nombres nombres, SUM(asignaturas.creditos) total_creditos, COUNT(*) asignaturas, SUM(IF (inscripcionsecciones.estado = 1, asignaturas.creditos, 0)) aprobados')}
+	# scope :con_totales, ->(escuela_id, periodo_id) {joins(:escuela).where("escuelas.id = ?", escuela_id).del_periodo(periodo_id).joins(:usuario).order("usuarios.apellidos ASC").joins(:asignatura).group(:estudiante_id).select('estudiante_id, usuarios.apellidos apellidos, usuarios.nombres nombres, SUM(asignaturas.creditos) total_creditos, COUNT(*) asignaturas, SUM(IF (inscripcionsecciones.estado = 1, asignaturas.creditos, 0)) aprobados')}
+
+
+	scope :con_totales, ->(escuela_id, periodo_id) {joins(:escuela).where("escuelas.id = ?", escuela_id).del_periodo(periodo_id).joins(:usuario).joins(:asignatura).joins(grado: :plan).group(:grado_id).select('planes.id plan_id, planes.creditos plan_creditos, grados.*, SUM(asignaturas.creditos) total_creditos, COUNT(*) asignaturas, SUM(IF (inscripcionsecciones.estado = 1, asignaturas.creditos, 0)) aprobados')}
 
 	scope :por_confirmar, -> {where(inscripcionescuelaperiodo_id: nil)}
 
@@ -655,6 +658,5 @@ class Inscripcionseccion < ApplicationRecord
 			ip_origen: nil
 		)
 	end
-
 
 end

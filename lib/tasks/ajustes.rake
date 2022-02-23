@@ -1,3 +1,21 @@
+desc "Actualiza todas las entidades con grado null"
+task :update_all_grado_nil => :environment do
+	begin
+		p 'iniciando... '
+		Inscripcionseccion.where(grado_id: nil).each do |ins|
+			g = Grado.where(escuela_id: ins.escuela_id, estudiante_id: ins.estudiante_id).first
+			g ||= Grado.create(escuela_id: ins.escuela_id, estudiante_id: ins.estudiante_id, tipo_ingreso: 'OPSU', plan_id: ins.escuela.planes.first.id)
+			ins.update(grado_id: g.id)
+		end
+
+		Grado.where(plan_id: nil).map{|g| g.historialplanes.any? ? g.update(plan_id: g.historialplanes.last.id) : g.update(plan_id: g.escuela.planes.first.id)}
+
+		Inscripcionescuelaperiodo.where(grado_id: nil).map{|ins_pe| ins_pe.update(grado_id: ins_pe.inscripcionsecciones.first.grado_id)}
+	rescue StandardError => e
+		p e
+	end
+	
+end
 
 desc "Envio de correos a estudiantes Asignados 2020 por Opsu"
 task :send_email_asignados => :environment do

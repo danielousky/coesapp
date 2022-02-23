@@ -15,21 +15,17 @@
 	%tbody
 
 		- @inscripciones.each do |ins|
-			- est = Estudiante.find ins.estudiante_id
 			%tr
-				%td= link_to ins.estudiante_id, usuario_path(est.id)
+				%td= link_to ins.estudiante_id, usuario_path(ins.estudiante_id)
 				%td= ins.usuario.email
-				%td= ins.apellidos
-				%td= ins.nombres
-				%td= est.escuelas.ids.to_sentence
-				- hplan = est.historialplanes.joins(:plan).where("planes.escuela_id = ?", @escupe.escuela_id).order('periodo_id DESC').first#.plan_id
-				-# hplan = est.ultimo_plan_de_escuela(@escupe.escuela_id)
-				%td= hplan ? hplan.plan_id : "--"
+				%td= ins.usuario.apellidos
+				%td= ins.usuario.nombres
+				%td= ins.escuela_id
+				%td= ins.plan_id
 				%td= ins.asignaturas
 				%td= ins.total_creditos
 				%td= ins.aprobados
-				%td= hplan.plan.creditos if hplan
-
+				%td= ins.plan_creditos
 
 :javascript
 
