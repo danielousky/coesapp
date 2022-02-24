@@ -9,7 +9,12 @@ module Admin
 
 
     def index
-      @escuelas = Escuela.all
+      if current_admin
+        @escuelas = current_admin.escuelas
+      else
+        @escuelas = Escuela.all
+      end
+      
       if params[:escuela_id]
         escuela = Escuela.find params[:escuela_id]
         @titulo = "Reportes de Pago de #{escuela.descripcion}"
