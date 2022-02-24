@@ -1,50 +1,44 @@
-- model_class = Departamento
-
 - if (current_admin and current_admin.autorizado? 'Departamentos', 'create')
-  = btn_add_success new_departamento_path, 'Agregar Nuevo Departamento', 'Nuevo'
-  %br
-  %br
-.border.p-2  
-  %table#dataTableDpto.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3
-    %thead
-      %tr
-        %th Escuela
-        %th= model_class.human_attribute_name(:descripcion)
-        %th Cátedra
-        %th.tooltip-btn{'data_toggle'=> :tooltip, title: 'Total de asignaturas para el periodo actual'} Asigs
-        %th.tooltip-btn{'data_toggle'=> :tooltip, title: 'Total de secciones para el periodo actual'} Seccs 
-        %th.tooltip-btn{'data_toggle'=> :tooltip, title: 'Total de inscripciones para el periodo actual'} Inscr
-        %th Actividad
-        %th Opciones
-    %tbody
+  .float-right.mb-4
+    = btn_add_success new_departamento_path, 'Agregar Nuevo Departamento', 'Nuevo'
+%table#dataTableDpto.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3
+  %thead
+    %tr
+      %th Nombre
+      %th Cátedras
+      %th.tooltip-btn{'data_toggle'=> :tooltip, title: 'Total de asignaturas para el periodo actual'} Asigs
+      %th.tooltip-btn{'data_toggle'=> :tooltip, title: 'Total de secciones para el periodo actual'} Seccs 
+      %th.tooltip-btn{'data_toggle'=> :tooltip, title: 'Total de inscripciones para el periodo actual'} Inscr
+      %th Actividad
+      %th Opciones
+  %tbody
 
-      - @departamentos.each do |departamento|
-        %tr
-          %td= departamento.escuela.descripcion
-          %td= link_to_if (current_admin and current_admin.autorizado? 'Departamentos', 'show'), departamento.descripcion, departamento_path(departamento)
-          %td
-            %table.table
-              - departamento.catedras.each do |c| 
-                %tr
-                  %td= link_to_if (current_admin and current_admin.autorizado? 'Catedras', 'index'), c.descripcion, catedra_path(c)
-          %td= departamento.asignaturas.count
-          %td= departamento.secciones.del_periodo(current_periodo.id).count
-          %td= departamento.inscripcionsecciones.del_periodo(current_periodo.id).count
-          %td=l departamento.updated_at, format: :short
-          %td
-            - if (current_admin and current_admin.autorizado? 'Departamentos', 'show')
-              = link_to departamento_path(departamento), class: 'btn btn-sm', title: "#{ t('.show', default: t('helpers.links.show')) }" do
-                = glyph 'info-sign'
-            - if (current_admin and current_admin.autorizado? 'Departamentos', 'update')
-              = link_to edit_departamento_path(departamento), class: 'btn btn-sm', title: "#{ t('.edit', default: t('helpers.links.edit')) }" do
-                = glyph 'pencil'
-            - if (current_admin and current_admin.autorizado? 'Departamentos', 'destroy')
-              - if !(departamento.asignaturas.any?)
-                = link_to departamento_path(departamento), method: :delete, data: { confirm: 'Esta acción eliminará irreversiblemente tadas las asignaturas y asociaciones con cátedras del sistema. ¿Está Seguro?'}, class: 'btn btn-sm', title: "#{ t('.destroy', default: t('helpers.links.destroy')) }" do
-                  .text-danger= glyph 'trash'
-              - else
-                .btn.btn-sm.tooltip-btn{'data-toggle': :tooltip, title: 'Elimine las asignaturas asociadas al departamento para activar la opción'}
-                  .text-muted= glyph 'trash'
+    - @departamentos.each do |departamento|
+      %tr
+        %td= link_to_if (current_admin and current_admin.autorizado? 'Departamentos', 'show'), departamento.descripcion, departamento_path(departamento)
+        %td
+          %table.table
+            - departamento.catedras.each do |c| 
+              %tr
+                %td= link_to_if (current_admin and current_admin.autorizado? 'Catedras', 'index'), c.descripcion, "#{catedra_path(c)}?escuela_id=#{departamento.escuela.id}"
+        %td= departamento.asignaturas.count
+        %td= departamento.secciones.del_periodo(current_periodo.id).count
+        %td= departamento.inscripcionsecciones.del_periodo(current_periodo.id).count
+        %td=l departamento.updated_at, format: :short
+        %td
+          - if (current_admin and current_admin.autorizado? 'Departamentos', 'show')
+            = link_to departamento_path(departamento), class: 'btn btn-sm', title: "#{ t('.show', default: t('helpers.links.show')) }" do
+              = glyph 'info-sign'
+          - if (current_admin and current_admin.autorizado? 'Departamentos', 'update')
+            = link_to edit_departamento_path(departamento), class: 'btn btn-sm', title: "#{ t('.edit', default: t('helpers.links.edit')) }" do
+              = glyph 'pencil'
+          - if (current_admin and current_admin.autorizado? 'Departamentos', 'destroy')
+            - if !(departamento.asignaturas.any?)
+              = link_to departamento_path(departamento), method: :delete, data: { confirm: 'Esta acción eliminará irreversiblemente tadas las asignaturas y asociaciones con cátedras del sistema. ¿Está Seguro?'}, class: 'btn btn-sm', title: "#{ t('.destroy', default: t('helpers.links.destroy')) }" do
+                .text-danger= glyph 'trash'
+            - else
+              .btn.btn-sm.tooltip-btn{'data-toggle': :tooltip, title: 'Elimine las asignaturas asociadas al departamento para activar la opción'}
+                .text-muted= glyph 'trash'
 
 :javascript
 
@@ -61,12 +55,13 @@
       // lengthChange: false,
       paging: false,
       responsive: true,
-      /* dom: '<"html5buttons"B>lTfgitp',
-      buttons: [
-        {extend: 'excel', title: 'ExcelListaSeccion'},
-        {extend: 'pdf', title: 'PDFListaSeccion'}
 
-        {extend: 'print',
+      dom: '<"html5buttons"B>lTfgitp',
+      buttons: [
+        {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `reportepago-#{current_periodo.id}`, className: 'btn btn-sm btn-outline-info'},
+        {extend: 'pdf', text: "<span class='glyphicon glyphicon-download'></span> PDF", title: `PDF-reportepago-#{current_periodo.id}`, className: 'btn btn-sm btn-outline-info'},
+        {extend: 'print', 
+          text: "<span class='glyphicon glyphicon-download'></span> Imprimir", title: `Lista Profesores de la Escuela #{@escuela.descripcion.titleize}`, className: 'btn btn-sm btn-outline-info mr-3',
           customize: function (win){
             $(win.document.body).addClass('white-bg');
             $(win.document.body).css('font-size', '10px');
@@ -74,9 +69,10 @@
             $(win.document.body).find('table')
               .addClass('compact')
               .css('font-size', 'inherit');
-        }
-        } 
-      ], */
+          }
+        }        
+      ],
+
       language: 
         {
           "sProcessing":     "Procesando...",
@@ -101,30 +97,6 @@
             "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
             "sSortDescending": ": Activar para ordenar la columna de manera descendente"
           }
-        },
-
-
-        initComplete: function () {
-            this.api().columns(0).every( function () {
-                var column = this;
-                var select = $('<select style="width: 220px;" class="form-control form-control-sm float-left"><option value="">Filtrar Escuela</option></select>')
-                    .insertBefore( $('#dataTableDpto_filter').parent().parent() )
-                    .on( 'change', function () {
-                        var val = $.fn.dataTable.util.escapeRegex(
-                            $(this).val()
-                        );
- 
-                        column
-                            .search( val ? '^'+val+'$' : '', true, false )
-                            .draw();
-                    } );
- 
-                column.data().unique().sort().each( function ( d, j ) {
-                    select.append( '<option value="'+d+'">'+d+'</option>' )
-                } );
-            } );
         }
-
-
     });
   } );

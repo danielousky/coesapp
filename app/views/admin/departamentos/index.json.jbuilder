@@ -1,1 +1,1 @@
-json.array! @departamentos, partial: 'departamentos/departamento', as: :departamento
+json.data @departamentos, partial: 'admin/departamentos/departamento', as: :departamento

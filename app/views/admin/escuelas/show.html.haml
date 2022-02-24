@@ -1,17 +1,18 @@
 
-.form-group.float-right
-  = link_to t('.back', default: t("helpers.links.back")), escuelas_path, class: 'btn btn-outline-secondary btn-sm'
-
+.float-right
   - if (current_admin and current_admin.autorizado? 'Escuelas', 'update')
-    = link_to t('.edit', default: t("helpers.links.edit")), edit_escuela_path(@escuela), class: 'btn btn-outline-info btn-sm'
+    = link_to edit_escuela_path(@escuela), class: 'btn btn-primary btn-sm mr-2' do
+      = glyph 'pencil'
+      Editar
   - if !(@escuela.inscripciones.any?)
-    = link_to escuela_path(@escuela), method: "delete", data: { confirm: t('.confirm', default: t("helpers.links.confirm", default: 'Are you sure?')) }, class: 'btn btn-outline-danger btn-sm' do
+    = link_to escuela_path(@escuela), method: "delete", data: { confirm: t('.confirm', default: t("helpers.links.confirm", default: 'Are you sure?')) }, class: 'btn btn-danger btn-sm' do
       = glyph 'trash'
       Eliminar
   - else
-    .btn.btn-sm.disabled.btn-outline-secondary.tooltip-btn{'data-toggle': :tooltip, title: 'Elimine las inscripciones para activar la opción', 'data-placement': :left}
+    .btn.btn-sm.disabled.btn-secondary.tooltip-btn{'data-toggle': :tooltip, title: 'Elimine las inscripciones para activar la opción', 'data-placement': :left}
       = glyph 'trash'
       Eliminar
+
 - if @escuelaperiodo
   = link_to "#{jornadacitahorarias_path}", class: 'btn btn-sm btn-success' do
     = glyph 'calendar'
@@ -24,10 +25,24 @@
     %b= link_to_if current_admin, "Período Activo", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold', style: "display:inline; padding:0px"}
     perteneciente a la escuela
 
-%nav
+%nav.mt-3
   .nav.nav-tabs
     = link_to 'Profesores', "#profes", "data-toggle": :tab, class: "nav-item nav-link active"
+    = link_to 'Estudiantes', "#estudiantes", "data-toggle": :tab, class: "nav-item nav-link"
+    = link_to 'Departamentos', "#dptos", "data-toggle": :tab, class: "nav-item nav-link"
+    = link_to 'Planes', "#planes", "data-toggle": :tab, class: "nav-item nav-link"
   .tab-content
     .tab-pane#profes.border.p-3.border-top-0.active
       = render partial: '/admin/profesores/index', locals: {profesores: @escuela.profesores}
+    .tab-pane#estudiantes.border.p-3.border-top-0
+      - @estudiantes = @escuela.estudiantes
+      = render partial: '/layouts/tabla_cargable', locals: {tabla_id: "estudiantes#{@escuela.id}", heads: ['CI', 'Nombres', 'Apellidos', 'Correo'] , url: "/estudiantes.json?escuela_id=#{@escuela.id}", new_button: (current_admin and current_admin.autorizado? 'Estudiante', 'create'), new_url: "#{new_usuario_path}?estudiante=true", objeto: 'Estudiante'}
+    .tab-pane#dptos.border.p-3.border-top-0
+      - @departamentos = @escuela.departamentos
+      = render template: '/admin/departamentos/index'
+
+      =# render partial: '/layouts/tabla_cargable', locals: {tabla_id: "dptos#{@escuela.id}", heads: ['Id', 'Descripción', 'T. Asigs Periodo Actual', 'T. Seccs Periodo Actual', 'T. Inscr Perio Actual'] , url: "/departamentos.json?escuela_id=#{@escuela.id}"}
+    .tab-pane#planes.border.p-3.border-top-0
+      - @planes = @escuela.planes
+      = render template: '/admin/planes/index'
 

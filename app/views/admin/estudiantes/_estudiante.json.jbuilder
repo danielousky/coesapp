@@ -1,0 +1,1 @@
+json.array! [estudiante.ci, estudiante.usuario.nombres, estudiante.usuario.apellidos, estudiante.usuario.email]

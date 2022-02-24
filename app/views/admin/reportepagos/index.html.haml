@@ -3,7 +3,7 @@
   %table
     %tbody
       %tr
-        - @escuelas.each do |escuela|
+        - @escuelas.each do |escuela| 
           - total = Reportepago.inscripciones_del_periodo(current_periodo.id).inscripciones_de_la_escuela(escuela.id).count
           %td
             - activeClass = (session[:escuela_id].eql? escuela.id) ? 'disabled' : ''
@@ -85,6 +85,7 @@
     maxDate = null;
 
     let tableData =  $('#dataTableReportes').DataTable({
+      scrollX: true,
       scrollY: 400,
       ajax: {
         "processing": true,

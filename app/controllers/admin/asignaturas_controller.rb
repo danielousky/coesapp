@@ -45,6 +45,7 @@ module Admin
       @seccion = Seccion.new
       if params[:escuela_id]
         @escuelas = Escuela.where(id: params[:escuela_id])
+        @escuela = @escuelas.first
         @profesores = @escuelas.first.profesores
       else
         flash[:success] = 'Por favor, seleccione una escuela haciendo uso de los enlaces en el menú'

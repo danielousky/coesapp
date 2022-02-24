@@ -112,7 +112,7 @@ Rails.application.routes.draw do
     end
 
 
-    resources :periodos, :planes, :departamentos, :catedras
+    resources :periodos, :planes, :departamentos, :catedras, :estudiantes
     resources :escuelas do 
       member do
         get 'periodos'

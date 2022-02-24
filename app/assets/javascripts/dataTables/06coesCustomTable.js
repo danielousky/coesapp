@@ -9,6 +9,7 @@ $(document).ready(function() {
 		// pageLength: 100,
 		// lengthChange: false,
 
+		scrollX: true,
 		order: [],
 		paging: false,
 		responsive: true,

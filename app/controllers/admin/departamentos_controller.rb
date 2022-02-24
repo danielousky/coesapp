@@ -7,12 +7,12 @@ module Admin
     before_action :filtro_autorizado
 
     before_action :set_departamento, only: [:show, :edit, :update, :destroy]
+    before_action :set_escuela, only: [:index]
 
     # GET /departamentos
     # GET /departamentos.json
     def index
-      @departamentos = current_admin.departamentos #.select("departamentos.*")#.joins(:departamentos)# Departamento.all
-      @titulo = 'Departamentos'
+      @departamentos = @escuela.departamentos
     end
 
     # GET /departamentos/1
@@ -86,6 +86,15 @@ module Admin
       # Use callbacks to share common setup or constraints between actions.
       def set_departamento
         @departamento = Departamento.find(params[:id])
+      end
+
+      def set_escuela
+        if params[:escuela_id]
+          @escuela = Escuela.find(params[:escuela_id])
+        else
+          flash[:danger] = 'Por favor seleccione una escuela en el menú'
+          redirect_back fallback_location: principal_admin_index_path
+        end
       end
 
       # Never trust parameters from the scary internet, only allow the white list through.

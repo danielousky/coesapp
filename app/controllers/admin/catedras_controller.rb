@@ -17,6 +17,7 @@ module Admin
     # GET /catedras/1
     # GET /catedras/1.json
     def show
+      @escuela = Escuela.find params[:escuela_id] 
       @titulo = "Detalle: #{@catedra.descripcion}"      
     end
 

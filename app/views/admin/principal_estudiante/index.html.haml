@@ -68,19 +68,6 @@
 						- if @escuela.dependencias_habilitadas?
 							- asignaturas_ofertables_segun_dependencia = @grado.asignaturas_ofertables_segun_dependencia
 							- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc)
-							- if false #Numeros de dependencias
-								.alert.alert-info
-									= asignaturas_ofertables_segun_dependencia.ids
-									.badge.badge-dark= asignaturas_ofertables_segun_dependencia.count
-
-								.alert.alert-success
-									= asignaturas_ofertadas_x_escuela.ids
-									.badge.badge-dark= asignaturas_ofertadas_x_escuela.count
-								-# aux = asignaturas_ofertadas_x_escuela.reject{|a| asignaturas_ofertables_segun_dependencia.include? a}
-								- aux = asignaturas_ofertadas_x_escuela.merge(asignaturas_ofertables_segun_dependencia)
-								.alert.alert-warning
-									= aux.map{|a| a.id}
-									.badge.badge-dark= aux.count
 							- asignaturas_ofertadas_x_escuela = asignaturas_ofertadas_x_escuela.merge(asignaturas_ofertables_segun_dependencia)
 
 						- else

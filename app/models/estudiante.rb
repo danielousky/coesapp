@@ -46,6 +46,10 @@ class Estudiante < ApplicationRecord
 	# 	end
 	# end
 
+	def ci
+		self.usuario_id
+	end
+
 	def inscripciones
 		inscripcionsecciones
 	end

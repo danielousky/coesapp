@@ -1,6 +1,7 @@
 - model_class = Plan
-
-= btn_add_success new_plan_path, 'Agregar Nuevo Plan de Estudio', 'Nuevo'
+- if (current_admin and current_admin.autorizado? 'Plan', 'create')
+  .float-right.mb-4
+    = btn_add_success new_plan_path, 'Agregar Nuevo Plan de Estudio', 'Nuevo'
 
 %table.table.table-striped.table-sm.table-hover.table-bordered.table-responsive-md.mt-3
   %thead.text-center

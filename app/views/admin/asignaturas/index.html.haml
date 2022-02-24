@@ -3,7 +3,35 @@
   = render '/admin/principal_admin/tabs_estructura/escuelas'
 - else
   - @asignaturas = @escuelas.first.asignaturas
-  = render 'admin/asignaturas/index_colocar_tabla'
+  - if @asignaturas.first
+    - escuela = @asignaturas.first.escuela
+  - elsif params[:escuela_id]
+    - escuela = Escuela.find params[:escuela_id]
+  - else
+    - escuela = @escuela
+  = render partial: '/admin/escuelas/eliminar_programacion', locals: {escuela: escuela}
+  .tab-content
+    .border.p-3
+      - if (current_admin and current_admin.autorizado? 'Asignaturas', 'create')
+        = link_to "#{new_asignatura_path}?escuela_id=#{escuela.id}", class: "btn btn-outline-success btn-sm tooltip-btn float-left mr-2", 'data_toggle': :tooltip, title: "Agregar Nueva Asignatura en #{escuela.descripcion}" do
+          = glyph 'plus'
+          Nueva
+
+      - periodo_anterior = escuela.periodo_anterior(current_periodo.id)
+      - if periodo_anterior and (current_admin and current_admin.autorizado? 'Escuelas', 'clonar_programaciones')
+        = link_to 'javascript:void(0)', class: 'clonar btn btn-outline-info btn-sm tooltip-btn float-left mr-2', 'data_toggle': :tooltip, title: "Clonar Programación de Periodos anteriores", escuela_id: escuela.id do
+          = glyph 'file'
+          = glyph 'chevron-right'
+          = glyph 'duplicate'
+
+      - if (current_admin and current_admin.autorizado? 'Escuelas', 'limpiar_programaciones')
+        - disabledClean = escuela.secciones.del_periodo(current_periodo.id).any? ? '' : 'disabled'
+        = link_to 'javascript:void(0)', class: "btn btn-outline-danger btn-sm tooltip-btn #{disabledClean} float-left mr-2", 'data_toggle': :tooltip, title: "Eliminar Programación del periodo actual #{current_periodo.id}", onclick: "$('#BorrarClonacion#{escuela.id}').modal()", disabled: disabledClean do
+          = glyph 'duplicate'
+          = glyph 'chevron-right'
+          = glyph 'trash'
+
+      = render 'admin/asignaturas/index_colocar_tabla'
 
 = render 'admin/secciones/modal_form' if current_admin and ((current_admin.autorizado? 'Secciones', 'create') or (current_admin.autorizado? 'Secciones', 'update'))
 = render 'admin/escuelas/clonar_periodo' if (current_admin and current_admin.autorizado? 'Escuelas', 'clonar_programaciones')
