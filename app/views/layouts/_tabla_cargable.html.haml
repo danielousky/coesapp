@@ -22,8 +22,8 @@
       paging: false,
       dom: '<"html5buttons"B>lTfgitp',
       buttons: [
-        {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `reportepago-#{current_periodo.id}`, className: 'btn btn-sm btn-outline-info'},
-        {extend: 'pdf', text: "<span class='glyphicon glyphicon-download'></span> PDF", title: `PDF-reportepago-#{current_periodo.id}`, className: 'btn btn-sm btn-outline-info'},
+        {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `#{tabla_id}`, className: 'btn btn-sm btn-outline-info'},
+        {extend: 'pdf', text: "<span class='glyphicon glyphicon-download'></span> PDF", title: `PDF-#{tabla_id}`, className: 'btn btn-sm btn-outline-info'},
         {extend: 'print', 
           text: "<span class='glyphicon glyphicon-download'></span> Imprimir", title: `Lista Profesores de la Escuela #{@escuela.descripcion.titleize}`, className: 'btn btn-sm btn-outline-info mr-3',
           customize: function (win){
