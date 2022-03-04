@@ -13,36 +13,46 @@
       = glyph 'trash'
       Eliminar
 
-- if @escuelaperiodo
-  = link_to "#{jornadacitahorarias_path}", class: 'btn btn-sm btn-success' do
-    = glyph 'calendar'
-    Jornanda de Cita Horaria
-- else
-  %p.alert.alert-warning 
-    Para generar 
-    %b Citas Horarias
-    escoja y seleccione un 
-    %b= link_to_if current_admin, "Período Actual", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold', style: "display:inline; padding:0px"}
-    perteneciente a la escuela
+- if (current_admin and current_admin.autorizado? 'Escuela', 'show')
+  - if @escuelaperiodo
+    = link_to "#{jornadacitahorarias_path}", class: 'btn btn-sm btn-success' do
+      = glyph 'calendar'
+      Jornanda de Cita Horaria
+  - else
+    %p.alert.alert-warning 
+      Para generar 
+      %b Citas Horarias
+      escoja y seleccione un 
+      %b= link_to_if current_admin, "Período Actual", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold', style: "display:inline; padding:0px"}
+      perteneciente a la escuela
 
 %nav.mt-3
   .nav.nav-tabs
-    = link_to 'Profesores', "#profes", "data-toggle": :tab, class: "nav-item nav-link active"
-    = link_to 'Estudiantes', "#estudiantes", "data-toggle": :tab, class: "nav-item nav-link"
-    = link_to 'Departamentos', "#dptos", "data-toggle": :tab, class: "nav-item nav-link"
-    = link_to 'Planes', "#planes", "data-toggle": :tab, class: "nav-item nav-link"
+    - if (current_admin and current_admin.autorizado? 'Proefesor', 'create')
+      = link_to 'Profesores', "#profes", "data-toggle": :tab, class: "nav-item nav-link active"
+    - if (current_admin and current_admin.autorizado? 'Usuario', 'set_estudiante')
+      = link_to 'Estudiantes', "#estudiantes", "data-toggle": :tab, class: "nav-item nav-link"
+    - if (current_admin and current_admin.autorizado? 'Departamento', 'index')
+      = link_to 'Departamentos', "#dptos", "data-toggle": :tab, class: "nav-item nav-link"
+    - if (current_admin and current_admin.autorizado? 'Plan', 'index')        
+      = link_to 'Planes', "#planes", "data-toggle": :tab, class: "nav-item nav-link"
   .tab-content
-    .tab-pane#profes.border.p-3.border-top-0.active
-      = render partial: '/admin/profesores/index', locals: {profesores: @escuela.profesores}
-    .tab-pane#estudiantes.border.p-3.border-top-0
-      - @estudiantes = @escuela.estudiantes
-      = render partial: '/layouts/tabla_cargable', locals: {tabla_id: "estudiantes#{@escuela.id}", heads: ['CI', 'Nombres', 'Apellidos', 'Correo'] , url: "/estudiantes.json?escuela_id=#{@escuela.id}", new_button: (current_admin and current_admin.autorizado? 'Estudiante', 'create'), new_url: "#{new_usuario_path}?estudiante=true", objeto: 'Estudiante'}
-    .tab-pane#dptos.border.p-3.border-top-0
-      - @departamentos = @escuela.departamentos
-      = render template: '/admin/departamentos/index'
+    - if (current_admin and current_admin.autorizado? 'Proefesor', 'create')
+      .tab-pane#profes.border.p-3.border-top-0.active
+        = render partial: '/admin/profesores/index', locals: {profesores: @escuela.profesores}
+    - if (current_admin and current_admin.autorizado? 'Usuario', 'set_estudiante')        
+      .tab-pane#estudiantes.border.p-3.border-top-0
+        -# @estudiantes = @escuela.estudiantes
+        - header = Usuario.attribute_names 
+        = render partial: '/layouts/tabla_cargable', locals: {tabla_id: "estudiantes#{@escuela.id}", heads: header , url: "/estudiantes.json?escuela_id=#{@escuela.id}", new_button: (current_admin and current_admin.autorizado? 'Estudiante', 'create'), new_url: "#{new_usuario_path}?estudiante=true", objeto: 'Estudiante'}
+    - if (current_admin and current_admin.autorizado? 'Departamento', 'index')    
+      .tab-pane#dptos.border.p-3.border-top-0
+        - @departamentos = @escuela.departamentos
+        = render template: '/admin/departamentos/index'
 
-      =# render partial: '/layouts/tabla_cargable', locals: {tabla_id: "dptos#{@escuela.id}", heads: ['Id', 'Descripción', 'T. Asigs Periodo Actual', 'T. Seccs Periodo Actual', 'T. Inscr Perio Actual'] , url: "/departamentos.json?escuela_id=#{@escuela.id}"}
-    .tab-pane#planes.border.p-3.border-top-0
-      - @planes = @escuela.planes
-      = render template: '/admin/planes/index'
+        =# render partial: '/layouts/tabla_cargable', locals: {tabla_id: "dptos#{@escuela.id}", heads: ['Id', 'Descripción', 'T. Asigs Periodo Actual', 'T. Seccs Periodo Actual', 'T. Inscr Perio Actual'] , url: "/departamentos.json?escuela_id=#{@escuela.id}"}
+    - if (current_admin and current_admin.autorizado? 'Plan', 'index')        
+      .tab-pane#planes.border.p-3.border-top-0
+        - @planes = @escuela.planes
+        = render template: '/admin/planes/index'
 
