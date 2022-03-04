@@ -408,7 +408,7 @@ module Admin
     # GET /secciones/1
     # GET /secciones/1.json
     def show
-      @inscripciones_secciones = @seccion.inscripcionsecciones.sort_by{|h| h.usuario.correo_descripcion}
+      @inscripciones_secciones = @seccion.inscripcionsecciones.inscritos.sort_by{|h| h.usuario.correo_descripcion}
       @any_outplan = @seccion.inscripcionsecciones.aprobado.reject{|h| h.ultimo_plan}.count > 0
 
       @bitacoras = Bitacora.search_by_id(@seccion.id).limit(50)#.search(@seccion.id)
