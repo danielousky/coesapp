@@ -28,6 +28,7 @@
 			%th Créditos
 			%th Resumen 
 			%th C. Aprob.
+			%th Total C. Aprob.
 			%th Total Créditos Plan
 			%th Ingreso
 			%th Secretaría
@@ -72,6 +73,7 @@
 								%tr
 									%td= aux.seccion.desc_asig_numero
 				%td= ins.inscripcionsecciones.aprobado.total_creditos
+				%td= grado.total_creditos_aprobados
 				%td= plan.creditos if plan
 				%td= grado.tipo_ingreso if grado
 				%td= grado.inscrito_ucv_label if grado

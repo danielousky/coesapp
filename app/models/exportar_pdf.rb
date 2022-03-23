@@ -770,6 +770,7 @@ class ExportarPdf
 		end
 
 		if estudiante and estudiante.usuario and estudiante.usuario.foto_perfil and estudiante.usuario.foto_perfil.attached?
+			# pdf.image Rails.application.routes.url_helpers.rails_blob_path(estudiante.usuario.foto_perfil, only_path: true), at: [450, 720], height: 80 
 			require 'open-uri'
 			pdf.image open(estudiante.usuario.foto_perfil.service_url), at: [450, 720], height: 80 
 		end
