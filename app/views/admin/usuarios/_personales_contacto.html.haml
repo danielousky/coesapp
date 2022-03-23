@@ -1,7 +1,6 @@
-- if current_admin and current_admin.maestros?
+- if current_admin and (current_admin.autorizado? 'Usuarios', 'update')
 	.float-right
 		= btn_edit_primary edit_usuario_path(@usuario), "Actualizar datos personales y de contacto", 'Actualizar'
-
 %br
 %br
 .float-right
@@ -15,11 +14,11 @@
 	%li
 		%b Cédula de Identidad:
 		= @usuario.id
-		- if current_admin and current_admin.maestros?
+		- if current_admin and (current_admin.autorizado? 'Usuarios', 'cambiar_ci')
 			= simple_icon_toggle_modal_edit "Editar cédula de identidad de #{@nickname}", 'cambiar_cedula'
 			= render '/admin/usuarios/cambiar_cedula'
 
-	- if current_admin and current_admin.maestros?
+	- if current_admin and (current_admin.autorizado? 'Usuarios', 'resetear_contrasena')
 		%li
 			%b Contraseña:
 			- if current_admin and current_admin.unico?
