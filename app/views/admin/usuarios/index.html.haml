@@ -39,7 +39,7 @@
         %td= u.email
         %td= u.telefono_movil
         %td
-          - if current_admin.maestros?            
+          - if (current_admin.autorizado? 'Usuarios', 'resetear_contrasena')         
             %b.tooltip-btn{'data_toggle'=>'tooltip', title: "Resetear Contraseña"}
               = link_to(resetear_contrasena_usuario_path(u), {data: {confirm: 'Esta acción asignará la cédula de identidad como contraseña, ¿está de acuerdo?'}, class: 'btn btn-sm btn-outline-primary'}) do
                 = glyph 'lock'
