@@ -1,15 +1,6 @@
 - link_coes = link_to 'COESFHE.COM', 'https://coesfhe.com/'
 
 %p= "Estimad#{@genero}: <b>#{@nombre}</b>, la Facultad de Humanidades y Educación le da la bienvenida al sistema de Control de Estudios COES-FHE.".html_safe
-%p= "Su registro en la escuela de #{@escuela.descripcion} ha sido completado con éxito.".html_safe
--if @asignado
-	%p= "A partir de este momento deberá ingresar a #{link_coes} y colocar su número de cédula en ambos campos del inicio de sesión, actualizar sus datos, subir una foto tipo carnet de frente con el fondo blanco y una foto legible de su cédula de identidad.".html_safe
 
-	%p= "Luego de actualizar sus datos, deberá reportar el pago del arancel de preinscripción por Facultad, en el cual indicará el banco del cual realizó el pago, el número de la operación, el día, entre otros datos y deberá subir una foto legible del depósito, transferencia o comprobante de pago."
 
-	%p= "Al finalizar el sistema le permitirá generar la <b>Constancia de Preinscripción por Facultad.</b>".html_safe
-
-- else
-	%p= "Lo primero que debe hacer es ingresar a #{link_coes} y colocar su número de cédula en ambos campos del inicio de sesión para actualizar sus datos.".html_safe
-
-	%p Recibirá más información posteriormente.
+%p="Para realizar el Proceso de Preinscripción por Facultad en la Escuela de #{@escuela.descripcion.upcase}, debe ingresar a: #{link_coes} y colocar su número de cédula en ambos campos (Usuario y Contraseña) para dar inicio de sesión y actualizar sus datos. Su número de cédula siempre será su usuario y deberá colocar una nueva contraseña para que el lo sucesivo pueda ingresar al Sistema. Debe cargar una foto de frente con el fondo blanco en formato imagen (jpg ó png) y una foto de su cédula de identidad; así mismo deberá completar los demás campos con la información que se pide en el Sistema. Una vez que culmine debe presionar el botón de guardar. Posterior mente el sistema le pedirá realizar el reporte de pago por el arancel de preinscripción de #{ParametroGeneral.arancel_ingreso_facultad_valor} y deberá cargar una foto del depósito o transferencia bancaria en formato imagen. Finalmente, el Sistema le permitirá imprimir su constancia de preinscripción.".html_safe
