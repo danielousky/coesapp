@@ -12,6 +12,7 @@ class EstudianteMailer < ActionMailer::Base
 
   def preinscrito(usuario, inscripcionperiodo)
     @asignaturas = inscripcionperiodo.inscripcionsecciones.map { |ins| ins.asignatura}
+    @escuela = inscripcionperiodo.escuela
     @escuela_desc = inscripcionperiodo.escuela.descripcion
     @periodo_id = inscripcionperiodo.periodo.id
     @nombre = usuario.primer_nombre_apellido
