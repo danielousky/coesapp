@@ -10,7 +10,19 @@
 	- @asignaturas.each do |asig| 
 		%li{style: 'list-style-type: square;margin-bottom: 10px'}= asig.descripcion_id
 
-- unless @escuela.id.eql? 'POST'
+- if @escuela.id.eql? 'POST'
+	POSTGRADO FHE UCV
+	INSCRIPCIONES PERIODO 2022-I
+
+	Siga las instrucciones para el proceso de inscripción usando la siguiente ruta de acceso: 
+	= "https://sites.google.com/view/cep-fhe-controldeestudios/inscripciones-regulares-2022-1".html_safe
+
+	Arancel de inscripción para Postgrado FHE:
+	= "Transferencia de <b>BANESCO</b> a <b>BANESCO</b>. Cuenta Corriente N° <b>01340112821123123960<b>, a nombre de la <b>Universidad Central de Venezuela</b>. Rif. <b>G-20000062-7</b>.".html_safe
+	= "Twitter e Instagram: @postgradofheucv".html_safe
+	= "Control Estudios Postgrado Humanidades y Educación: controlestudiopostgradofheucv@gmail.com".html_safe
+
+- else
 
 	Usted debe cancelar uno de los siguientes montos, dependiendo de su caso:
 
