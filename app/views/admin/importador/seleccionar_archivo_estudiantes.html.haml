@@ -54,6 +54,10 @@
               = radio_button_tag '[grado]estado', k, false, required: true, class: ''
               = "#{k.upcase}"
 
+        .border.mt-3.p-3
+          %h6 
+            ¿Enviar Correo de Bienvenida?:
+            = check_box_tag 'enviar_correo', nil, true 
 
     .form-group
       .col-md-offset-2.col-md-10

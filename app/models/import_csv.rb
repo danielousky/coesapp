@@ -1,7 +1,7 @@
 
 class ImportCsv
 
-	def self.importar_estudiantes file, escuela_id, plan_id, periodo_id, grado, usuario_id, ip
+	def self.importar_estudiantes file, escuela_id, plan_id, periodo_id, grado, usuario_id, ip, enviar_correo= false
 		require 'csv'
 		csv_text = File.read(file)
 		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
@@ -168,6 +168,16 @@ class ImportCsv
 													desc = "Estudiante #{estudiante.id} registrado en #{grado_aux.escuela.descripcion}"
 													tipo = Bitacora::CREACION
 													total_grados_nuevos += 1
+
+													if enviar_correo
+														begin
+															grado_aux.enviar_correo_bienvenida(usuario_id, ip)
+															total_correos_enviados += 1
+														rescue Exception => e
+															total_correos_no_enviados += 1
+														end
+													end
+
 												else
 													desc = "Actualizada carrera de #{estudiante.id} en #{grado_aux.escuela.descripcion}"
 													tipo = Bitacora::ACTUALIZACION

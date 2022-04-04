@@ -66,8 +66,7 @@ module Admin
 		end
 
 		def importar_estudiantes
-
-			resultado = ImportCsv.importar_estudiantes params[:datafile].tempfile, params[:escuela_id], params[:plan_id], params[:periodo_id], params[:grado], current_admin.id,request.remote_ip
+			resultado = ImportCsv.importar_estudiantes params[:datafile].tempfile, params[:escuela_id], params[:plan_id], params[:periodo_id], params[:grado], current_admin.id,request.remote_ip, params[:enviar_correo]
 
 			flash[:info] = resultado[0]
 			errores = resultado[1]
