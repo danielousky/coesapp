@@ -170,6 +170,7 @@ class ImportCsv
 													total_grados_nuevos += 1
 
 													if enviar_correo
+														p '  ---- ENVIANDO CORREOS ---- '.center 200, '#'
 														begin
 															grado_aux.enviar_correo_bienvenida(usuario_id, ip)
 															total_correos_enviados += 1

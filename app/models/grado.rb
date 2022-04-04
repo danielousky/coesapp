@@ -330,7 +330,7 @@ class Grado < ApplicationRecord
 			id_objeto: self.id,
 			tipo_objeto: self.class.name,
 			ip_origen: ip
-		) if EstudianteMailer.bienvenida(self).deliver
+		) if EstudianteMailer.delay.bienvenida(self)
 	end
 
 	private
