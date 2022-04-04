@@ -41,7 +41,9 @@ class EstudianteMailer < ActionMailer::Base
     mail(to: grado.estudiante.usuario.email, subject: "¡Bienvenidos a COES-FHE!")
   end
   # No se están enviando los email por este método.
-  # Falta revisar por qué
+  # Hay que personalizar el método, Custom Jobs https://github.com/collectiveidea/delayed_job#custom-jobs
+  # Esto para serealizar los valores ya que no es compatible con el método por defecto.
+
   # handle_asynchronously :bienvenida
 
   def asignados_opsu_2020(grado)
