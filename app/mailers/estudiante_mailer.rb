@@ -40,7 +40,9 @@ class EstudianteMailer < ActionMailer::Base
     @asignado = grado.asignado?
     mail(to: grado.estudiante.usuario.email, subject: "¡Bienvenidos a COES-FHE!")
   end
-  handle_asynchronously :bienvenida
+  # No se están enviando los email por este método.
+  # Falta revisar por qué
+  # handle_asynchronously :bienvenida
 
   def asignados_opsu_2020(grado)
     @grado = grado
