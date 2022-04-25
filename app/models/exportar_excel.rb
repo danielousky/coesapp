@@ -235,18 +235,19 @@ class ExportarExcel
 		end
 
 		@sheet.column(0).width = 15 #estudiantes.collect{|e| e.cal_usuario_ci.length if e.cal_usuario_ci}.max+2;
-		@sheet.column(1).width = 30	#estudiantes.collect{|e| e.cal_usuario.apellido_nombre.length if e.cal_usuario.apellido_nombre}.max+2;
-		@sheet.column(2).width = 30 #estudiantes.collect{|e| e.cal_usuario.correo_electronico.length if e.cal_usuario.correo_electronico}.max+2;
-		@sheet.column(3).width = 15
+		@sheet.column(1).width = 50	#estudiantes.collect{|e| e.cal_usuario.apellido_nombre.length if e.cal_usuario.apellido_nombre}.max+2;
+		@sheet.column(2).width = 15 #estudiantes.collect{|e| e.cal_usuario.correo_electronico.length if e.cal_usuario.correo_electronico}.max+2;
+		@sheet.column(3).width = 40
+		@sheet.column(4).width = 20
 
 		@sheet.row(0).concat ["Profesor: #{seccion.descripcion_profesor_asignado}"]
 		@sheet.row(1).concat ["Sección: #{seccion.descripcion}"]
-		@sheet.row(2).concat %w{CI NOMBRES CORREO MOVIL}
+		@sheet.row(2).concat %w{CI NOMBRES ESTADO CORREO MOVIL}
 
 		data = []
 		inscripcionsecciones.each_with_index do |i_s,i|
 			usuario = i_s.estudiante.usuario
-			@sheet.row(i+3).concat  [usuario.ci, i_s.nombre_estudiante_con_retiro, usuario.email, usuario.telefono_movil]
+			@sheet.row(i+3).concat i_s.datos_para_excel
 		end
 
 		file_name = "reporte_seccion.xls"

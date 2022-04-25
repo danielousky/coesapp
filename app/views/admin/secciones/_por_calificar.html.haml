@@ -8,7 +8,7 @@
 		%tbody
 			- inscripciones.each_with_index do |es,i|
 
-				- disable = (es.diferido? || es.reparacion? || es.retirado? || es.pi?)
+				- disable = (es.diferido? || es.reparacion? || es.retirado? || es.pi? || es.inscripcionescuelaperiodo.preinscrito?)
 				%tr{id: "reg_#{es.estudiante_id}", class: es.tr_class_style_qualify}
 
 					= # RENDERIZAMOS EL ID Y LA DESCRIPCIÓN DEL ESTUDIANTE

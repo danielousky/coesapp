@@ -25,15 +25,17 @@ class ExportarPdf
 
 		inscripciones = seccion.inscripcionsecciones.sort_by{|h| h.estudiante.usuario.apellidos}
 
-		data = [["<b>#</b>", "<b>Cédula</b>", "<b>Nombre</b>"]]
+		data = [["<b>#</b>", "<b>Cédula</b>", "<b>Estado</b>","<b>Nombre</b>"]]
 
 		inscripciones.each_with_index do |h,i|
+			label = h.inscripcionescuelaperiodo.nil? ? '' : h.inscripcionescuelaperiodo.tipo_estado_inscripcion.descripcion
 			data << [i+1, 
 			h.estudiante_id,
+			label,
 			h.estudiante.usuario.apellido_nombre]
 		end
 		
-		t = pdf.make_table(data, header: true, row_colors: ["F0F0F0", "FFFFFF"], width: 540, position: :center, cell_style: { inline_format: true, size: 9, align: :justify, padding: 3, border_color: '818284'}, :column_widths => {1 => 250})
+		t = pdf.make_table(data, header: true, row_colors: ["F0F0F0", "FFFFFF"], width: 540, position: :center, cell_style: { inline_format: true, size: 9, align: :justify, padding: 3, border_color: '818284'})
 		t.draw
 
 		return pdf
@@ -47,7 +49,8 @@ class ExportarPdf
 		escuela = nil unless escuela.id.eql? 'POST'
 		pdf = Prawn::Document.new(top_margin: 275, bottom_margin: 100)
 
-		inscripciones = seccion.inscripcionsecciones.sort_by{|h| h.estudiante.usuario.apellidos}
+		# inscripciones = seccion.inscripcionsecciones.sort_by{|h| h.estudiante.usuario.apellidos}
+		inscripciones = seccion.inscripcionsecciones.joins(:inscripcionescuelaperiodo).where("inscripcionescuelaperiodos.tipo_estado_inscripcion_id = 'INS'").includes(estudiante: :usuario).order('usuarios.apellidos ASC')
 		
 		pdf.repeat(:all, dynamic: true) do
 			pdf.bounding_box([0, 660], :width => 540, :height => 265) do

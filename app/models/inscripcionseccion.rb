@@ -167,6 +167,27 @@ class Inscripcionseccion < ApplicationRecord
 	end
 
 	# Funciones Generales
+
+	def datos_para_excel
+
+		data = [self.estudiante_id, self.nombre_estudiante_con_retiro]
+
+		if self.inscripcionescuelaperiodo 
+			data << self.inscripcionescuelaperiodo.tipo_estado_inscripcion.descripcion
+
+			if self.inscripcionescuelaperiodo.tipo_estado_inscripcion_id.eql? TipoEstadoInscripcion::INSCRITO
+				data += [self.usuario.email, self.usuario.telefono_movil]
+			else
+				data += ['--', '--']
+			end
+
+		else
+			data += ['--', '--', '--']
+		end
+		return data
+	end
+
+
 	def ultimo_plan
 		grado ? grado.ultimo_plan : nil
 	end

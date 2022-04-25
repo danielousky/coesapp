@@ -106,7 +106,7 @@ module SeccionesHelper
 		
 	end
 
-	def colocar_calificacion_parcial inscripcion, holder, calcular = false, p1 = 30, p2 = 30, p3 = 30, readonly = false, required = true
+	def colocar_calificacion_parcial inscripcion, holder, calcular = false, p1 = 30, p2 = 30, p3 = 30, disabled = false
 		onchange = calcular ? "calcular(#{p1}, #{p2}, #{p3}, #{inscripcion.estudiante_id});" : ""
 		case holder
 		when '1ra'
@@ -120,7 +120,7 @@ module SeccionesHelper
 			calificacion = 'tercera_calificacion'
 		end 
 		
-		number_field_tag "[est][#{inscripcion.estudiante_id}]#{calificacion}", {}, {value: valor, placeholder: holder, class: 'form-control form-control-sm numerica3', required: required, step: 0.1, in: 0...21, readonly: readonly, disabled: readonly, onchange: onchange, id_obj: inscripcion.id, tipo_calificacion_id: TipoCalificacion::PARCIAL, calificacion_parcial: calificacion}
+		number_field_tag "[est][#{inscripcion.estudiante_id}]#{calificacion}", {}, {value: valor, placeholder: holder, class: 'form-control form-control-sm numerica3', required: !disabled, step: 0.1, in: 0...21, readonly: disabled, disabled: disabled, onchange: onchange, id_obj: inscripcion.id, tipo_calificacion_id: TipoCalificacion::PARCIAL, calificacion_parcial: calificacion}
 	end
 
 	def colocar_calificacion_final inscripcion, disable = false

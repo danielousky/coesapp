@@ -9,7 +9,7 @@
 		%tbody
 			- inscripciones.each_with_index do |es,i|
 				- disable = (es.pi? || es.retirado?)#(es.diferido? || es.reparacion?)
-				- disable_porterior = es.pi? || es.retirado? || !(es.diferido? || es.reparacion?)
+				- disable_porterior = es.pi? || es.retirado? || !(es.diferido? || es.reparacion? || es.inscripcionescuelaperiodo.preinscrito?)
 				%tr{id: "reg_#{es.estudiante_id}", class: es.tr_class_style_qualify}
 					= render partial: 'admin/inscripcionsecciones/id_and_estudiante', locals: {i: i, es: es}
 					- if es.retirado?
@@ -43,6 +43,13 @@
 	%hr
 		= submit_tag "Guardar", id: "submit", class: "btn btn-outline-success float-right ml-md-2", disable_with: "Espere..."
 :javascript
+
+	$(document).ready(function() {
+		$('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+			$($.fn.dataTable.tables( true ) ).css('width', '100%');
+			$($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
+		});
+	});
 	
 	$('#submit').click(function(e){
 
@@ -56,18 +63,17 @@
 		}
 	})
 
-
 	if ("${if @seccion.asignatura.absoluta?}") {
 
-		$(document).ready(function() {
+	$(document).ready(function() {
 			$('.absoluta').click(function(){
-				let clase = 'table-success'
-				let ci = $(this).attr('ci'),
-				valor_letras = $(this).attr('final')
-				if (valor_letras == 'APLAZADO') clase = 'table-danger'
+			let clase = 'table-success'
+			let ci = $(this).attr('ci'),
+			valor_letras = $(this).attr('final')
+		i (valor_letras == 'APLAZADO') clase = 'table-danger'
+	});
 
-				$(`#_${ci}calificacion_en_letras`).val(valor_letras)
-				$(`#reg_${ci}`).removeClass().addClass(clase);
+			$(`#_${ci}calificacion_en_letras`).val(valor_letras				$(`#reg_${ci}`).removeClass().addClass(clase);
 			});
 		});
 	}else console.log('No Absoluta')
