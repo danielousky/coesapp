@@ -3,7 +3,8 @@
 		= glyph 'envelope'
 	=# simple_icon_toggle_modal 'Ver Lista de Correos', 'btn-outline-info', 'envelope', 'listaCorreos'
 
-	- correos = @inscripciones_secciones.map{|i| i.estudiante.usuario.correo_descripcion}.join(", ")
+	- correos = @inscripciones_secciones.reject{|i| !i.inscripcionescuelaperiodo.tipo_estado_inscripcion_id.eql? 'INS'}.map{|i| i.estudiante.usuario.correo_descripcion}.join(", ")
+
 	- content = text_area_tag nil, correos, {role: "textbox", class: 'justify form-control', rows: 15, readonly: true, style: 'text-align: justify;'}
 
 	= render partial: '/layouts/modal_layout', locals: {url: nil, id_modal: "listaCorreos", title: 'Lista de Correos', content: content, width: 'modal-lg'}
