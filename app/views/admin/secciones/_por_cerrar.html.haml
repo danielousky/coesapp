@@ -65,16 +65,16 @@
 
 	if ("${if @seccion.asignatura.absoluta?}") {
 
-	$(document).ready(function() {
+		$(document).ready(function() {
 			$('.absoluta').click(function(){
-			let clase = 'table-success'
-			let ci = $(this).attr('ci'),
-			valor_letras = $(this).attr('final')
-		i (valor_letras == 'APLAZADO') clase = 'table-danger'
-	});
-
-			$(`#_${ci}calificacion_en_letras`).val(valor_letras				$(`#reg_${ci}`).removeClass().addClass(clase);
+				let clase = 'table-success'
+				let ci = $(this).attr('ci'),
+				valor_letras = $(this).attr('final')
+				if (valor_letras == 'APLAZADO') clase = 'table-danger'
 			});
+
+			$(`#_${ci}calificacion_en_letras`).val(valor_letras);
+			$(`#reg_${ci}`).removeClass().addClass(clase);
 		});
 	}else console.log('No Absoluta')
 
