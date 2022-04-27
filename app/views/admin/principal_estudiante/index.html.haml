@@ -50,19 +50,21 @@
 
 					- inscripcion_abierta_por_citahoraria = (jornada_horaria_actual and @grado.citahoraria and jornada_horaria_actual.puede_inscribir? @grado.citahoraria)
 					
-					-# con_inscripciones_en_periodo_anterior = @grado.inscripciones.del_periodo(periodo_anterior.id).any?)
-					- con_inscripciones_en_periodo_anterior = @grado.inscripciones.de_los_periodos(["2019-01S", "2019-02S", "2020-01U", "2021-01S", "2021-02S", "2019-01C", "2019-02C", "2020-01C", "2021-01C", "2021-02C"]).any?
+					- con_inscripciones_en_periodo_anterior = @grado.inscripciones.del_periodo(periodo_anterior.id).any?
+					-# con_inscripciones_en_periodo_anterior = @grado.inscripciones.de_los_periodos(["2019-01S", "2019-02S", "2020-01U", "2021-01S", "2021-02S", "2019-01C", "2019-02C", "2020-01C", "2021-01C", "2021-02C"]).any?
 
 					- valido_inscripcion_regular = ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or con_inscripciones_en_periodo_anterior))
 
 					- autorizado_especial = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id)
 					- inscripcion_en_proceso = @inscripcionperiodo and @inscripcionperiodo.reservado?
 
-					- inscripcion_abierta_por_regular = valido_inscripcion_regular or autorizado_especial or inscripcion_en_proceso
+					- #NOTA INTERNA: La siguiente línea no funciona con or. por lo que fue cambiada a || 
+					- #Tiene que ver con que el or pareciera un or exclusivo, es decir que tienen que ser todos true
+					- inscripcion_abierta_por_regular = valido_inscripcion_regular || autorizado_especial || inscripcion_en_proceso
 
 					- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
 					- # inscripcion_abierta_por_regular = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
-
+					
 					-if inscripcion_abierta_por_citahoraria or (!inscripcion_abierta_por_citahoraria and inscripcion_abierta_por_regular)
 
 						- if @escuela.dependencias_habilitadas?
