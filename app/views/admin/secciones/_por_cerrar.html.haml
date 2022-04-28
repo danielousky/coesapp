@@ -8,8 +8,8 @@
 
 		%tbody
 			- inscripciones.each_with_index do |es,i|
-				- disable = (es.pi? || es.retirado?)#(es.diferido? || es.reparacion?)
-				- disable_porterior = es.pi? || es.retirado? || !(es.diferido? || es.reparacion? || es.inscripcionescuelaperiodo.preinscrito?)
+				- disable = (es.pi? || es.retirado? || (es.inscripcionescuelaperiodo and es.inscripcionescuelaperiodo.preinscrito?))#(es.diferido? || es.reparacion?)
+				- disable_porterior = es.pi? || es.retirado? || !(es.diferido? || es.reparacion? || (es.inscripcionescuelaperiodo and es.inscripcionescuelaperiodo.preinscrito?))
 				%tr{id: "reg_#{es.estudiante_id}", class: es.tr_class_style_qualify}
 					= render partial: 'admin/inscripcionsecciones/id_and_estudiante', locals: {i: i, es: es}
 					- if es.retirado?
