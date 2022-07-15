@@ -271,7 +271,7 @@ class ExportarExcel
 		# ============ Mover a Inscripcionseccion =========== #
 		nota_def = inscripcion.pi? ? 'PI' : inscripcion.colocar_nota_final
 		nota_final = inscripcion.nota_final_para_csv
-		nota_def = nota_final if nota_final.eql? 'SN' or asig.absoluta?
+		nota_def = nota_final if nota_final.eql? 'SN' or asig.absoluta? or asig.forzar_absoluta
 		# ============ Mover a Inscripcionseccion =========== #
 
 		

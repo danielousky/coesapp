@@ -34,6 +34,9 @@
           %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
             = radio_button_tag '[asignatura]calificacion', k, (k.eql? @asignatura.calificacion), required: true
             = k.upcase
+        %label.btn.btn-sm.btn-success.tooltip-btn{'data_toggle': :tooltip, title: 'Aún cuando sea una asignatura numerica, su valor en los documentos aparecerá como absoluta'}
+          = f.check_box :forzar_absoluta
+          ¿Forzar a Absoluta?
             
     .row.form-group
       .col-md-2= f.label :creditos, class: 'control-label', value: 'Créditos'

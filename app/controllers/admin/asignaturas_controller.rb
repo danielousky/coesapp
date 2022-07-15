@@ -184,7 +184,7 @@ module Admin
 
       # Never trust parameters from the scary internet, only allow the white list through.
       def asignatura_params
-        params.require(:asignatura).permit(:id, :descripcion, :catedra_id, :departamento_id, :anno, :orden, :id_uxxi, :creditos, :tipoasignatura_id, :calificacion)
+        params.require(:asignatura).permit(:id, :descripcion, :catedra_id, :departamento_id, :anno, :orden, :id_uxxi, :creditos, :tipoasignatura_id, :calificacion, :forzar_absoluta)
       end
 
   end

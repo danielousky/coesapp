@@ -620,7 +620,7 @@ class ExportarPdf
 
 	def self.insertar_tabla_convocados pdf, inscripciones#, k
 
-		if inscripciones.first.seccion.asignatura.absoluta?
+		if inscripciones.first.seccion.asignatura.absoluta? or inscripciones.first.seccion.asignatura.forzar_absoluta
 			data = [["<b>N°</b>", "<b>CÉDULA DE IDENTIDAD</b>", "<b>APELLIDOS Y NOMBRES</b>", "<b>COD. PLAN</b>", "<b>CALIF. DESCR.</b>", "<b>TIPO</b>", "<b>CALIF. EN LETRAS</b>"]]
 		else
 			data = [["<b>N°</b>", "<b>CÉDULA DE IDENTIDAD</b>", "<b>APELLIDOS Y NOMBRES</b>", "<b>COD. PLAN</b>", "<b>CALIF. DESCR.</b>", "<b>TIPO</b>","<b>CALIF. NUM.</b>", "<b>CALIF. EN LETRAS</b>"]]
@@ -641,7 +641,7 @@ class ExportarPdf
 				cali_a_letras = h.calificacion_en_letras
 			end
 
-			if h.seccion.asignatura.absoluta?
+			if h.seccion.asignatura.absoluta? or h.seccion.asignatura.forzar_absoluta
 				data << [i, 
 				h.estudiante_id,
 				h.estudiante.usuario.apellido_nombre,

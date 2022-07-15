@@ -199,7 +199,7 @@ class Inscripcionseccion < ApplicationRecord
 	# end
 
 	def descripcion_asignatura_pdf
-		aux = seccion.asignatura.descripcion
+		aux = asignatura.descripcion
 		aux += " <b> (PCI) </b>" if self.como_pci?
 		aux += " <b> (#{retirado_en_letras}) </b>" if self.retirado?
 		return aux
@@ -265,7 +265,7 @@ class Inscripcionseccion < ApplicationRecord
 
 	def estado_segun_calificacion
 		
-		if seccion and seccion.asignatura and !seccion.asignatura.absoluta?
+		if seccion and asignatura and !asignatura.absoluta?
 			nota = (reparacion? || diferido?) ? calificacion_posterior : calificacion_final
 			if nota and nota >= 10 
 				return :aprobado
@@ -306,7 +306,7 @@ class Inscripcionseccion < ApplicationRecord
 			return 'RT'
 		elsif self.sin_calificar?
 			return 'SN'
-		elsif self.seccion.asignatura.absoluta?
+		elsif self.asignatura.absoluta? or self.asignatura.forzar_absoluta
 			if self.aprobado?
 				return 'A'
 			else
@@ -341,7 +341,7 @@ class Inscripcionseccion < ApplicationRecord
 	# 	return aplazada?
 	# end
 	# def aplazada?
-	# 	if seccion.asignatura.absoluta?
+	# 	if asignatura.absoluta?
 	# 		return (tipo_estado_calificacion_id.eql? 'AP' or no_presento?)
 	# 	elsif no_presento? and calificacion_final < 10
 	# 		return true
@@ -352,7 +352,7 @@ class Inscripcionseccion < ApplicationRecord
 
 	# ATENCIÓN: ESTA FUNCIÓN SE USA PARA CASOS EN LOS QUE EL REGISTRO ESTÉ AÚN EN MEMORIA, POR LO QUE NO SE HAYA ASIGNADO EL VALOR DEL ESTADO EN set_estados
 	def aprobada?
-		if seccion.asignatura.absoluta?
+		if asignatura.absoluta?
 			if no_presento?
 				return false
 			else
@@ -375,7 +375,7 @@ class Inscripcionseccion < ApplicationRecord
 	# end
 
 	def descripcion periodo_id
-		aux = seccion.asignatura.descripcion_pci periodo_id
+		aux = asignatura.descripcion_pci periodo_id
 		aux += " <b>(Retirada)</b>" if retirado?
 		return aux
 	end
@@ -397,7 +397,7 @@ class Inscripcionseccion < ApplicationRecord
 		valor = ''
 		if retirado?
 			valor = '--'
-		elsif seccion.asignatura.absoluta?
+		elsif asignatura.absoluta? or self.asignatura.forzar_absoluta
 			if self.sin_calificar?
 				valor = 'SC'
 			elsif self.aprobado?
@@ -423,7 +423,7 @@ class Inscripcionseccion < ApplicationRecord
 			return '--'
 		elsif self.calificacion_final.nil?
 			return 'SN'
-		elsif seccion.asignatura.absoluta?
+		elsif asignatura.absoluta? or self.asignatura.forzar_absoluta
 			if self.aprobado?
 				valor = 'A'
 			else
@@ -482,7 +482,7 @@ class Inscripcionseccion < ApplicationRecord
 			valor = 'PÉRDIDA POR INASISTENCIA'
 		elsif  sin_calificar?
 			valor = 'POR DEFINIR'
-		elsif seccion.asignatura.absoluta?
+		elsif asignatura.absoluta? or self.asignatura.forzar_absoluta
 			valor = self.estado.upcase
 		else
 			calificacion = (diferido? || reparacion? || particular.eql?('posterior')) ? calificacion_posterior : calificacion_final

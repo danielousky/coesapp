@@ -9,19 +9,25 @@
 			%th Orden
 			%th Tipo
 			%th U. Créditos
+			%th Tipo Calificación
 			%th Opciones
 
 	%tbody
 		%tr.text-center
 
-			%td= @asignatura.id
-			%td= @asignatura.descripcion
-			%td= @asignatura.departamento.descripcion
-			%td= @asignatura.catedra.descripcion
-			%td= @asignatura.anno
-			%td= @asignatura.tipoasignatura.descripcion
-			%td= @asignatura.creditos
-			%td
+			%td.align-middle= @asignatura.id
+			%td.align-middle= @asignatura.descripcion
+			%td.align-middle= @asignatura.departamento.descripcion
+			%td.align-middle= @asignatura.catedra.descripcion
+			%td.align-middle= @asignatura.anno
+			%td.align-middle= @asignatura.tipoasignatura.descripcion
+			%td.align-middle= @asignatura.creditos
+			%td.align-middle
+				= @asignatura.calificacion.humanize.titleize
+				- if @asignatura.forzar_absoluta
+					%label.badge.badge-success Forzada a Absoluta
+
+			%td.align-middle
 				- if current_admin.maestros?
 
 					= btn_toggle 'text-success', 'pencil', edit_asignatura_path(@asignatura), 'Editar Asignatura', nil

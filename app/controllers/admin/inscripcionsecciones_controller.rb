@@ -361,7 +361,7 @@ module Admin
 
 				inscripcion.calificacion_final = nil if (inscripcion.primera_calificacion.nil? or inscripcion.segunda_calificacion.nil? or inscripcion.tercera_calificacion.nil?)
 
-			elsif inscripcion.seccion.asignatura.absoluta?
+			elsif inscripcion.asignatura.absoluta?
 				inscripcion.estado = Inscripcionseccion.estados.key params[:calificacion_final].to_i
 				inscripcion.calificacion_posterior = nil
 				inscripcion.calificacion_final = inscripcion.aprobado? ? 20 : 1
