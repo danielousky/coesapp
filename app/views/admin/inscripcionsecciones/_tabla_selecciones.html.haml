@@ -24,4 +24,12 @@
 						%td{colspan: 7} Total U. Créditos
 						%td.text-right#totalCreditosNumero= @inscripciones.total_creditos 
 
-		%div{style: 'max-width: 400px; margin: 0 auto 10px;'}= submit_tag 'Confirmar inscripción', class: 'btn btn-large btn-block btn-success', 'data-confirm': "¿Confirma que desea completar el proceso de inscripción en el estudiante: #{@estudiante.usuario.descripcion_apellido} para el Período #{current_periodo.id} y para #{@escuela.descripcion}?", disabled: disabledConfirmar, id: 'btn-confirmacion'
+		%div{style: 'max-width: 400px; margin: 0 auto 10px;'}
+			.btn-sm.btn-warning.m-2.tooltip-btn{'data-toggle': :tooltip, title: 'Marca la inscripción cómo confirmada'}
+				= check_box_tag :confirmar, true, true, onclick: "$('#notificarEmail').toggle();$('#notificar').prop('checked', $('#confirmar').is(':checked'));"
+				Confirmar
+
+			#notificarEmail.btn-sm.btn-warning.m-2.tooltip-btn{'data-toggle': :tooltip, title: 'Notifica la acción al estudiante vía correo'}
+				= check_box_tag :notificar, true, true
+				Enviar Notificación
+			= submit_tag 'Guardar inscripción', class: 'btn btn-large btn-block btn-success', 'data-confirm': "¿Confirma que desea completar el proceso de inscripción en el estudiante: #{@estudiante.usuario.descripcion_apellido} para el Período #{current_periodo.id} y para #{@escuela.descripcion}?", disabled: disabledConfirmar, id: 'btn-confirmacion'

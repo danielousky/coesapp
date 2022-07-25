@@ -446,6 +446,7 @@ module Admin
 		end
 
 		def inscribir
+			1/0
 			secciones = params[:secciones]
 			guardadas = 0
 			# id = params[:id]
@@ -460,7 +461,6 @@ module Admin
 				# @inscripciones_del_periodo = Inscripcionescuelaperiodo.find_or_create_by(escuelaperiodo_id: escuelaperiodo.id, estudiante)
 				# El tema es que debe incluirsele un tipo_estado_inscripcion_id por defecto que aún no está definido.
 
-				se_preinscribio = false
 				# inscripcion_del_periodo = @estudiante.inscripcionescuelaperiodos.de_la_escuela_y_periodo(escuelaperiodo.id).first
 
 				# if inscripcion_del_periodo.nil?
@@ -475,10 +475,12 @@ module Admin
 				estudiante = @grado.estudiante
 
 				inscripcion_del_periodo = Inscripcionescuelaperiodo.find_or_new(@grado.id, current_periodo.id)
-
-				se_preinscribio = true if inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? TipoEstadoInscripcion::PREINSCRITO
-				
-				inscripcion_del_periodo.tipo_estado_inscripcion_id = TipoEstadoInscripcion::INSCRITO
+	
+				if params[:confirmar]
+					inscripcion_del_periodo.tipo_estado_inscripcion_id = TipoEstadoInscripcion::INSCRITO 
+				else
+					inscripcion_del_periodo.tipo_estado_inscripcion_id = TipoEstadoInscripcion::PREINSCRITO
+				end
 
 				flash[:success] = "Inscripción en el período #{current_periodo.id} para la escuela #{escuela.descripcion} realizada con éxito." if inscripcion_del_periodo.save
 
@@ -544,7 +546,7 @@ module Admin
 			end
 
 
-			if se_preinscribio and inscripcion_del_periodo.tipo_estado_inscripcion_id.eql? 'INS' and inscripcion_del_periodo.inscripcionsecciones.any?
+			if params[:notificar] and inscripcion_del_periodo.inscripcionsecciones.any?
 				begin
 					info_bitacora "Confirmación inscripción estudiante #{inscripcion_del_periodo.estudiante_id} en periodo #{inscripcion_del_periodo.periodo.id} en #{inscripcion_del_periodo.escuela.descripcion}.", Bitacora::CREACION, inscripcion_del_periodo
 
