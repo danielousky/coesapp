@@ -446,7 +446,6 @@ module Admin
 		end
 
 		def inscribir
-			1/0
 			secciones = params[:secciones]
 			guardadas = 0
 			# id = params[:id]
