@@ -633,11 +633,11 @@ class ExportarPdf
 			plan = plan.id if plan 
 			if h.tiene_calificacion_posterior?
 				estado_a_letras = 'AP'
-				tipo_calificacion_id = 'NF'
+				tipo_calificacion_id = TipoCalificacion::FINAL
 				cali_a_letras = (h.calificacion_en_letras 'final')
 			else
-				tipo_calificacion_id = h.tipo_calificacion_id
 				estado_a_letras = h.estado_a_letras
+				tipo_calificacion_id = h.tipo_calificacion_id
 				cali_a_letras = h.calificacion_en_letras
 			end
 
