@@ -14,7 +14,8 @@ module Admin
       @titulo = 'Resumen de los Periodos'
       @escuelas = current_admin.escuelas
       # @periodos = @escuelas.collect{|es| es.periodo_ids}.uniq.flatten.uniq
-      @periodos = @escuelas.collect{|es| es.periodos}.uniq.flatten.uniq.sort{|a,b| b <=> a}
+
+      @periodos =  (@escuelas and @escuelas.count > 1) ? Periodo.all.order(inicia: :desc) : @escuelas.collect{|es| es.periodos}.uniq.flatten.uniq.sort{|a,b| b <=> a}
 
     end
 
