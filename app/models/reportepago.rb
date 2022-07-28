@@ -35,7 +35,16 @@ class Reportepago < ApplicationRecord
   end
 
   def descripcion
-  	aux = "#{self.numero} x (#{monto_con_formato}) del #{self.banco_origen.nombre}"
+  	"#{self.numero} x (#{monto_con_formato}) del #{self.banco_origen.nombre}"
+  end
+
+  def descripcion_con_ci
+    
+    aux = self.objeto.nil? ? '' : "#{self.objeto.estudiante.ci} - "
+    aux += self.descripcion
+
+    return aux
+      
   end
 
   def objeto

@@ -33,6 +33,8 @@
 			%th Ingreso
 			%th Periodo Inicial
 			%th Secretaría
+			- if params[:status].eql? TipoEstadoInscripcion::INSCRITO or params[:status].eql? 'reported'
+				%th Pago
 
 	%tbody
 
@@ -79,6 +81,14 @@
 				%td= grado.tipo_ingreso if grado
 				%td= grado.iniciado_periodo_id if grado
 				%td= grado.inscrito_ucv_label if grado
+				%td
+					- if rp = ins.reportepago
+						= link_to_if (rp.respaldo and rp.respaldo.attached?), rp.descripcion_con_ci, main_app.url_for(rp.respaldo), target: '_blank', rel: "noopener noreferrer"
+
+					- else
+						Sin Reporte de Pago
+
+
 
 
 
