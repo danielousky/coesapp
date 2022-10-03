@@ -3,8 +3,6 @@ class ImportCsv
 
 	def self.importar_estudiantes file, escuela_id, plan_id, periodo_id, grado, usuario_id, ip, enviar_correo= false
 		require 'csv'
-		csv_text = File.read(file)
-		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
 
 		# Totales
 		# Usuarios
@@ -30,10 +28,18 @@ class ImportCsv
 		estudiates_con_iniciado_periodo_id_errado = []
 		estudiates_con_region_errada = []
 
-		errores_cabeceras << "'ci' no existe" unless (csv.headers.include? 'ci')
+		begin
+			csv_text = File.read(file).encode('UTF-8', invalid: :replace, replace: '')
+			csv = CSV.parse(csv_text, headers: true)
+		rescue Exception => e
+			errores_generales << "Error al intentar abrir el archivo: #{e}"			
+		end
+
+
+		errores_cabeceras << "'ci'" unless (csv.headers.include? 'ci')
 		if !(csv.headers.include? 'nombres_apellidos')
-			errores_cabeceras << "'nombres' no existe" unless (csv.headers.include? 'nombres')
-			errores_cabeceras << "'apellidos' no existe" unless (csv.headers.include? 'apellidos')
+			errores_cabeceras << "'nombres'" unless (csv.headers.include? 'nombres')
+			errores_cabeceras << "'apellidos'" unless (csv.headers.include? 'apellidos')
 		end
 
 		# Emails
@@ -250,17 +256,19 @@ class ImportCsv
 
 	def self.importar_profesores file
 		require 'csv'
-
-		csv_text = File.read(file)
-
 		errores_cabeceras = []
 
-		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
+		begin
+			csv_text = File.read(file).encode('UTF-8', invalid: :replace, replace: '')
+			csv = CSV.parse(csv_text, headers: true)
+		rescue Exception => e
+			errores_cabeceras << "Error al intentar abrir el archivo: #{e}"			
+		end
 
-		errores_cabeceras << "Falta la cabecera 'ci' en el archivo" unless csv.headers.include? 'ci'
-		errores_cabeceras << "Falta la cabecera 'nombres' en el archivo" unless csv.headers.include? 'nombres'
-		errores_cabeceras << "Falta la cabecera 'apellidos' en el archivo" unless csv.headers.include? 'apellidos'
-		errores_cabeceras << "Falta la cabecera 'departamento_id' en el archivo" unless csv.headers.include? 'departamento_id'
+		errores_cabeceras << "Falta la cabecera 'ci' en el archivo o está mal escrita" unless csv.headers.include? 'ci'
+		errores_cabeceras << "Falta la cabecera 'nombres' en el archivo o está mal escrita" unless csv.headers.include? 'nombres'
+		errores_cabeceras << "Falta la cabecera 'apellidos' en el archivo o está mal escrita" unless csv.headers.include? 'apellidos'
+		errores_cabeceras << "Falta la cabecera 'departamento_id' en el archivo o está mal escrita" unless csv.headers.include? 'departamento_id'
 
 		if errores_cabeceras.count > 0
 			return [0, "Error en las cabaceras del archivo: #{errores_cabeceras.to_sentence}"]
@@ -333,7 +341,8 @@ class ImportCsv
 	def self.importar_inscripciones file, escuela_id, periodo_id=nil
 		require 'csv'
 
-		csv_text = File.read(file)
+
+		errores_cabeceras = []
 		total_inscritos = 0
 		total_existentes = 0
 		estudiantes_no_inscritos = []
@@ -348,9 +357,13 @@ class ImportCsv
 		total_no_calificados = 0
 
 		estudiantes_sin_grado = []
-		errores_cabeceras = []
 
-		csv = CSV.parse(csv_text, headers: true, encoding: 'iso-8859-1:utf-8')
+		begin
+			csv_text = File.read(file).encode('UTF-8', invalid: :replace, replace: '')
+			csv = CSV.parse(csv_text, headers: true)
+		rescue Exception => e
+			errores_cabeceras << "Error al intentar abrir el archivo: #{e}"			
+		end
 
 		errores_cabeceras << "Falta la cabecera 'ci' en el archivo" unless csv.headers.include? 'ci'
 		errores_cabeceras << "Falta la cabecera 'id_uxxi' en el archivo" unless csv.headers.include? 'id_uxxi'

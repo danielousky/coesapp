@@ -80,7 +80,7 @@ module Admin
 				flash[:danger] += "Estudiates Con iniciado_periodo_id Errado (#{errores[5].count}): <b>#{errores[5].to_sentence.truncate(40)}</b><hr></hr>" if errores[5].count > 0
 				flash[:danger] += "Estudiates Con region Errado (#{errores[6].count}): <b>#{errores[6].to_sentence.truncate(40)}</b><hr></hr>" if errores[6].count > 0
 				flash[:danger] += "Error General (#{errores[7].count}): <b>#{errores[7].to_sentence.truncate(200)}</b><hr></hr>" if errores[7].count > 0
-				flash[:danger] += "Error en las cabeceras:: <b>#{errores[8].to_sentence.truncate(40)}</b><hr></hr>" if errores[8].count > 0
+				flash[:danger] += "Error en las cabeceras: Las siguentes cabeceras no se encuentran en el archivo o están mal escritas: <b>#{errores[8].to_sentence} </b>. Por favor vuelva a escribirlas tomando en cuenta que deben estár en minúsculas y elimine espacios agregados al principio o al final de la palabra. <hr></hr>" if errores[8].count > 0
 			end
 
 			redirect_to action: 'seleccionar_archivo_estudiantes'
