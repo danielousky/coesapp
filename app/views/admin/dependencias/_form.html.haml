@@ -4,7 +4,9 @@
 
     .form-group
       = f.label :dependencia, class: 'control-label', value: 'Dependencias'
-      .text-muted.font-italic= "Seleccione la o las asignaturas que dependen de la asignatura #{@asignatura.descripcion}. Recuerde que puede seleccionar más de una."
+      .alert.alert-warning.text-justify
+        .font-italic= "Seleccione la(s) asignatura(s) que el estudiante podrá inscribir una vez que apruebe #{@asignatura.descripcion_id}."
+        .text-muted.font-italic Recuerde que puede seleccionar más de una.
       %br
       - asignatura_dependientes_ids = @asignatura.dependencias.map{|dep| dep.asignatura_dependiente_id}
       - asignatura_dependientes_ids << @asignatura.id
