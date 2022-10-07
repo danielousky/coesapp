@@ -18,9 +18,9 @@ module Admin
         total_saved+= 1 if dependiente.save
       end
       if total_saved > 0
-        flash[:success] = "Se guardaron con éxito #{total_saved} dependencias."
+        flash[:success] = "Se guardaron con éxito #{total_saved} prelaciones."
       else
-        flash[:danger] = 'No fue posible guardar ninguna dependencia. Por favor revise e inténtelo nuevamente.'
+        flash[:danger] = 'No fue posible guardar ninguna prelación. Por favor revise e inténtelo nuevamente.'
       end
       redirect_to "#{asignatura_path(params[:dependencia]['asignatura_id'])}?dependencias=true"
     end
@@ -30,9 +30,9 @@ module Admin
       return_asig_id = @dependencia.asignatura_id
 
       if @dependencia.destroy
-        flash[:info] = 'Dependencia Eliminada'
+        flash[:info] = 'Prelación Eliminada'
       else
-        flash[:danger] = "Inconvenientes al intentar eliminar la relación de dependencia: #{@dependencia.errors.full_messages.to_sentence}"
+        flash[:danger] = "Inconvenientes al intentar eliminar la relación de prelación: #{@dependencia.errors.full_messages.to_sentence}"
       end
       redirect_to "#{asignatura_path(return_asig_id)}?dependencias=true"
 
