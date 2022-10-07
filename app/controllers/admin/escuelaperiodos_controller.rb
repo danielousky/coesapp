@@ -6,6 +6,34 @@ module Admin
 
 		before_action :set_escupe
 
+		def index_reglamento
+
+			@titulo = "Estudiantes inscritos en el período anterior #{@escupe.periodo_id}"
+			@grados_con_inscripciones_periodo_anterior = @escupe.escuela.grados.con_inscripciones_en_periodo(@escupe.periodo_id).includes(estudiante: :usuario).order(['usuarios.nombres ASC', 'usuarios.apellidos'])
+		end
+
+		def correr_reglamento
+			total_actualizados = 0
+			total_error = 0
+			Jornadacitahoraria.destroy_all
+			@escupe.inscripcionescuelaperiodos.each do |iep|
+				reglamento = iep.revisar_reglamento
+				grado = iep.grado 
+
+				if grado.update(reglamento: reglamento, eficiencia: grado.calcular_eficiencia, promedio_ponderado: grado.calcular_promedio_simple, promedio_simple: grado.calcular_promedio_simple)
+					total_actualizados += 1
+				else
+					total_error += 1
+				end
+			end
+
+			
+			flash[:danger] = 'Errores en la actualización del estado de reglamento' if total_error > 0 
+			flash[:success] = "#{ total_actualizados} #{'inscripción'.pluralize(total_actualizados)} en total actualizados" if total_actualizados > 0
+			
+			redirect_back fallback_location: escuelas_path(@escuela) 
+		end
+
 		def borrar_ausentes
 			preinscritos = @escupe.escuela.grados.asignado.sin_inscripciones.where(iniciado_periodo_id: @escupe.periodo_id)
 

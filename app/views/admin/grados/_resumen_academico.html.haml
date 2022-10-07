@@ -21,10 +21,10 @@
 		%th= aprobados
 	%tr
 		%td Eficiencia:
-		%th= @grado.eficiencia
+		%th= @grado.calcular_eficiencia
 	%tr
 		%td Promedio Simple:
-		%th= @grado.promedio_simple
+		%th= @grado.calcular_promedio_simple
 	%tr
 		%td Promedio Simple Aprobado:
 		%th= @grado.calcular_promedio_simple_aprobado
@@ -33,4 +33,4 @@
 		%th= @grado.calcular_promedio_ponderado_aprobado
 	%tr
 		%td Promedio Ponderado:
-		%th= @grado.promedio_ponderado
+		%th= @grado.calcular_promedio_ponderado

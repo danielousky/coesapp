@@ -5,6 +5,7 @@ class Grado < ApplicationRecord
 	# ASOCIACIONES:
 	belongs_to :escuela
 	belongs_to :estudiante
+	has_one :usuario, through: :estudiante
 	belongs_to :plan, optional: true
 	belongs_to :periodo_ingreso, optional: true, class_name: 'Periodo', foreign_key: :iniciado_periodo_id
 	belongs_to :reportepago, optional: true, dependent: :destroy
@@ -13,6 +14,7 @@ class Grado < ApplicationRecord
 	has_many :historialplanes
 	has_many :inscripciones, class_name: 'Inscripcionseccion'
 	has_many :inscripcionescuelaperiodos
+	has_many :periodos, through: :inscripcionescuelaperiodos
 	has_many :secciones, through: :inscripciones, source: :seccion
 	has_many :asignaturas, through: :secciones
 
@@ -59,6 +61,7 @@ class Grado < ApplicationRecord
 	scope :con_cita_horaria_igual_a, -> (dia){ where("date(citahoraria) = '#{dia}'")}
 	scope :sin_cita_horarias, -> { where(citahoraria: nil)}
 
+	scope :regular_or_articulo_3, -> {where('reglamento = 0 OR reglamento = 1')}
 
 	scope :con_inscripciones_en_periodo, -> (periodo_id) { joins(inscripciones: :seccion).where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0 and secciones.periodo_id = ?', periodo_id) }
 
@@ -79,6 +82,7 @@ class Grado < ApplicationRecord
 	enum estado_inscripcion: [:preinscrito, :confirmado, :reincorporado, :asignado]
 	enum region: [:no_aplica, :amazonas, :barcelona, :barquisimeto, :bolivar, :capital]
 
+	enum reglamento: [:regular, :articulo_3, :articulo_6, :articulo_7] 
 	enum tipo_ingreso: TIPO_INGRESOS
 
 	# after_create :enviar_correo_bienvenida

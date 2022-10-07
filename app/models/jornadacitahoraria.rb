@@ -1,5 +1,5 @@
-class Jornadacitahoraria < ApplicationRecord
-  
+class Jornadacitahoraria  < ApplicationRecord
+
   #RELACIONES
   belongs_to :escuelaperiodo
   has_one :escuela, through: :escuelaperiodo 

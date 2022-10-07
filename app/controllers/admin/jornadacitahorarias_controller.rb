@@ -6,7 +6,7 @@ module Admin
 
     before_action :set_jornadacitahoraria, only: %i[ show edit update destroy ]
     before_action :set_escuelaperiodo, only: %i[ index new create]
-    before_action :set_grados_sin_cita, only: %i[ index new ]
+    before_action :set_grados_sin_cita, only: %i[ index new]
 
     def index
       @jornadacitahorarias = @escuelaperiodo.jornadacitahorarias
@@ -30,9 +30,9 @@ module Admin
         grados_x_franja = @jornada.grado_x_franja
         total_grados_actualizados = 0
         for a in 0..(total_franjas-1) do
-          limitado = @escuelaperiodo.escuela.grados.sin_cita_horarias.con_inscripciones_en_periodo(@escuelaperiodo_anterior.periodo_id).includes(estudiante: :usuario).order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc]).uniq
+          limitado = @escuelaperiodo.escuela.grados.sin_cita_horarias.regular_or_articulo_3.con_inscripciones_en_periodo(@escuelaperiodo_anterior.periodo_id).includes(estudiante: :usuario).order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc]).uniq
 
-          limitado[0..grados_x_franja].each{|gr| total_grados_actualizados += 1 if gr.update(citahoraria: @jornada.inicio+(a*@jornada.duracion_franja_minutos).minutes, duracion_franja_horaria: @jornada.duracion_franja_minutos)}
+          limitado[0..grados_x_franja-1].each{|gr| total_grados_actualizados += 1 if gr.update(citahoraria: @jornada.inicio+(a*@jornada.duracion_franja_minutos).minutes, duracion_franja_horaria: @jornada.duracion_franja_minutos)}
 
         end
         flash[:success] = "Jornada de Cita Horaria guardada con éxito. Se asignaron #{total_grados_actualizados} citas horarias de un total esperado de #{@jornada.max_grados}."
@@ -95,7 +95,7 @@ module Admin
 
         # @grados_sin_cita = @escuelaperiodo.escuela.grados.sin_cita_horarias.includes(estudiante: :usuario).joins(inscripcionescuelaperiodos: :escuelaperiodo).where("inscripcionescuelaperiodos.tipo_estado_inscripcion_id = '#{TipoEstadoInscripcion::INSCRITO}' AND escuelaperiodos.periodo_id = '#{@escuelaperiodo_anterior.periodo_id}'").order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc])  
 
-        @grados_sin_cita = @escuelaperiodo.escuela.grados.sin_cita_horarias.con_inscripciones_en_periodo(@escuelaperiodo_anterior.periodo_id).includes(estudiante: :usuario).order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc]).uniq
+        @grados_sin_cita = @escuelaperiodo.escuela.grados.sin_cita_horarias.regular_or_articulo_3.con_inscripciones_en_periodo(@escuelaperiodo_anterior.periodo_id).includes(estudiante: :usuario).order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc]).uniq
 
       end
 

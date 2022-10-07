@@ -3,6 +3,7 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	# Tipo Estado Inscripciones
 	# ["CO", "INS", "NUEVO", "PRE", "REINC", "RES", "RET", "VAL"] 
 
+	# ASOCIACIONES:
 	has_many :inscripcionsecciones, dependent: :destroy
 	accepts_nested_attributes_for :inscripcionsecciones
 
@@ -17,10 +18,12 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	has_one :escuela, through: :escuelaperiodo
 	has_one :periodo, through: :escuelaperiodo
 
+	belongs_to :reportepago, optional: true
+
+	# VALIDACIONES:
 	validates_uniqueness_of :estudiante_id, scope: [:escuelaperiodo_id], message: 'El estudiante ya posee una inscripción en el período actual', field_name: false
 
-	belongs_to :reportepago, optional: true
-	
+	# SCOPES:
 	scope :del_periodo, -> (periodo_id) {joins(:periodo).where('periodos.id = ?', periodo_id)}
 	scope :de_la_escuela, -> (escuela_id) {joins(:escuela).where('escuelas.id = ?', escuela_id)}
 	scope :de_la_escuela_y_periodo, -> (escuelaperiodo_id) {where('escuelaperiodo_id = ?', escuelaperiodo_id)}
@@ -31,6 +34,36 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	# scope :con_reportepago, -> {joins(:reportepago)}
 	scope :con_reportepago, -> {where('reportepago_id IS NOT NULL')}
 	scope :sin_reportepago, -> {where(reportepago_id: nil)}
+
+	scope :total_inscripciones, -> {inscripcionsecciones.count}
+	scope :total_inscripciones_calificadas, -> {joins(:inscripcionsecciones).where('inscripcionsecciones.estado = 1 or inscripcionsecciones.estado = 2')}
+
+	# FUNCIONES: 
+	def revisar_reglamento
+		reglamento_aux = :regular
+		if inscribio_pero_no_aprobo_ninguna?
+			reglamento_aux = :articulo_3
+			iep_anterior = self.anterior_iep
+			if iep_anterior and iep_anterior.inscribio_pero_no_aprobo_ninguna?
+				reglamento_aux = :articulo_6
+				iep_anterior2 = iep_anterior.anterior_iep
+				if iep_anterior2 and iep_anterior2.inscribio_pero_no_aprobo_ninguna?
+					reglamento_aux = :articulo_7
+				end
+			end
+		end
+		return reglamento_aux
+	end
+
+	def inscribio_pero_no_aprobo_ninguna?
+		self.inscripcionsecciones.any? and !(self.inscripcionsecciones.aprobado.any?)
+	end
+
+	def anterior_iep
+		escu_per_ant = self.escuelaperiodo.escuelaperiodo_anterior
+		Inscripcionescuelaperiodo.where(grado_id: self.grado_id, escuelaperiodo_id: escu_per_ant.id).first
+	end
+
 
 	def label_estado_inscripcion
 		# ["CO", "INS", "NUEVO", "PRE", "REINC", "RES", "RET", "VAL"] 

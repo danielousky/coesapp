@@ -4,23 +4,24 @@
 %nav
   .nav.nav-tabs  
     = link_to "#sinCita", "data-toggle": :tab, class: "nav-item nav-link active" do
-      Estudiantes Sin Citas
-      .badge.badge-dark= @grados_sin_cita.count
+      = "#{@grados_sin_cita.count} Estudiantes válidos para la cita horaria "
+      .badge.badge-dark Regulares y Artículo 3
     - @jornadacitahorarias.each do |cita| 
       = link_to "#cita#{cita.id}", "data-toggle": :tab, class: "nav-item nav-link" do
         =# l(cita.inicio, format: :short)
         = I18n.l(cita.inicio, format: "%d/%m/%Y")
         .badge.badge-dark= cita.grados_propios_ordenados.count
+    - if false #@grados_sin_cita and @grados_sin_cita.any?
+      = # ESTO NO TIENE SENTIDO PORQUE EL ENLACE ES PARA TODAS LAS JORNADACITAHORARIAS Y DEBERIA SER PARA CADA CITA HORARIA EJ: jornadacitahorarias_path(cita)
+      .tooltip-btn{'data-toggle': :tooltip, title: 'Limpiar Todas las Citas Horarias de las Escuela'}
+        = link_to "#{jornadacitahorarias_path}", method: :delete, data: {confirm: 'Confima que desea limpiar todas las citas horarias de la escuela'},class: "nav-item nav-link bg-danger text-white" do
+          = glyph 'erase'
+          Limpiar Citas
     .tooltip-btn{'data-toggle': :tooltip, title: 'Agregar Nueva Jornada Horaria'}
       = link_to new_jornadacitahoraria_path, class: "nav-item nav-link bg-success text-white" do
         = glyph 'plus'
         = glyph 'calendar'
         Nueva Cita Horaria
-    - if false #@grados_sin_cita and @grados_sin_cita.any?
-      .tooltip-btn{'data-toggle': :tooltip, title: 'Limpiar Todas las Citas Horarias de las Escuela'}
-        = link_to "#{jornadacitahorarias_path}", method: :delete, data: {confirm: 'Confima que desea limpiar todas las citas horarias de la escuela'},class: "nav-item nav-link bg-danger text-white" do
-          = glyph 'erase'
-          Limpiar Citas
 
   .tab-content
     .tab-pane#sinCita.active.border.border-top-0.p-3

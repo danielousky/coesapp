@@ -8,4 +8,6 @@ attributes = usuario.attributes.values
 # end
 
 # attributes << foto_perfil_value
+
+attributes << estudiante.grados.map{|g| g.reglamento}.to_sentence
 json.array! attributes

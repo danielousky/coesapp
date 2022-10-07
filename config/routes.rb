@@ -30,6 +30,8 @@ Rails.application.routes.draw do
 
     resources :escuelaperiodos, only: :show do
       member do
+        get 'index_reglamento'
+        get 'correr_reglamento'
         get 'borrar_ausentes'
       end
     end
