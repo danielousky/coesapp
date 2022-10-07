@@ -15,8 +15,6 @@
   $(document).ready(function() {
 
       $('.tableDataPropia').DataTable( {
-
-
           scrollX: true,
           scrollY: 400,
           fixedHeader: {
@@ -30,7 +28,6 @@
           buttons: [
             {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `EstudiantesConInscripcionesEnPeriodo#{@escupe.periodo_id}-#{@escupe.escuela_id}`, className: 'btn btn-sm btn-outline-info'}
           ],
-          responsive: true,          
           language: 
             {
               "sZeroRecords":    "No se encontraron resultados",
@@ -56,8 +53,4 @@
 
       } );
 
-      $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
-        $($.fn.dataTable.tables( true ) ).css('width', '100%');
-        $($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
-      } );
   } );
