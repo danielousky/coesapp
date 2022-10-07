@@ -12,7 +12,7 @@
     - if @secciones.any?
       = link_to 'Periodo Actual', "#seccionesActual", "data-toggle": :tab, class: "nav-item nav-link #{active_default}"
     - if (current_admin and current_admin.autorizado? 'Dependencias', 'index')
-      = link_to 'Dependencias', "#dependencias", "data-toggle": :tab, class: "nav-item nav-link #{active_depend}"
+      = link_to 'Prelaciones', "#dependencias", "data-toggle": :tab, class: "nav-item nav-link #{active_depend}"
     - if @asignatura.secciones.any?
       = link_to 'Histórico de secciones', "#secciones", "data-toggle": :tab, class: "nav-item nav-link"
     - if @bitacoras.any? and (current_admin.autorizado? 'Bitacoras', 'index')

@@ -1,9 +1,9 @@
 - if (current_admin and current_admin.autorizado? 'Dependencias', 'create')
   .m-1
-    = btn_toggle_modal :plus, 'Agregar Asignaturas dependientes', 'Agregar', 'agregarDependencias'
+    = btn_toggle_modal :plus, 'Agregar Prelaciones', 'Agregar', 'agregarDependencias'
 
 - if @dependencia_hacia_atras.any? or @dependientes.any?
-  %h6.titulo.text-center.m-2= "Árbol de dependencia #{@asignatura.descripcion}"
+  %h6.titulo.text-center.m-2= "Árbol de Prelaciones #{@asignatura.descripcion}"
   .m-3
     %table.table-striped.table-sm.table-hover.table-bordered
       %tbody
@@ -23,5 +23,5 @@
   - @dependencia.asignatura = @asignatura
 
   - content = render partial: '/admin/dependencias/form'
-  - title = 'Agregar Asignaturas Dependientes'
+  - title = 'Asignar Prelaciones'
   = render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "agregarDependencias", title: title, content: content, width: nil}

@@ -3,7 +3,7 @@
     = f.hidden_field :asignatura_id
 
     .form-group
-      = f.label :dependencia, class: 'control-label', value: 'Dependencias'
+      =# f.label :dependencia, class: 'control-label', value: 'Prelaciones'
       .alert.alert-warning.text-justify
         .font-italic= "Seleccione la(s) asignatura(s) que el estudiante podrá inscribir una vez que apruebe #{@asignatura.descripcion_id}."
         .text-muted.font-italic Recuerde que puede seleccionar más de una.
@@ -14,7 +14,7 @@
 
 
     .modal-footer
-      = f.submit nil, class: 'btn btn-primary'
+      = f.submit 'Crear Prelaciones', class: 'btn btn-primary'
       %a.btn.btn-outline-secondary{data: {dismiss: 'modal'}} Cancelar
 
 
