@@ -2,6 +2,14 @@ class Grado < ApplicationRecord
 	#CONSTANTES:
 	TIPO_INGRESOS = ['OPSU', 'OPSU/COLA', 'SIMADI', 'ACTA CONVENIO (DOCENTE)', 'ACTA CONVENIO (ADMIN)', 'ACTA CONVENIO (OBRERO)', 'DISCAPACIDAD', 'DIPLOMATICO', 'COMPONENTE DOCENTE', 'EQUIVALENCIA', 'ART. 25 (CULTURA)', 'ART. 25 (DEPORTE)', 'CAMBIO: 158', 'ART. 6', 'EGRESADO', 'SAMUEL ROBINSON', 'DELTA AMACURO', 'AMAZONAS', 'PRODES', 'CREDENCIALES', 'SIMULTANEOS']
 
+
+	TITULO_NORMATIVA = "NORMAS SOBRE EL RENDIMIENTO MÍNIMO Y CONDICIONES DE PERMANENCIA DE LOS ALUMNOS EN LA U.C.V"
+	ARTICULO7 = 'Artículo 7°. El alumno que, habiéndose reincorporado conforme al artículo anterior, dejare nuevamente de aprobar el 25% de la carga que curse, o en todo caso, el que no apruebe ninguna asignatura durante dos períodos consecutivos, no podrá incorporarse más a la misma Escuela o Facultad, a menos que el Consejo de Facultad, previo estudio del caso, autorice su reincorporación.'
+
+	ARTICULO6 = "Artículo 6°. El alumno que al final del semestre de recuperación no alcance nuevamente a aprobar el 25% de la carga académica que cursa o en todo caso a aprobar por lo menos una asignatura, no podrá reinscribirse en la Universidad Central de Venezuela, en los dos semestres siguientes. Pasados éstos, tendrá el derecho de reincorporarse en la Escuela en la que cursaba sin que puedan exigírsele otros requisitos que los trámites administrativos usuales. Igualmente, podrá inscribirse en otra Escuela diferente con el Informe favorable del Profesor Consejero y de la Unidad de Asesoramiento Académico de la Escuela a la cual pertenecía, y la aprobación por parte del Consejo de Facultad a la cual solicita el traslado."
+
+	ARTICULO3 = "Artículo 3°. Todo alumno que en un período no apruebe el 25% de la carga académica que curse o que, en todo caso no apruebe por lo menos una asignatura, deberá participar obligatoriamente en el procedimiento especial de recuperación establecido en estas   normas."
+
 	# ASOCIACIONES:
 	belongs_to :escuela
 	belongs_to :estudiante
@@ -33,6 +41,8 @@ class Grado < ApplicationRecord
 
 
 	# SCOPES
+
+	scope :not_regular?, -> {where "reglamento != 0"}
 	scope :no_retirados, -> {where "estado != 3"}
 	scope :cursadas, -> {where "estado != 3"}
 	scope :aprobadas, -> {where "estado = 1"}
@@ -95,6 +105,26 @@ class Grado < ApplicationRecord
 	# def inscripciones
 	# 	Inscripcionseccion.where("estudiante_id = ? and escuelas_id = ?", estudiante_id, escuela_id)
 	# end
+	def not_regular?
+		! self.regular?
+	end
+
+	def self.normativa
+		TITULO_NORMATIVA
+	end
+
+	def normativa_segun_articulo
+		if self.articulo_7?
+			ARTICULO7
+		elsif self.articulo_6?
+			ARTICULO6
+		elsif self.articulo_3?
+			ARTICULO3
+		else
+			""
+		end
+	end
+
 
 	def asignaturas_ofertables_segun_dependencia
 		# Buscamos los ids de las asignaturas aprobadas

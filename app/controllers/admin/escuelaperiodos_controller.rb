@@ -8,7 +8,7 @@ module Admin
 
 		def index_reglamento
 
-			@titulo = "Estudiantes inscritos en el período anterior #{@escupe.periodo_id}"
+			@titulo = "Estudiantes que finalizaron el período #{@escupe.periodo_id} incurriendo en artículos de la normativa"
 			@grados_con_inscripciones_periodo_anterior = @escupe.escuela.grados.con_inscripciones_en_periodo(@escupe.periodo_id).includes(estudiante: :usuario).order(['usuarios.nombres ASC', 'usuarios.apellidos'])
 		end
 

@@ -35,6 +35,13 @@ module Admin
           limitado[0..grados_x_franja-1].each{|gr| total_grados_actualizados += 1 if gr.update(citahoraria: @jornada.inicio+(a*@jornada.duracion_franja_minutos).minutes, duracion_franja_horaria: @jornada.duracion_franja_minutos)}
 
         end
+        limitado = @escuelaperiodo.escuela.grados.sin_cita_horarias.regular_or_articulo_3.con_inscripciones_en_periodo(@escuelaperiodo_anterior.periodo_id).includes(estudiante: :usuario).order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc]).uniq
+
+        if limitado.any?
+          limitado.each{|gr| total_grados_actualizados += 1 if gr.update(citahoraria: @jornada.inicio+(total_franjas-1*@jornada.duracion_franja_minutos).minutes, duracion_franja_horaria: @jornada.duracion_franja_minutos)}
+        end
+
+
         flash[:success] = "Jornada de Cita Horaria guardada con éxito. Se asignaron #{total_grados_actualizados} citas horarias de un total esperado de #{@jornada.max_grados}."
         
         redirect_to jornadacitahorarias_path

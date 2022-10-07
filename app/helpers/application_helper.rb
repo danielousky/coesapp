@@ -15,6 +15,18 @@ module ApplicationHelper
 		Haml::Engine.new(haml.strip_heredoc, format: :html5).render(self, locals)
 	end
 
+	def alert_reglamento(grado)
+		render_haml <<-HAML, grado: grado
+			- if grado.not_regular?
+				.alert.alert-danger 
+					%h5.text-center= Grado.normativa
+					%h5.alert Atención, usted ha incurrido en la siguiente falta:
+					%h6.alert.alert-warning.text-justify= grado.normativa_segun_articulo
+					- if grado.articulo_6? or grado.articulo_7?
+						%h5.alert Por favor comuníquese con el personal administrativo para solventar su situación.
+		HAML
+	end	
+
 	def label_bst(content)
 		render_haml <<-HAML, content: content
 			.badge.badge-success

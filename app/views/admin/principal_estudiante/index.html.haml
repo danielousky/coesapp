@@ -29,102 +29,105 @@
 				= link_to 'javascript:void(0)', onclick: "$('#reportarPagoGrado#{@grado.id}').modal()", class: 'm-3 btn btn-success' do
 					= glyph 'plus'
 					= "Reportar Pago Ingreso a #{@escuela.descripcion}"
+			
+			= alert_reglamento(@grado)
+			- unless @grado.articulo_7? or @grado.articulo_6?
 
-			- if @periodo_inscripcion = @escuela.periodo_inscripcion
-				- @escupe = @escuela.escuelaperiodos.where(periodo_id: @periodo_inscripcion.id).first
-				- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first unless @escupe.nil?
-				- @limiteCreditos = @escupe.limite_creditos_permitidos
-				- @limiteAsignaturas = @escupe.limite_asignaturas_permitidas
-				- if @inscripcionperiodo.nil? or (@inscripcionperiodo and @inscripcionperiodo.reservado?)
-					-# periodo_anterior = @escuela.periodo_anterior @periodo_inscripcion.id
-					- @totalCreditosReservados = @inscripcionperiodo ? @inscripcionperiodo.total_creditos : 0
-					- @totalAsignaturasReservadas = @inscripcionperiodo ? @inscripcionperiodo.total_asignaturas : 0
-					- periodo_anterior = @escuela.periodo_anterior @periodo_inscripcion.id
-					-# periodo_anteanterior = @escuela.periodo_anterior periodo_anterior.id
-					
-					- jornada_horaria_actual = Jornadacitahoraria.actual(@escupe.id).first
-					- if false #jornada_horaria_actual
-						.alert.alert-info
-							%b Jornada Actual de Inscripción
-							%p= "Hora de Inicio: #{jornada_horaria_actual.inicio.strftime('%I:%M%P')}"
+				- if @periodo_inscripcion = @escuela.periodo_inscripcion
+					- @escupe = @escuela.escuelaperiodos.where(periodo_id: @periodo_inscripcion.id).first
+					- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first unless @escupe.nil?
+					- @limiteCreditos = @escupe.limite_creditos_permitidos
+					- @limiteAsignaturas = @escupe.limite_asignaturas_permitidas
+					- if @inscripcionperiodo.nil? or (@inscripcionperiodo and @inscripcionperiodo.reservado?)
+						-# periodo_anterior = @escuela.periodo_anterior @periodo_inscripcion.id
+						- @totalCreditosReservados = @inscripcionperiodo ? @inscripcionperiodo.total_creditos : 0
+						- @totalAsignaturasReservadas = @inscripcionperiodo ? @inscripcionperiodo.total_asignaturas : 0
+						- periodo_anterior = @escuela.periodo_anterior @periodo_inscripcion.id
+						-# periodo_anteanterior = @escuela.periodo_anterior periodo_anterior.id
+						
+						- jornada_horaria_actual = Jornadacitahoraria.actual(@escupe.id).first
+						- if false #jornada_horaria_actual
+							.alert.alert-info
+								%b Jornada Actual de Inscripción
+								%p= "Hora de Inicio: #{jornada_horaria_actual.inicio.strftime('%I:%M%P')}"
 
-					- inscripcion_abierta_por_citahoraria = (jornada_horaria_actual and @grado.citahoraria and jornada_horaria_actual.puede_inscribir? @grado.citahoraria)
-					
-					- con_inscripciones_en_periodo_anterior = @grado.inscripciones.del_periodo(periodo_anterior.id).any?
-					-# con_inscripciones_en_periodo_anterior = @grado.inscripciones.de_los_periodos(["2019-01S", "2019-02S", "2020-01U", "2021-01S", "2021-02S", "2019-01C", "2019-02C", "2020-01C", "2021-01C", "2021-02C"]).any?
+						- inscripcion_abierta_por_citahoraria = (jornada_horaria_actual and @grado.citahoraria and jornada_horaria_actual.puede_inscribir? @grado.citahoraria)
+						
+						- con_inscripciones_en_periodo_anterior = @grado.inscripciones.del_periodo(periodo_anterior.id).any?
+						-# con_inscripciones_en_periodo_anterior = @grado.inscripciones.de_los_periodos(["2019-01S", "2019-02S", "2020-01U", "2021-01S", "2021-02S", "2019-01C", "2019-02C", "2020-01C", "2021-01C", "2021-02C"]).any?
 
-					- valido_inscripcion_regular = ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or con_inscripciones_en_periodo_anterior))
+						- valido_inscripcion_regular = ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or con_inscripciones_en_periodo_anterior))
 
-					- autorizado_especial = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id)
-					- inscripcion_en_proceso = @inscripcionperiodo and @inscripcionperiodo.reservado?
+						- autorizado_especial = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id)
+						- inscripcion_en_proceso = @inscripcionperiodo and @inscripcionperiodo.reservado?
 
-					- #NOTA INTERNA: La siguiente línea no funciona con or. por lo que fue cambiada a || 
-					- #Tiene que ver con que el or pareciera un or exclusivo, es decir que tienen que ser todos true
-					- inscripcion_abierta_por_regular = valido_inscripcion_regular || autorizado_especial || inscripcion_en_proceso
+						- #NOTA INTERNA: La siguiente línea no funciona con or. por lo que fue cambiada a || 
+						- #Tiene que ver con que el or pareciera un or exclusivo, es decir que tienen que ser todos true
+						- inscripcion_abierta_por_regular = valido_inscripcion_regular || autorizado_especial || inscripcion_en_proceso
 
-					- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
-					- # inscripcion_abierta_por_regular = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
-					
-					-if inscripcion_abierta_por_citahoraria or (!inscripcion_abierta_por_citahoraria and inscripcion_abierta_por_regular)
+						- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
+						- # inscripcion_abierta_por_regular = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
+						
+						-if inscripcion_abierta_por_citahoraria or (!inscripcion_abierta_por_citahoraria and inscripcion_abierta_por_regular)
 
-						- if @escuela.dependencias_habilitadas?
-							- asignaturas_ofertables_segun_dependencia = @grado.asignaturas_ofertables_segun_dependencia
-							- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc)
-							- asignaturas_ofertadas_x_escuela = asignaturas_ofertadas_x_escuela.merge(asignaturas_ofertables_segun_dependencia)
+							- if @escuela.dependencias_habilitadas?
+								- asignaturas_ofertables_segun_dependencia = @grado.asignaturas_ofertables_segun_dependencia
+								- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc)
+								- asignaturas_ofertadas_x_escuela = asignaturas_ofertadas_x_escuela.merge(asignaturas_ofertables_segun_dependencia)
 
-						- else
-							- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc )
+							- else
+								- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc )
 
-						- @aprobadas = @inscripciones.aprobadas.includes(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
-						-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
-						- titulo_modal = "Proceso de Preinscripción #{@periodo_inscripcion.id}"
-						- titulo_btn = "Preinscribirse"
-						- msgDanger = "Seleccione las asignaturas que desea preinscribir. Recuerde mover el scroll para ver todas las asignaturas ofertadas."
-						- url = '/inscripcionsecciones/preinscribirse'
-						- idModal = "preinscripcion#{@escuela.id}"
-						= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas_x_escuela, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
-						- if false #@inscripcionperiodo and @inscripcionperiodo.reservado?
-							:javascript
-								$(`##{idModal}`).modal();
+							- @aprobadas = @inscripciones.aprobadas.includes(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
+							-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
+							- titulo_modal = "Proceso de Preinscripción #{@periodo_inscripcion.id}"
+							- titulo_btn = "Preinscribirse"
+							- msgDanger = "Seleccione las asignaturas que desea preinscribir. Recuerde mover el scroll para ver todas las asignaturas ofertadas."
+							- url = '/inscripcionsecciones/preinscribirse'
+							- idModal = "preinscripcion#{@escuela.id}"
+							= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas_x_escuela, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
+							- if false #@inscripcionperiodo and @inscripcionperiodo.reservado?
+								:javascript
+									$(`##{idModal}`).modal();
 
-					- elsif !jornada_horaria_actual
-						.alert.alert-warning
-							%b Atención: 
-							Verifique alguna de las siguientes opciones con el personal administrativo para habilitar su inscripción:
-							%ul
-								- if !@grado.confirmado? and !@grado.reincorporado?
-									%li= "No esta confirmado o asignado como reincorporado en #{@escuela.descripcion.titleize} para poder realizar su preinscribirse."
-								- if !@grado.inscripciones.del_periodo(periodo_anterior.id).any?
-									%li= "Debe haber inscrito asignaturas en el período inmediatemente anterior #{periodo_anterior.id} (Regulares)."
-								- if @grado.inscripciones.del_periodo(@periodo_inscripcion.id).any?
-									%li= "Ya ha realizado su inscripción en #{@periodo_inscripcion.id} (Nuevo Ingreso)." 
-				- else
-					- if @inscripcionperiodo.reportepago.nil? and @periodo_inscripcion.es_mayor_al_anno? 2019
-						.alert.alert-warning.text-justify
-							- @asignaturas = @inscripcionperiodo.inscripcionsecciones.map { |ins| ins.asignatura}
-							- @escuela_desc = @inscripcionperiodo.escuela.descripcion
-							- @periodo_id = @inscripcionperiodo.periodo.id
-							- @nombre = @inscripcionperiodo.estudiante.usuario.primer_nombre_apellido
-							- @genero = @inscripcionperiodo.estudiante.usuario.genero
+						- elsif !jornada_horaria_actual
+							.alert.alert-warning
+								%b Atención: 
+								Verifique alguna de las siguientes opciones con el personal administrativo para habilitar su inscripción:
+								%ul
+									- if !@grado.confirmado? and !@grado.reincorporado?
+										%li= "No esta confirmado o asignado como reincorporado en #{@escuela.descripcion.titleize} para poder realizar su preinscribirse."
+									- if !@grado.inscripciones.del_periodo(periodo_anterior.id).any?
+										%li= "Debe haber inscrito asignaturas en el período inmediatemente anterior #{periodo_anterior.id} (Regulares)."
+									- if @grado.inscripciones.del_periodo(@periodo_inscripcion.id).any?
+										%li= "Ya ha realizado su inscripción en #{@periodo_inscripcion.id} (Nuevo Ingreso)." 
+					- else
+						- if @inscripcionperiodo.reportepago.nil? and @periodo_inscripcion.es_mayor_al_anno? 2019
+							.alert.alert-warning.text-justify
+								- @asignaturas = @inscripcionperiodo.inscripcionsecciones.map { |ins| ins.asignatura}
+								- @escuela_desc = @inscripcionperiodo.escuela.descripcion
+								- @periodo_id = @inscripcionperiodo.periodo.id
+								- @nombre = @inscripcionperiodo.estudiante.usuario.primer_nombre_apellido
+								- @genero = @inscripcionperiodo.estudiante.usuario.genero
 
-							= render template: 'estudiante_mailer/preinscrito'
+								= render template: 'estudiante_mailer/preinscrito'
 
-						= link_to new_reportepago_path(reportable_id: @inscripcionperiodo.id, reportable_type: @inscripcionperiodo.class.name), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
-							= glyph 'chevron-right'
-							= "Reportar pago de inscripción el periodo #{@periodo_inscripcion.id}"
+							= link_to new_reportepago_path(reportable_id: @inscripcionperiodo.id, reportable_type: @inscripcionperiodo.class.name), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
+								= glyph 'chevron-right'
+								= "Reportar pago de inscripción el periodo #{@periodo_inscripcion.id}"
 
-			-if @grado.citahoraria and @grado.duracion_franja_horaria and @inscripcionperiodo.nil?
-				.border.p-md-3
-					%h5 Cita Horaria:
+				-if @grado.citahoraria and @grado.duracion_franja_horaria and @inscripcionperiodo.nil?
+					.border.p-md-3
+						%h5 Cita Horaria:
 
-					%h5.alert.alert-warning.text-justify
-						%b Atención:
-						= "Estimad#{@estudiante.usuario.genero} #{@estudiante.usuario.nickname.titleize}, le informamos que su Cita Horaria es el"
-						%b
-							=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y de %I:%M %p")).capitalize()
-							a
-							=(I18n.localize(@grado.franja_horaria, :format => " %I:%M %p,")).capitalize()
-						= "usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. Por favor, piense muy bien las asignaturas que va inscribir porque para este período no se va a permitir el retiro de materias.".html_safe
+						%h5.alert.alert-warning.text-justify
+							%b Atención:
+							= "Estimad#{@estudiante.usuario.genero} #{@estudiante.usuario.nickname.titleize}, le informamos que su Cita Horaria es el"
+							%b
+								=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y de %I:%M %p")).capitalize()
+								a
+								=(I18n.localize(@grado.franja_horaria, :format => " %I:%M %p,")).capitalize()
+							= "usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. Por favor, piense muy bien las asignaturas que va inscribir porque para este período no se va a permitir el retiro de materias.".html_safe
 
 			- if @grado.historialplanes.any?
 				.border.p-md-3
