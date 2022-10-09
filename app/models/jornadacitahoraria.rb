@@ -19,6 +19,8 @@ class Jornadacitahoraria  < ApplicationRecord
 
   #SCOPE
   scope :actual, -> (escuelaperiodo_id) { where("escuelaperiodo_id = '#{escuelaperiodo_id}' and inicio LIKE '%#{Date.today}%'")}
+
+  scope :del_dia, -> {where(inicio: Time.zone.now.all_day)}
   
   #MÉTODOS
   def puede_inscribir? citahoraria
