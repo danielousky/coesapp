@@ -1,4 +1,8 @@
 %h5.titulo.text-center.mb-2= @titulo
+
+= link_to escuela_path(@escupe.escuela), class: 'btn btn-sm btn-success m-2' do
+  = glyph 'chevron-left'
+  Atrás 
 %nav
   .nav.nav-tabs
     - Grado.reglamentos.each_pair do|v,k|

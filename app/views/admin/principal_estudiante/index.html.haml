@@ -30,7 +30,7 @@
 					= glyph 'plus'
 					= "Reportar Pago Ingreso a #{@escuela.descripcion}"
 			
-			= alert_reglamento(@grado)
+			= alert_reglamento(@grado).html_safe
 			- unless @grado.articulo_7? or @grado.articulo_6?
 
 				- if @periodo_inscripcion = @escuela.periodo_inscripcion
@@ -127,7 +127,7 @@
 								=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y de %I:%M %p")).capitalize()
 								a
 								=(I18n.localize(@grado.franja_horaria, :format => " %I:%M %p,")).capitalize()
-							= "usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. Por favor, piense muy bien las asignaturas que va inscribir porque para este período no se va a permitir el retiro de materias.".html_safe
+							= "usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. Recuerde que para completar su inscripción usted debe: seleccionar la(s) asignatura(s) que desea cursar, realizar el pago del aransel correspondiente y reportar su pago aquí.".html_safe
 
 			- if @grado.historialplanes.any?
 				.border.p-md-3
