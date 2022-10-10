@@ -30,8 +30,19 @@
 					= glyph 'plus'
 					= "Reportar Pago Ingreso a #{@escuela.descripcion}"
 
+			- if @grado.citahoraria and @grado.duracion_franja_horaria and @inscripcionperiodo.nil?
+				.p-md-1
+					%h6.alert.alert-warning.text-justify
+						%b Atención:
+						= "Estimad#{@estudiante.usuario.genero} #{@estudiante.usuario.nickname.titleize}, le informamos que su Cita Horaria es el"
+						%b
+							=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y de %I:%M %p")).capitalize()
+							a
+							=(I18n.localize(@grado.franja_horaria, :format => " %I:%M %p,")).capitalize()
+						= "usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. </br></br> Recuerde que para completar su inscripción usted debe; seleccionar la(s) asignatura(s) que desea cursar, realizar el pago del aransel correspondiente y reportar su pago aquí.".html_safe
+
 			- if @periodo_inscripcion = @escuela.periodo_inscripcion
-				%h4.text-center.text-success= "INSCRIPCIÓN  #{@periodo_inscripcion.id} ABIERTA"
+				%h4.text-center.text-success.mt-1= "INSCRIPCIÓN  #{@periodo_inscripcion.id} ABIERTA"
 				- @escupe = @escuela.escuelaperiodos.where(periodo_id: @periodo_inscripcion.id).first
 				- @inscripcionperiodo = @estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: @escupe.id).first unless @escupe.nil?
 				- @limiteCreditos = @escupe.limite_creditos_permitidos
@@ -46,22 +57,9 @@
 					-# jornada_horaria_actual = Jornadacitahoraria.actual(@escupe.id).first
 					- jornada_horaria_actual = @escupe.jornadacitahorarias.del_dia.first
 
-					= alert_reglamento(@grado).html_safe
 					%h4.text-center= "Jornada por Cita Horaria Activa" unless jornada_horaria_actual.nil?
 
-					- if @grado.citahoraria and @grado.duracion_franja_horaria and @inscripcionperiodo.nil?
-						.border.p-md-3
-							%h6.alert.alert-warning.text-justify
-								%b Atención:
-								= "Estimad#{@estudiante.usuario.genero} #{@estudiante.usuario.nickname.titleize}, le informamos que su Cita Horaria es el"
-								%b
-									=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y de %I:%M %p")).capitalize()
-									a
-									=(I18n.localize(@grado.franja_horaria, :format => " %I:%M %p,")).capitalize()
-								= "usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. </br></br> Recuerde que para completar su inscripción usted debe; seleccionar la(s) asignatura(s) que desea cursar, realizar el pago del aransel correspondiente y reportar su pago aquí.".html_safe
-
-
-
+					= alert_reglamento(@grado).html_safe
 					- inscripcion_permitida_por_citahoraria = (!jornada_horaria_actual.nil? and !@grado.citahoraria.nil? and jornada_horaria_actual.puede_inscribir? @grado.citahoraria)
 					
 					- con_inscripciones_en_periodo_anterior = @grado.inscripciones.del_periodo(periodo_anterior.id).any?
