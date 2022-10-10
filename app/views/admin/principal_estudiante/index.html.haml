@@ -36,9 +36,9 @@
 						%b Atención:
 						= "Estimad#{@estudiante.usuario.genero} #{@estudiante.usuario.nickname.titleize}, le informamos que su Cita Horaria es el"
 						%b
-							=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y de %I:%M %p")).capitalize()
+							=(I18n.localize(@grado.citahoraria, :format => "%A, %d de %B de %Y de %I:%M%p"))
 							a
-							=(I18n.localize(@grado.franja_horaria, :format => " %I:%M %p,")).capitalize()
+							=(I18n.localize(@grado.franja_horaria, :format => " %I:%M%p,"))
 						= "usted podrá inscribirse <b>ÚNICAMENTE</b> durante este lapso de tiempo. </br></br> Recuerde que para completar su inscripción usted debe; seleccionar la(s) asignatura(s) que desea cursar, realizar el pago del aransel correspondiente y reportar su pago aquí.".html_safe
 
 			- if @periodo_inscripcion = @escuela.periodo_inscripcion
