@@ -70,7 +70,7 @@
 					- autorizado_especial = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id)
 					- inscripcion_en_proceso = @inscripcionperiodo and @inscripcionperiodo.reservado?
 
-					- permitida = !(@grado.articulo_7? or @grado.articulo_6?)
+					- permitida = !(@grado.articulo_7? or @grado.articulo_6? or @grado.iniciado_periodo.eql? @periodo_inscripcion)
 					- #NOTA INTERNA: La siguiente línea no funciona con or. por lo que fue cambiada a || 
 					- #Tiene que ver con que el or pareciera un or exclusivo, es decir que tienen que ser todos true
 					- inscripcion_regular_permitida = valido_inscripcion_regular or inscripcion_en_proceso
