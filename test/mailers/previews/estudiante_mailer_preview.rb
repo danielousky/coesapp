@@ -10,5 +10,9 @@ class EstudianteMailerPreview < ActionMailer::Preview
   def preinscrito
     EstudianteMailer.preinscrito(Usuario.where(ci: 25872065).first, Inscripcionescuelaperiodo.last)
   end
+  
+  def confirmado
+    EstudianteMailer.preinscrito(Usuario.where(ci: 25872065).first, Inscripcionescuelaperiodo.last)
+  end
 
 end

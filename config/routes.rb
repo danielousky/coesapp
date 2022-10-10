@@ -41,7 +41,11 @@ Rails.application.routes.draw do
         post 'autorizar_usuario'
       end
     end
-    resources :inscripcionescuelaperiodos, only: :index
+    resources :inscripcionescuelaperiodos, only: :index do
+      member do
+        get :confirmacion_masiva
+      end
+    end
     resources :parametros_generales, only: :index do 
       member do
         post :update

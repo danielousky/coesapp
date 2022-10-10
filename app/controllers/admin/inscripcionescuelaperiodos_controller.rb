@@ -34,5 +34,16 @@ module Admin
 			end
 		end
 
+		def confirmacion_masiva
+			escuelaperiodo = Escuelaperiodo.find params[:id]
+			if escuelaperiodo
+				escuelaperiodo.inscripcionescuelaperiodos.con_reportepago.preinscritos.each {|ins| ins.delay.confirmar_con_correo}				
+				flash[:success] = 'Inscripciones confimadas. Se enviarán los correos prograsivamente en los próximos minutos'
+			else
+				flash[:danger] = 'No se encontró el período y escuela solicitado'
+			end
+			redirect_back fallback_location: root_path
+		end
+
 	end
 end

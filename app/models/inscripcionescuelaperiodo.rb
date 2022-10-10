@@ -20,6 +20,9 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 
 	belongs_to :reportepago, optional: true
 
+	#CALLBACKS:
+	after_save :bitacora_confirmacion_inscripcion
+
 	# VALIDACIONES:
 	validates_uniqueness_of :estudiante_id, scope: [:escuelaperiodo_id], message: 'El estudiante ya posee una inscripción en el período actual', field_name: false
 
@@ -138,5 +141,30 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 
 		return ins_escuelaperiodo
 
+	end
+
+	def confirmar_con_correo
+		if self.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)
+			if EstudianteMailer.confirmado(estudiante, self).deliver
+				info_bitacora "Se envió correo de confirmacion de inscripción estudiante #{self.estudiante_id} en periodo #{self.periodo.id} en #{self.escuela.descripcion}.", Bitacora::CREACION, self
+			end
+		end		
+	end
+
+	def bitacora_confirmacion_inscripcion
+		if self.tipo_estado_inscripcion_id.eql? TipoEstadoInscripcion::INSCRITO
+
+			Bitacora.create!(
+			descripcion: "Confirmada inscripción del estudiante #{self.estudiante_id} en periodo #{self.periodo.id} en #{self.escuela.descripcion}.", 
+			tipo: Bitacora::CREACION,
+			usuario_id: nil,
+			comentario: nil,
+			id_objeto: self.id,
+			tipo_objeto: self.class.name,
+			ip_origen: 'localhost'
+			)
+
+		end
+		
 	end
 end
