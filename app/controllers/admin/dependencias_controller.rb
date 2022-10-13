@@ -11,17 +11,22 @@ module Admin
 
     def create
       total_saved = 0
+      total_error = []
       (params[:dependencia]['asignatura_dependiente_id']).reject!(&:empty?)
       params[:dependencia]['asignatura_dependiente_id'].each do |a_d_id|
         dependiente = Dependencia.new(asignatura_id: params[:dependencia]['asignatura_id'])
         dependiente.asignatura_dependiente_id = a_d_id
-        total_saved+= 1 if dependiente.save
+        if dependiente.save
+          total_saved += 1
+        else
+          total_error << a_d_id
+        end
+
       end
-      if total_saved > 0
-        flash[:success] = "Se guardaron con éxito #{total_saved} prelaciones."
-      else
-        flash[:danger] = 'No fue posible guardar ninguna prelación. Por favor revise e inténtelo nuevamente.'
-      end
+      
+      flash[:success] = "Se guardaron con éxito #{total_saved} #{'prelación'.pluralize(total_saved)}." if total_saved > 0
+      flash[:danger] = "Error en las siguientes asignaturas: #{total_error.to_sentence}. Es posible que existan dependencias anidadas. Por favor, revísela e inténtelo nuevamente." if total_error.any?
+
       redirect_to "#{asignatura_path(params[:dependencia]['asignatura_id'])}?dependencias=true"
     end
 

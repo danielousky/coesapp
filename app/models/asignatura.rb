@@ -5,7 +5,7 @@ class Asignatura < ApplicationRecord
 	belongs_to :departamento
 	belongs_to :tipoasignatura
 
-	has_many :dependencias
+	has_many :dependencias, dependent: :delete_all
 	has_many :dependencia_hacia_atras, foreign_key: 'asignatura_dependiente_id', class_name: 'Dependencia'
 	# has_many :asignaturas, through: :dependencias
 
@@ -71,6 +71,32 @@ class Asignatura < ApplicationRecord
 	before_save :set_to_upcase, :if => :new_record?
 
 	# FUNCIONES:
+
+	def arbol_completo_dependencias
+		aux = []
+		aux = arbol_dependencias
+		aux << arbol_dependencias_hacia_atras
+		return aux.flatten.uniq
+	end
+
+	def arbol_dependencias_hacia_atras
+		if dependencia_hacia_atras.count.eql? 0
+			self.id
+		else
+			dependencia_hacia_atras.map{|dep| [self.id, dep.asignatura.arbol_dependencias_hacia_atras]}
+		end
+	end
+
+	def arbol_dependencias
+		if dependencias.count.eql? 0
+			self.id
+		else
+			dependencias.map{|dep| [self.id, dep.asignatura_dependiente.arbol_dependencias]}
+		end
+	end
+
+
+
 	def proyecto?
 		self.tipoasignatura_id.eql? Tipoasignatura::PROYECTO
 	end

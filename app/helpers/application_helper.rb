@@ -15,6 +15,9 @@ module ApplicationHelper
 		Haml::Engine.new(haml.strip_heredoc, format: :html5).render(self, locals)
 	end
 
+
+	
+
 	def alert_reglamento(grado)
 		render_haml <<-HAML, grado: grado
 			- if grado.not_regular?
@@ -26,6 +29,7 @@ module ApplicationHelper
 						%h5.alert Por favor comuníquese con el personal administrativo para solventar su situación.
 		HAML
 	end	
+	
 
 	def label_bst(content)
 		render_haml <<-HAML, content: content

@@ -3,5 +3,5 @@
 	%table.table
 		%tbody
 			- @aprobadas_ids = @grado.inscripciones.aprobado.includes(:asignatura).map{|ins| ins.asignatura.id}
-			- @escuela.asignaturas.con_dependencias.order('orden ASC, id ASC').each do |asignatura| 
+			- @escuela.asignaturas.con_dependencias.order('anno ASC, id ASC').each do |asignatura| 
 				= render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: asignatura.dependencias}

@@ -69,9 +69,9 @@ module Admin
 
       @escuela = @asignatura.escuela
       @departamentos = @escuela.departamentos.includes(:departamento)
-      @dependientes = @asignatura.dependencias
+      @dependientes = @asignatura.dependencias.joins(:asignatura_dependiente).order(['asignaturas.anno ASC','asignaturas.descripcion ASC'])
 
-      @dependencia_hacia_atras = @asignatura.dependencia_hacia_atras
+      @dependencia_hacia_atras = @asignatura.dependencia_hacia_atras.joins(:asignatura).order(['asignaturas.anno DESC','asignaturas.descripcion ASC'])
       @secciones = @asignatura.secciones.del_periodo(current_periodo.id)
 
 

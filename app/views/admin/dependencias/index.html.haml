@@ -8,11 +8,14 @@
     %table.table-striped.table-sm.table-hover.table-bordered
       %tbody
         - if @dependencia_hacia_atras.any?
-          = render partial: '/admin/dependencias/tabla_depen_hacia_atras', locals: {dependientes: @dependencia_hacia_atras}
+          = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: @dependencia_hacia_atras, adelante: false}
         %tr.table-success
-          %td= @asignatura.descripcion_id
+          %td
+            = badge_orden_asignatura(@asignatura)
+            |
+            = @asignatura.descripcion_id
         - if @dependientes.any?
-          = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: @dependientes}
+          = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: @dependientes, adelante: true}
 
 - else
   .row
