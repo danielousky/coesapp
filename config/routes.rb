@@ -122,6 +122,7 @@ Rails.application.routes.draw do
     resources :escuelas do 
       member do
         get 'periodos'
+        get 'arbol_prelaciones'
         post 'set_periodo_inscripcion'
         get 'update_dependencias'
         get 'set_habilitar_retiro_asignaturas'

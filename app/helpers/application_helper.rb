@@ -16,7 +16,30 @@ module ApplicationHelper
 	end
 
 
-	
+	def ordinalize_es(numero)
+		case numero
+		when 0
+			0
+		when 1
+			'1ro.'
+		when 2
+			'2do.'
+		when 3
+			'3ro.'
+		when 4..6
+			"#{numero}to."
+		when 7
+			'7mo.'
+		when 8
+			'8vo.'
+		when 9
+			'9no.'
+		when 10
+			'10mo.'
+		else
+			numero
+		end
+	end
 
 	def alert_reglamento(grado)
 		render_haml <<-HAML, grado: grado

@@ -11,6 +11,13 @@ module Admin
 
     # GET /escuelas
     # GET /escuelas.json
+
+    def arbol_prelaciones
+      @asignaturas = @escuela.asignaturas.order(:anno)
+      @annos = @asignaturas.group(:anno).count
+      @max = @annos.values.max
+    end
+
     def periodos
       render json: {ids: @escuela.periodos.where("periodos.id != ?", params[:periodo_actual_id]).order(inicia: :desc).ids.to_a}
     end

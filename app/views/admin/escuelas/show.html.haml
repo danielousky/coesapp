@@ -14,11 +14,16 @@
       Eliminar
 
 - if (current_admin and current_admin.autorizado? 'Escuela', 'show')
+  - if current_admin and current_admin.autorizado?('Escuela', 'arbol_prelaciones')
+    = link_to arbol_prelaciones_escuela_path(@escuela), class: 'btn btn-sm btn-success tooltip-btn mr-2', 'data-toggle': :tooltip, title: 'Ver árbol completo de prelaciones' do
+      = glyph 'tree-deciduous'
+      Árbol Prelaciones
   - if @escuelaperiodo
     - @ep_anterior = @escuelaperiodo.escuelaperiodo_anterior
+
     - if @ep_anterior.inscripcionescuelaperiodos.any? and (current_admin and current_admin.autorizado? 'Escuelaperiodo', 'correr_reglamento')
       - total = @ep_anterior.inscripcionescuelaperiodos.count
-      = link_to "#{correr_reglamento_escuelaperiodo_path(@ep_anterior)}", class: 'btn btn-sm btn-info tooltip-btn', 'data-confirm': "Esta acción es irreversible y actualizará el estado de #{total} estudiantes inscritos en: Citahorarias, Eficiencia, Promedios y Normativa ¿Está seguro?", 'data-toggle': :tooltip, title: "Limpiar citas horarias anteriores, actualizar eficiencia, promedios y estado de la normativa de cada estudiante inscrito en el periodo #{@ep_anterior.periodo_id}" do
+      = link_to correr_reglamento_escuelaperiodo_path(@ep_anterior), class: 'btn btn-sm btn-info tooltip-btn', 'data-confirm': "Esta acción es irreversible y actualizará el estado de #{total} estudiantes inscritos en: Citahorarias, Eficiencia, Promedios y Normativa ¿Está seguro?", 'data-toggle': :tooltip, title: "Limpiar citas horarias anteriores, actualizar eficiencia, promedios y estado de la normativa de cada estudiante inscrito en el periodo #{@ep_anterior.periodo_id}" do
         = glyph 'wrench'
         Normativa
         .badge.badge-dark= "Hasta #{@ep_anterior.periodo_id}"
