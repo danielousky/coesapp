@@ -4,8 +4,10 @@
 
 %table#dataTable.table.table-sm
 
-	= link_to 'Confirmar '+"Reportado".pluralize(@inscripciones.count), confirmacion_masiva_inscripcionescuelaperiodo_path(@escuelaperiodo.id), class: 'float-left btn btn-sm btn-success mr-3 tooltip-btn', 'data_toggle': :tooltip, title: "Confirmar #{@inscripciones.count} "+"inscripcion".pluralize(@inscripciones.count) if (params[:status].eql? 'reported' and @inscripciones.any?)
-
+	- if (params[:status].eql? 'reported' and @inscripciones.any?)
+		= link_to confirmacion_masiva_inscripcionescuelaperiodo_path(@escuelaperiodo.id), class: 'float-left btn btn-sm btn-success mr-3 tooltip-btn', 'data_toggle': :tooltip, title: "Confirmar #{@inscripciones.count} "+"inscripcion".pluralize(@inscripciones.count) do
+			= glyph :check
+			= 'Confirmar '+"Reportado".pluralize(@inscripciones.count)
 
 	= text_field_tag nil, nil, {id: :max, class: 'float-right form-control-sm ml-3', placeholder: 'Hasta', onfocus: "(this.type='date')"}
 	= text_field_tag nil, nil, {id: :min, class: 'float-right form-control-sm ml-1', placeholder: 'Desde', onfocus: "(this.type='date')"}
