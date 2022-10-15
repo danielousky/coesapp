@@ -145,7 +145,7 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 
 	def confirmar_con_correo
 		if self.update(tipo_estado_inscripcion_id: TipoEstadoInscripcion::INSCRITO)
-			if EstudianteMailer.delay.confirmado(estudiante, self).deliver
+			if EstudianteMailer.confirmado(estudiante, self).deliver_later
 				Bitacora.create!(
 				descripcion: "Se envió correo de confirmacion de inscripción estudiante #{self.estudiante_id} en periodo #{self.periodo.id} en #{self.escuela.descripcion}.", 
 				tipo: Bitacora::CREACION,
