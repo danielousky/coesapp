@@ -2,6 +2,11 @@ class EstudianteMailer < ActionMailer::Base
     
   default from: "COES-FHE <controlestfheucv@gmail.com>"#, authentication: 'plain'
   layout 'mailer'
+
+  def prueba
+    mail(to: 'danielmoros@mailinator.com', subject: "Correo de Prueba de COESFHE")
+  end
+
   def ratificacionEIM201902A(estudiante)
     @nombre = estudiante.usuario.nombres
     @genero = estudiante.usuario.genero
