@@ -11,7 +11,10 @@
   display: inline-block;
 }
 
-
+.required {
+  @extend .border;
+  @extend .border-warning;
+}
 
 .btn-mini{
   height: 25px;

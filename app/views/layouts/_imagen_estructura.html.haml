@@ -4,7 +4,7 @@
   - warning = !(objeto and objeto.attached?) ? 'alert-warning' : ''
   %div{class: warning}
     .form-group.row
-      = label_tag nil, nombre, class: 'col-form-label col-md-3 text-right', value: titulo
+      = label_tag nil, nombre.titleize, class: 'col-form-label col-md-3 text-right', value: titulo
       .col-md-9
         - image_value = (objeto and objeto.attached?) ? main_app.url_for(objeto) : "#{nombre}_default.png"
         = image_tag image_value, width: '100px', class: 'border p-1', id: "img#{nombre}"

@@ -46,6 +46,11 @@ class Estudiante < ApplicationRecord
 	# 	end
 	# end
 
+	def datos_incompletos?
+		self.direccion.nil? ? true : false
+	end
+
+
 	def ci
 		self.usuario_id
 	end

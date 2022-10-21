@@ -34,6 +34,11 @@ class Usuario < ApplicationRecord
 	validates :nombres, presence: true, unless: :new_record?
 	validates :apellidos, presence: true, unless: :new_record?
 	validates :sexo, presence: true, unless: :new_record?
+	
+
+	# validates :foto_perfil, presence: true, unless: :new_record?
+	# validates :imagen_ci, presence: true, unless: :new_record?
+
 	validates :password, presence: true
 	validates :password, confirmation: true
 
@@ -62,7 +67,7 @@ class Usuario < ApplicationRecord
 	end
 
 	def datos_incompletos?
-		((self.attributes.values.reject{|e| !e.blank?}.any?) or (self.ci.eql? self.password) or (self.foto_perfil.nil? or (self.foto_perfil and !self.foto_perfil.attached?))) ? true : false
+		((self.attributes.reject{|at| at.eql? 'telefono_habitacion'}.values.reject{|e| !e.blank?}.any?) or (self.ci.eql? self.password) or (self.foto_perfil.nil? or (self.foto_perfil and !self.foto_perfil.attached?))) ? true : false
 	end
 
 	def autorizado? *args 

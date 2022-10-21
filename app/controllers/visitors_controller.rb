@@ -140,7 +140,7 @@ class VisitorsController < ApplicationController
 
     gen = usuario.genero
 
-    flash[:success] = "Bienvenid#{gen} #{usuario.nombres}" 
+    flash[:success] = "¡Bienvenid#{gen} #{usuario.nombres}!" 
 
     if tipo == "Administrador" && usuario.administrador
       session[:rol] = tipo

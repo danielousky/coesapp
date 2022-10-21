@@ -3,4 +3,4 @@
   .col-md-10
     =# collection_select(:profesor, :departamento_id, Departamento.all, :id, :descripcion_completa, {prompt: "-- Seleccione Departamento --"}, {required: true, class: 'text-field form-control'})
     - escuelas = current_admin ? current_admin.escuelas : Escuela.all
-    = grouped_collection_select :profesor, :departamento_id, escuelas, :departamentos, :descripcion, :id, :descripcion, {:prompt => "-- Seleccione Departamento --"}, { class: 'selects2 form-control text-field'}
+    = grouped_collection_select :profesor, :departamento_id, escuelas, :departamentos, :descripcion, :id, :descripcion, {:prompt => "-- Seleccione Departamento --"}, { class: 'selects2 form-control required'}

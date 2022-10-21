@@ -3,47 +3,47 @@
 
 =# DATOS DE ESCUELA
 .form-group.row
-  %label.col-form-label.col-md-2.text-right Escuela:
-  .col-md-10
+  %label.col-form-label.col-md-3.text-right Escuela:
+  .col-md-9
     =# collection_select(nil, :escuela_id , Escuela.all, :id, :descripcion, {prompt: "--- Seleccione Escuela ---"}, {class: 'text-field form-control', required: true})
 
-    = select(:grado, :escuela_id, @escuelas_disponibles.collect{|o| [ o.descripcion, o.id ] }, { include_blank: '--- Selecciona Escuela ---'}, {class: "form-control", required: true, onchange: 'set_escuela()'})
+    = select(:grado, :escuela_id, @escuelas_disponibles.collect{|o| [ o.descripcion, o.id ] }, { include_blank: '--- Selecciona Escuela ---'}, {class: "form-control required", required: true, onchange: 'set_escuela()'})
 
 =# DATOS DE PLAN
 .form-group.row
-  %label.col-form-label.col-md-2.text-right Plan:
-  .col-md-10
+  %label.col-form-label.col-md-3.text-right Plan:
+  .col-md-9
     =# collection_select(nil, 'plan[id]' , Plan.all, :id, :descripcion_completa_con_escuela, {prompt: "-- Seleccione Plan --"}, {class: 'text-field form-control', required: true})
 
-    = grouped_collection_select :grado, :plan_id, @escuelas_disponibles, :planes, :descripcion, :id, :descripcion_completa, {:prompt => "--- Selecciona plan ---"}, { class: 'form-control hideble', required: true}
+    = grouped_collection_select :grado, :plan_id, @escuelas_disponibles, :planes, :descripcion, :id, :descripcion_completa, {:prompt => "--- Selecciona plan ---"}, { class: 'form-control hideble required', required: true}
 
-=# DATOS DE PERIODO
+=# DATOS DE PERIODO INICIAL
 .form-group.row
-  %label.col-form-label.col-md-2.text-right Periodo:
-  .col-md-10
+  %label.col-form-label.col-md-3.text-right Periodo:
+  .col-md-9
 
-    = grouped_collection_select :grado, :iniciado_periodo_id, @escuelas_disponibles, :periodos, :descripcion, :id, :id, {:prompt => "--- Selecciona el periodo a partir de cúal inicia el estudiante ---"}, { class: 'form-control hideble', required: true}
+    = grouped_collection_select :grado, :iniciado_periodo_id, @escuelas_disponibles, :periodos, :descripcion, :id, :id, {:prompt => "--- Selecciona el periodo a partir de cúal inicia el estudiante ---"}, { class: 'form-control hideble required', required: true}
 
 .form-group.row
-  %label.col-form-label.col-md-2.text-right Tipo de Ingreso:
-  .col-md-10
+  %label.col-form-label.col-md-3.text-right Tipo de Ingreso:
+  .col-md-9
     - Grado.tipos_ingreso.map do |k,v| 
       %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
-        = radio_button_tag '[grado]tipo_ingreso', k, false, required: true, class: ''
+        = radio_button_tag '[grado]tipo_ingreso', k, false, required: true, class: 'required'
         = "#{k.titleize}"
 
 .form-group.row
-  %label.col-form-label.col-md-2.text-right Regiones:
-  .col-md-10
+  %label.col-form-label.col-md-3.text-right Regiones:
+  .col-md-9
     - Grado.regiones.map do |k,v| 
       %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
         - value = v.eql? 0
-        = radio_button_tag '[grado]region', k, value, required: true, class: ''
+        = radio_button_tag '[grado]region', k, value, required: true, class: 'required'
         = "#{k.titleize}"
 
 .form-group.row
-  %label.col-form.label.col-md-2.text-right Reincorporado:
-  .col-md-10= check_box_tag '[grado]estado_inscripcion', :reincorporado, false
+  %label.col-form.label.col-md-3.text-right Reincorporado:
+  .col-md-9= check_box_tag '[grado]estado_inscripcion', :reincorporado, false
 
 :javascript
   function set_escuela(){

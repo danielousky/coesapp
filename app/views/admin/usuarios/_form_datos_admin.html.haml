@@ -10,17 +10,17 @@
 .form-group.row
   %b.col-form-label.col-md-3.text-right Rol del Adminstrador: 
   .col-md-9
-    = select_tag '[administrador]rol', options_for_select(administradores), prompt: '-- Seleccione Rol --', required: true, class: 'text-field form-control', id: :roles_admin
+    = select_tag '[administrador]rol', options_for_select(administradores), prompt: '-- Seleccione Rol --', required: true, class: 'required form-control', id: :roles_admin
 #jefeDepartamento.hideble
   .form-group.row
     %label.col-form-label.col-md-3.text-right Departamento:
     .col-md-9
-      = grouped_collection_select :administrador, :departamento_id, Escuela.all, :departamentos, :descripcion, :id, :descripcion, {prompt: "-- Seleccione Departamento --"}, { class: 'text-field form-control'}
+      = grouped_collection_select :administrador, :departamento_id, Escuela.all, :departamentos, :descripcion, :id, :descripcion, {prompt: "-- Seleccione Departamento --"}, { class: 'required form-control'}
 #jefeEscuela.hideble
   .form-group.row
     %label.col-form-label.col-md-3.text-right Escuela:
     .col-md-9
-      = collection_select(:administrador, :escuela_id, Escuela.all, :id, :descripcion, {prompt: "-- Seleccione Escuela --"}, {class: 'text-field form-control'})
+      = collection_select(:administrador, :escuela_id, Escuela.all, :id, :descripcion, {prompt: "-- Seleccione Escuela --"}, {class: 'required form-control'})
 
 :javascript
   $('#roles_admin').on('change',function(evt){ 
