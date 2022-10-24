@@ -21,6 +21,31 @@ class Escuelaperiodo < ApplicationRecord
 	# 	self.escuela.grados.no_preinscrito.sin_cita_horarias.order([eficiencia: :desc, promedio_simple: :desc, promedio_ponderado: :desc])
 	# end
 
+	def semestral?
+		periodo.semestral?
+	end
+
+	def anual?
+		periodo.anual?
+	end
+
+	def periodos_ultimo_año_ids
+		periodos_ids = []
+		if escupe_anterior = escuelaperiodo_anterior
+			periodos_ids << escupe_anterior.periodo_id
+			escuepe_anteanterior = escupe_anterior.escuelaperiodo_anterior
+			if semestral? and escuepe_anteanterior
+				periodos_ids << escuepe_anteanterior.periodo_id
+			end
+		end
+		periodos_ids.reverse
+	end
+
+	def periodos_ultimo_año
+		Periodo.where(periodo_id: periodos_ultimo_año_ids)
+	end
+
+
 	def escuelaperiodo_anterior
 		periodo_anterior = escuela.periodo_anterior periodo_id
 		Escuelaperiodo.where(periodo_id: periodo_anterior.id, escuela_id: escuela_id).first

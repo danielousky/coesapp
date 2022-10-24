@@ -14,6 +14,12 @@
       Eliminar
 
 - if (current_admin and current_admin.autorizado? 'Escuela', 'show')
+
+  = link_to ponderados_escuelaperiodo_path(@escuelaperiodo), class: 'btn btn-sm btn-success tooltip-btn mr-2', 'data-toggle': :tooltip, title: "Ponderados último año #{@escuelaperiodo.periodos_ultimo_año_ids.to_sentence}" do
+    = glyph 'star'
+    = glyph 'education'
+    Ponderados
+
   - if current_admin and current_admin.autorizado?('Escuela', 'arbol_prelaciones')
     = link_to arbol_prelaciones_escuela_path(@escuela), class: 'btn btn-sm btn-success tooltip-btn mr-2', 'data-toggle': :tooltip, title: 'Ver árbol completo de prelaciones' do
       = glyph 'tree-deciduous'
@@ -28,8 +34,9 @@
         Normativa
         .badge.badge-dark= "Hasta #{@ep_anterior.periodo_id}"
 
-      = link_to index_reglamento_escuelaperiodo_path(@ep_anterior.id), class: 'btn btn-sm btn-info ml-2 mr-2' do
-        Estudiantes por normativa
+      = link_to index_reglamento_escuelaperiodo_path(@ep_anterior.id), class: 'btn btn-sm btn-success ml-2 mr-2' do
+        = glyph 'list'
+        Estudiantes por Normativa
 
     = link_to "#{jornadacitahorarias_path}", class: 'btn btn-sm btn-success' do
       = glyph 'calendar'

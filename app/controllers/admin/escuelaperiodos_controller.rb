@@ -12,6 +12,12 @@ module Admin
 			@grados_con_inscripciones_periodo_anterior = @escupe.escuela.grados.con_inscripciones_en_periodo(@escupe.periodo_id).includes(estudiante: :usuario).order(['usuarios.nombres ASC', 'usuarios.apellidos'])
 		end
 
+		def ponderados
+			@periodo_ultimo_año_ids = @escupe.periodos_ultimo_año_ids
+			@inscritos_ultimo_año = Inscripcionescuelaperiodo.includes(:usuario, :grado, :escuelaperiodo).where('escuelaperiodos.escuela_id': @escupe.escuela_id, 'escuelaperiodos.periodo_id': @periodo_ultimo_año_ids.last)
+
+		end
+
 		def correr_reglamento
 			total_actualizados = 0
 			total_error = 0
@@ -20,7 +26,7 @@ module Admin
 				reglamento = iep.revisar_reglamento
 				grado = iep.grado 
 
-				if grado.update(reglamento: reglamento, eficiencia: grado.calcular_eficiencia, promedio_ponderado: grado.calcular_promedio_simple, promedio_simple: grado.calcular_promedio_simple)
+				if grado.update(reglamento: reglamento, eficiencia: grado.calcular_eficiencia, promedio_ponderado: grado.calcular_promedio_ponderado, promedio_simple: grado.calcular_promedio_simple)
 					total_actualizados += 1
 				else
 					total_error += 1

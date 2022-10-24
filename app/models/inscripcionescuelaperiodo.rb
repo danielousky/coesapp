@@ -14,7 +14,7 @@ class Inscripcionescuelaperiodo < ApplicationRecord
 	belongs_to :escuelaperiodo
 	belongs_to :tipo_estado_inscripcion
 	belongs_to :grado
-
+	has_one :usuario, through: :estudiante
 	has_one :escuela, through: :escuelaperiodo
 	has_one :periodo, through: :escuelaperiodo
 
