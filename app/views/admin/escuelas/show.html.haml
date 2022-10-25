@@ -14,7 +14,7 @@
       Eliminar
 
 - if (current_admin and current_admin.autorizado? 'Escuela', 'show')
-  - if @escuelaperiodo
+  - if @escuelaperiodo and current_admin and current_admin.autorizado? 'Escuelaperiodo', 'ponderados'
     = link_to ponderados_escuelaperiodo_path(@escuelaperiodo), class: 'btn btn-sm btn-success tooltip-btn mr-2', 'data-toggle': :tooltip, title: "Ponderados del #{@escuelaperiodo.periodos_ultimo_año_ids.to_sentence}" do
       = glyph 'star'
       = glyph 'education'
