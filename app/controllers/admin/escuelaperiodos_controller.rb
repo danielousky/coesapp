@@ -14,6 +14,7 @@ module Admin
 
 		def ponderados
 			@periodo_ultimo_año_ids = @escupe.periodos_ultimo_año_ids
+			@titulo = "Estudiantes incritos en el último año: #{@periodo_ultimo_año_ids.to_sentence} "
 			@inscritos_ultimo_año = Inscripcionescuelaperiodo.includes(:usuario, :grado, :escuelaperiodo).where('escuelaperiodos.escuela_id': @escupe.escuela_id, 'escuelaperiodos.periodo_id': @periodo_ultimo_año_ids.last)
 
 		end
