@@ -18,7 +18,7 @@
     - @inscritos_ultimo_año.each do |ins| 
       %tr
         %td= ins.estudiante_id
-        %td= ins.usuario.apellido_nombre
+        %td= link_to ins.usuario.apellido_nombre, usuario_path(ins.usuario)
         %td= ins.grado.calcular_promedio_ponderado @periodo_ultimo_año_ids
         %td= ins.grado.calcular_promedio_simple @periodo_ultimo_año_ids
         %td= ins.grado.calcular_eficiencia @periodo_ultimo_año_ids

@@ -106,8 +106,13 @@ class Inscripcionseccion < ApplicationRecord
 
 	scope :total_creditos_cursados, -> {cursadas.total_creditos}
 	scope :total_creditos_aprobados, -> {aprobadas.total_creditos}
-	scope :ponderado, -> {joins(:asignatura).sum('asignaturas.creditos * calificacion_final')}
-	scope :promedio, -> {average('calificacion_final')}
+	
+	scope :ponderado, -> {joins(:asignatura).cursadas.sum('asignaturas.creditos * calificacion_final')}
+
+	# scope :peso_asignaturas, -> {joins(:asignatura).cursadas.sum('asignaturas.creditos * calificacion_final')}
+	# scope :ponderado, -> {peso_asignaturas/total_creditos_cursados}
+
+	scope :promedio, -> {cursadas.average('calificacion_final')}
 	scope :promedio_aprobadas, -> {aprobadas.promedio}
 	scope :ponderado_aprobadas, -> {aprobadas.ponderado}
 

@@ -264,7 +264,7 @@ class Grado < ApplicationRecord
 			promedio_simple = (aux and aux.any? and !aux.average('calificacion_final').nil?) ? aux.average('calificacion_final').round(4) : 0.0
 
 			aux = inscripciones.ponderado
-			ponderado = cursados > 0 ? (aux.to_f/cursados.to_f).round(4) : 0.0
+			ponderado = (cursados > 0) ? (aux.to_f/cursados.to_f).round(4) : 0.0
 		end
 
 	end
