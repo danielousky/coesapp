@@ -60,7 +60,7 @@ class Grado < ApplicationRecord
 	scope :iniciados_en_periodo, -> (periodo_id) {where "iniciado_periodo_id = ?", periodo_id}
 	scope :iniciados_en_periodos, -> (periodo_ids) {where "iniciado_periodo_id IN (?)", periodo_ids}
 
-	scope :de_las_escuelas, lambda {|escuelas_ids| where("escuela_id IN (?)", escuelas_ids)}
+	scope :de_las_escuelas, lambda {|escuelas_ids| where("grados.escuela_id IN (?)", escuelas_ids)}
 
 
 	scope :con_inscripciones, -> { where('(SELECT COUNT(*) FROM inscripcionsecciones WHERE inscripcionsecciones.estudiante_id = grados.estudiante_id) > 0') }

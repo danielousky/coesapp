@@ -39,8 +39,16 @@ module Admin
 			file = ExportarExcel.listado_estudiantes current_periodo.id, params[:estado], @escuela_id, @plan_id, params[:ingreso]
 			# send_file file, type: "application/vnd.ms-excel", x_sendfile: true, stream: false, filename: "listado_completo_#{params[:estado]}_#{current_periodo.id}.xls", disposition: "attachment"
 
+			params[:estado] = 'completo' if params[:estado].blank?
+
+			nombre_archivo = 'listado'
+			nombre_archivo += "_#{params[:estado]}" if params[:estado]
+			nombre_archivo += "_#{current_periodo.id}"
+			nombre_archivo += "_#{escuela.id}" if escuela
+
+
 			File.open(file, 'r') do |f|
-				send_data f.read, type: "text/excel", filename: "listado_completo_#{params[:estado]}_#{current_periodo.id}.xls"
+				send_data f.read, type: "text/excel", filename: "#{nombre_archivo}.xls"
 			end
 
 			File.delete(file) if File.exist?(file)

@@ -13,15 +13,24 @@ class ExportarExcel
 	def self.listado_estudiantes periodo_id, estado='completo', escuela_id=nil, plan_id=nil, ingreso=nil
 
 		require 'spreadsheet'
+		estado = 'completo' if estado.blank?
 
 		@book = Spreadsheet::Workbook.new
 		@sheet = @book.create_worksheet :name => "estudiantes_#{estado}_#{periodo_id}"
 
 		@sheet.row(0).concat ['#', 'ESCUELA', 'PLAN', 'INGRESO','CEDULA', 'ESTADO INSCRIP', 'REGION', 'APELLIDOS', 'NOMBRES', 'NAC.', 'EDO. CIVIL', 'GÉNERO', 'TLF. FIJO', 'TLF. MÓVIL', 'CORREO-E', 'NAC. AÑO', 'NAC. MES', 'NAC. DÍA', 'ESTADO', 'MUNICIPIO', 'CIUDAD', 'URBANIZACIÓN/SECTOR', 'CALLE/AVENIDA', 'TIPO VIVIENDA']
 
-		grados = Grado.iniciados_en_periodo(periodo_id)#.limit(50)
+		if estado.eql? 'con_inscripcion_en_periodo'
+			grados = Grado.con_inscripciones_en_periodo(periodo_id)
+
+			grados = Grado.joins(:periodos).where("periodos.id": periodo_id)
+			grados = grados.de_las_escuelas [escuela_id] if escuela_id
+		else
+			grados = Grado.iniciados_en_periodo(periodo_id)#.limit(50)
+		end
+
 		estado = estado.singularize
-		if estado != 'completo'
+		if estado != 'completo' and estado != 'con_inscripcion_en_periodo'
 			unless estado.eql? 'nuevo'
 				if estado.eql? 'ucv'
 					grados = grados.inscritos_ucv

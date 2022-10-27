@@ -14,11 +14,19 @@
       Eliminar
 
 - if (current_admin and current_admin.autorizado? 'Escuela', 'show')
+  - if(current_admin and current_admin.autorizado?('grados', 'index_nuevos'))
+
+    = btn_toggle 'btn-success', 'list', "#{listado_completo_estudiante_descargar_path(1)}?estado=con_inscripcion_en_periodo&escuela=#{@escuela.descripcion}", "Descargar listado completo de inscritos en #{@escuelaperiodo.periodo_id}", 'Inscritos'
+
   - if @escuelaperiodo and current_admin and current_admin.autorizado? 'Escuelaperiodo', 'ponderados'
-    = link_to ponderados_escuelaperiodo_path(@escuelaperiodo), class: 'btn btn-sm btn-success tooltip-btn mr-2', 'data-toggle': :tooltip, title: "Ponderados del #{@escuelaperiodo.periodos_ultimo_año_ids.to_sentence}" do
-      = glyph 'star'
-      = glyph 'education'
-      Ponderados Último Año
+    
+    = btn_toggle 'btn-success', 'star', ponderados_escuelaperiodo_path(@escuelaperiodo), "Ponderados del #{@escuelaperiodo.periodos_ultimo_año_ids.to_sentence}", 'Ponderados Último Año'
+
+    - if false
+      = link_to ponderados_escuelaperiodo_path(@escuelaperiodo), class: 'btn btn-sm btn-success tooltip-btn mr-2', 'data-toggle': :tooltip, title: "Ponderados del #{@escuelaperiodo.periodos_ultimo_año_ids.to_sentence}" do
+        = glyph 'star'
+        = glyph 'education'
+        Ponderados Último Año
 
   - if current_admin and current_admin.autorizado?('Escuela', 'arbol_prelaciones')
     = link_to arbol_prelaciones_escuela_path(@escuela), class: 'btn btn-sm btn-success tooltip-btn mr-2', 'data-toggle': :tooltip, title: 'Ver árbol completo de prelaciones' do
