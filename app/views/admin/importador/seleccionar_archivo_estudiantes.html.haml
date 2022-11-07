@@ -53,6 +53,12 @@
             %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
               = radio_button_tag '[grado]estado', k, false, required: true, class: ''
               = "#{k.upcase}"
+        .border.mt-3.p-3
+          %h6 Elija el lugar (Estado) de procedencia del estudiante, si lo hubiera:
+          - Grado.regiones.map do |k,v| 
+            %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
+              = radio_button_tag '[grado]region', k, false, required: true, class: ''
+              = "#{k.upcase}"
 
         .border.mt-3.p-3
           %h6 
