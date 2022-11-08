@@ -35,29 +35,43 @@ class ImportCsv
 			errores_generales << "Error al intentar abrir el archivo: #{e}"			
 		end
 
+		# Validación de Cabeceras
+		# begin
+		# 	headers = csv.headers.flatten.split(";")
+		# rescue Exception => e
+		# 	errores_generales << "Error al intentar crear las cabeceras: #{e}"
+		# end
 
-		errores_cabeceras << "'ci'" unless (csv.headers.include? 'ci')
-		if !(csv.headers.include? 'nombres_apellidos')
-			errores_cabeceras << "'nombres'" unless (csv.headers.include? 'nombres')
-			errores_cabeceras << "'apellidos'" unless (csv.headers.include? 'apellidos')
-		end
-
+		# unless errores_generales.any?
+		# 	errores_cabeceras << "'ci'" unless (headers.include? 'ci')
+		# 	if !(headers.include? 'nombres_apellidos')
+		# 		errores_cabeceras << "'nombres'" unless (headers.include? 'nombres')
+		# 		errores_cabeceras << "'apellidos'" unless (headers.include? 'apellidos')
+		# 	end
+		# end
 		# Emails
 
 		total_correos_enviados = 0
 		total_correos_no_enviados = 0
 
-		unless errores_cabeceras.any?
+		if not errores_generales.any?
+			p "    INICIANDO PROCESO GENERAL    ".center(300, '$')
 
 			csv.group_by{|row| row['ci']}.values.each do |row|
 
 				begin
+
 					# if profe = Profesor.where(usuario_id: row.field(0))
 					hay_usuario = false
-					row = row[0]
+
+					p "    CONTENIDO DE ROW: #{row}    ".center(300, '$')
+
+
+					row = row[0] if not row[0].nil?
 					row['ci'].strip!
 					row['ci'].delete! '^0-9'
 
+					p "    INICIANDO A PROCESAR: #{row['ci']}    ".center(300, '$')
 					unless usuario = Usuario.where(ci: row['ci']).limit(1).first
 						usuario = Usuario.new
 						usuario.ci = row['ci']
@@ -79,6 +93,8 @@ class ImportCsv
 					
 					nuevo_usuario = usuario.new_record?
 					if usuario.save
+						p "    USUARIO REGISTRADO: #{usuario.ci}    ".center(300, '$')
+
 						if nuevo_usuario
 							total_usuarios_nuevos += 1
 							desc_us = "Creacion de Usuario vía migración con CI: #{usuario.ci}"
@@ -112,6 +128,9 @@ class ImportCsv
 						nuevo_estudiante = estudiante.new_record?
 
 						if estudiante.save
+
+							p "    ESTUDIANTE REGISTRADO: #{usuario.ci}    ".center(300, '$')
+
 							nuevo_estudiante ? (total_estudiantes_nuevos += 1) : (total_estudiantes_actualizados += 1)
 							Bitacora.create!(
 								descripcion: "Asociación de Usuario como Estudiante vía migración con CI: #{estudiante.id}", 
