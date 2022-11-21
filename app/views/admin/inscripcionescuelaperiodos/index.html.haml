@@ -61,9 +61,9 @@
 				%td= usuario.apellidos
 				%td= usuario.nombres
 				%td= ins.grado.escuela.descripcion
-				- if params[:status].eql? 'reported' and ins.reportepago
-					%td= ins.reportepago.numero
-					%td= ins.reportepago.monto_con_formato
+				- if params[:status].eql? 'reported'
+					%td= ins.reportepago.numero if ins.reportepago
+					%td= ins.reportepago.monto_con_formato if ins.reportepago
 				- plan = grado.plan if grado
 				- if plan.nil?
 					- hplan = ins.grado.historialplanes.joins(:plan).where("planes.escuela_id = ?", @escuelaperiodo.escuela_id).order('periodo_id DESC').first#.plan_id
@@ -87,12 +87,13 @@
 				%td= grado.tipo_ingreso if grado
 				%td= grado.iniciado_periodo_id if grado
 				%td= grado.inscrito_ucv_label if grado
-				%td
-					- if rp = ins.reportepago
-						= link_to_if (rp.respaldo and rp.respaldo.attached?), rp.descripcion_con_ci, main_app.url_for(rp.respaldo), target: '_blank', rel: "noopener noreferrer"
+				- if params[:status].eql? TipoEstadoInscripcion::INSCRITO or params[:status].eql? 'reported'
+					%td
+						- if rp = ins.reportepago
+							= link_to_if (rp.respaldo and rp.respaldo.attached?), rp.descripcion_con_ci, main_app.url_for(rp.respaldo), target: '_blank', rel: "noopener noreferrer"
 
-					- else
-						Sin Reporte de Pago
+						- else
+							Sin Reporte de Pago
 
 
 
