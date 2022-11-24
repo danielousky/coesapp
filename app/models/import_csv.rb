@@ -441,7 +441,6 @@ class ImportCsv
 									estudiantes_sin_grado << estu.id
 								else
 									# BUSCAR O CREAR INSCRIPCIÓN:
-									p "     #{grado.descripcion}    ".center(2000, "#")
 									inscrip = s.inscripcionsecciones.where(estudiante_id: row['ci']).first
 									if inscrip.nil?
 										inscrip = Inscripcionseccion.new
