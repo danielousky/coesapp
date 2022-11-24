@@ -441,14 +441,16 @@ class ImportCsv
 									estudiantes_sin_grado << estu.id
 								else
 									# BUSCAR O CREAR INSCRIPCIÓN:
+									p "     #{grado.descripcion}    ".center(2000, "#")
 									inscrip = s.inscripcionsecciones.where(estudiante_id: row['ci']).first
 									if inscrip.nil?
 										inscrip = Inscripcionseccion.new
 										escuelaperiodo = Escuelaperiodo.where(periodo_id: periodo_id, escuela_id: a.escuela.id).first
+										escuelaperiodo ||= Escuelaperiodo.create!(periodo_id: periodo_id, escuela_id: a.escuela.id)
 										# BUSCAR O CREAR INSCRIPCIÓN_ESCUELA_PERIODO
 										unless inscrip_escuela_period = estu.inscripcionescuelaperiodos.where(escuelaperiodo_id: escuelaperiodo.id).first
 
-											inscrip_escuela_period = Inscripcionescuelaperiodo.create!(estudiante_id: row['ci'], escuelaperiodo_id: escuelaperiodo.id, tipo_estado_inscripcion_id: 'INS')
+											inscrip_escuela_period = Inscripcionescuelaperiodo.create!(estudiante_id: row['ci'], escuelaperiodo_id: escuelaperiodo.id, tipo_estado_inscripcion_id: 'INS', grado_id: grado.id)
 										end
 
 										inscrip.inscripcionescuelaperiodo_id = inscrip_escuela_period.id
@@ -456,6 +458,8 @@ class ImportCsv
 										inscrip.estudiante_id = estu.id
 										inscrip.escuela_id = escuela_id
 										inscrip.seccion_id = s.id
+										inscrip.grado_id = grado.id
+
 									end
 
 									# CALIFICAR:
