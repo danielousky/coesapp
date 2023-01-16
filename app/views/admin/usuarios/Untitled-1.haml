@@ -1,0 +1,7 @@
+- if (current_admin.autorizado? 'Carteleras', 'index') or (current_admin.autorizado? 'Noticias', 'index') 
+    = sidebar_sub_item 'Informaciones', 'Informaciones', 'bullhorn'
+    #infoSubMenu.list-subgroup-item.list-subgroup.list-group-flush.d-none
+        - if (current_admin.autorizado? 'Carteleras', 'index')
+          = sidebar_link_to_item 'Carteleras', 'carteleras_path'
+        - if (current_admin.autorizado? 'Noticias', 'index')
+          = sidebar_link_to_item 'Noticias', 'comentarios_path'
