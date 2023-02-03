@@ -378,7 +378,7 @@ class ImportCsv
 		estudiantes_sin_grado = []
 
 		begin
-			csv_text = File.read(file).encode('UTF-8', invalid: :replace, replace: '')
+			csv_text = File.read(file)#.encode('UTF-8', invalid: :replace, replace: '')
 			csv = CSV.parse(csv_text, headers: true)
 		rescue Exception => e
 			errores_cabeceras << "Error al intentar abrir el archivo: #{e}"			
