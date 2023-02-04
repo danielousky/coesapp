@@ -216,6 +216,11 @@ es:
       <<: *errors
   activerecord:
     errors:
+      models:
+        seccion:
+          attributes:
+            periodo:
+              required: Requerido
       <<: *errors
   flash:
     actions:
