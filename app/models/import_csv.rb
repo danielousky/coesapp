@@ -411,7 +411,7 @@ class ImportCsv
 
 							aux_period = Periodo.where(id: row['periodo_id']).first
 							if aux_period
-								periodo_id_aux = aux_period
+								periodo_id_aux = aux_period.id
 							else
 								return [0, "Error: Periodo '#{row['periodo_id']}' es inválido o no está creado. fila (#{i}): [#{row}]. Revise o cree el periodo respectivo e inténtelo nuevamente."]
 							end
