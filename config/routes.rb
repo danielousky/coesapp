@@ -88,7 +88,10 @@ Rails.application.routes.draw do
       end
     end
 
-    get '/importador/seleccionar_archivo'
+
+    get '/importador_xlsx/seleccionar_archivo_inscripciones'
+    post '/importador_xlsx/entidades'
+
     get '/importador/index'
     get '/importador/seleccionar_archivo_inscripciones'
     get '/importador/seleccionar_archivo_profesores'

@@ -1,26 +1,19 @@
 class ImportXslx
 
-	def self.general_import fields, headers_layout
+	def self.general_import fields
 		require 'simple_xlsx_reader'
 
 		errores_cabeceras = []
 
 		begin
-			doc = SimpleXlsxReader.open(fields[:datafile].tempfile)
-			hoja = doc.sheets.first
-
-			hoja.rows.shift if hoja.headers.include? nil
-			headers = hoja.headers
-			rows = hoja.data
-			headers.compact!
-
+			rows = SimpleXlsxReader.open(fields[:datafile].tempfile).sheets.first.rows
 		rescue Exception => e
 			errores_cabeceras << "Error al intentar abrir el archivo: #{e}"
 		end
 
 
 		if errores_cabeceras.any?
-			errores_cabeceras << headers
+			# errores_cabeceras << headers
 			return [0,0, errores_cabeceras]
 		else		
 			errors = []

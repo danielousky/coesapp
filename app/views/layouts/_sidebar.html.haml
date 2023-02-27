@@ -43,7 +43,7 @@
         - if (current_admin.autorizado? 'Importador', 'importar_estudiantes')
           = sidebar_link_to_item 'Migrar Estudiantes', {controller: 'importador', action: 'seleccionar_archivo_estudiantes'}
         - if (current_admin.autorizado? 'Importador', 'importar_seccion')
-          = sidebar_link_to_item 'Migrar Inscripciones', {controller: 'importador', action: 'seleccionar_archivo_inscripciones'}
+          = sidebar_link_to_item 'Migrar Inscripciones', {controller: 'importador_xlsx', action: 'seleccionar_archivo_inscripciones'}
     - if (current_admin.autorizado? 'Usuarios', 'create') and (current_admin.autorizado? 'Usuarios', 'set_estudiante') or (current_admin.autorizado? 'Usuarios', 'set_profesor')
       = sidebar_sub_item 'usuario', 'Usuarios', 'user'
       #usuarioSubMenu.list-subgroup-item.list-subgroup.list-group-flush.d-none
