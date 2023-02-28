@@ -5,7 +5,7 @@
   .text-center
     %p Ejemplo:
     =# image_tag 'ejem_csv_importar_estudiantes_secciones'
-    = image_tag image_url('ejem_csv_importar_estudiantes_secciones.png')
+    = image_tag image_url('ejem_csv_importar_estudiantes_secciones_xls.png')
     %p 
       .float-right.text-success #CAMPOS OPCIONALES
       .float-right.text-danger #CAMPOS OBLIGATORIOS
@@ -20,38 +20,11 @@
 
         .alert.alert-info
           %b Seleccione Archivo EXCEL
-        = file_field_tag :datafile, required: true, class: 'form-control', accept: ".xlsx, .xls"
+        = file_field_tag :datafile, required: true, class: 'form-control', accept: ".xlsx"
       .col-md-12
         = select(nil, :escuela_id, current_admin.escuelas.order("id ASC").collect{|o| [ o.descripcion, o.id ] }, { include_blank: 'Selecciona Escuela...'}, {class: "form-control", required: true, onchange: 'set_escuela()'})
       %b.col-md-12.text-muted Las inscripciones del archivo serán cargadas en la escuela seleccionada
-    .form-group
-      #periodo.d-none
-
-        .col-md-12
-          = check_box_tag :periodo_en_archivo, nil, false, onChange: "togglePeriodo($(this))" 
-          El periodo está incluido en una columna del archivo
-          = grouped_collection_select nil, :periodo_id, current_admin.escuelas.order("id ASC"), :periodos, :descripcion, :id, :id, {:prompt => "Selecciona el período de inscripción..."}, { class: 'form-control mt-md-3', required: true}
 
     .form-group
       .col-md-offset-2.col-md-10
         = submit_tag "Cargar", {class: 'btn btn-outline-success btn-sm', disable_with: "Cargando..."}
-
-:javascript
-
-  function togglePeriodo(e){
-    if (e.is(":checked")){
-      $('#periodo_id').attr('disabled', 'disabled')
-    }else{
-      $('#periodo_id').attr('disabled', false)
-    }
-  }
-
-
-  function set_escuela(){
-    $("#periodo_id optgroup").hide();
-    var escuela = $("#escuela_id option:selected").text();
-
-    $("#periodo_id optgroup[label='" + escuela + "']").show();
-    $("#periodo_id").val('');
-    $('#periodo').removeClass('d-none');
-  }  
