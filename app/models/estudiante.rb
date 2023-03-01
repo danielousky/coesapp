@@ -420,9 +420,6 @@ class Estudiante < ApplicationRecord
 			return [0,0, 'error usuario']
 
 		end
-
-
-
 		
 	end
 

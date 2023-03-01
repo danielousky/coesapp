@@ -27,7 +27,7 @@
 .form-group.row
   %label.col-form-label.col-md-3.text-right Tipo de Ingreso:
   .col-md-9
-    - Grado.tipos_ingreso.map do |k,v| 
+    - Grado.tipos_ingreso.map do |k,v|
       %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
         = radio_button_tag '[grado]tipo_ingreso', k, false, required: true, class: 'required'
         = "#{k.titleize}"
@@ -35,15 +35,26 @@
 .form-group.row
   %label.col-form-label.col-md-3.text-right Regiones:
   .col-md-9
-    - Grado.regiones.map do |k,v| 
+    - Grado.regiones.map do |k,v|
       %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
         - value = v.eql? 0
         = radio_button_tag '[grado]region', k, value, required: true, class: 'required'
         = "#{k.titleize}"
 
 .form-group.row
-  %label.col-form.label.col-md-3.text-right Reincorporado:
-  .col-md-9= check_box_tag '[grado]estado_inscripcion', :reincorporado, false
+  %label.col-form.label.col-md-3.text-right Estado Inicial de Inscripción:
+  - if false
+    .col-md-9= check_box_tag '[grado]estado_inscripcion', :reincorporado, false
+  .col-md-9
+    - Grado.estado_inscripciones.map do |k,v|
+      %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
+        = radio_button_tag '[grado]estado_inscripcion', k, false, required: true, class: 'required'
+        = "#{k.titleize}"
+
+.form-group.row
+  %label.col-form.label.col-md-3.text-right ¿Enviar Correo de Bienvenida?:
+  = check_box_tag 'enviar_correo', true, false
+
 
 :javascript
   function set_escuela(){

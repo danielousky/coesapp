@@ -314,10 +314,13 @@ module Admin
                   info_bitacora_crud Bitacora::CREACION, historialplan
                   flash[:success] = 'Estudiante creado con éxito.' 
                 end
-                begin
-                  grado.enviar_correo_bienvenida(current_usuario.id, request.remote_ip)
-                rescue Exception => e
-                  flash[:danger] = "No se pudo enviar el correo de bienvenida: #{e} "
+
+                if params[:enviar_correo]
+                  begin
+                    grado.enviar_correo_bienvenida(current_usuario.id, request.remote_ip)
+                  rescue Exception => e
+                    flash[:danger] = "No se pudo enviar el correo de bienvenida: #{e} "
+                  end
                 end
 
               end
