@@ -347,8 +347,6 @@ class Estudiante < ApplicationRecord
 				tipo_us = Bitacora::ACTUALIZACION
 			end
 
-			p "   ANTES DE LA PRIMERA BITÁCORA. USUARIO_ID: #{current_usuario_id}. IP: #{current_ip}  ".center(1000, "$")
-
 			Bitacora.create!(
 				descripcion: desc_us, 
 				tipo: tipo_us,
@@ -358,7 +356,6 @@ class Estudiante < ApplicationRecord
 				tipo_objeto: 'Usuario',
 				ip_origen: current_ip
 			)
-			p "   DESPUÉS DE LA PRIMERA BITÁCORA   ".center(400, "$")
 
 			estudiante = Estudiante.where(usuario_id: usuario.ci).first
 			estudiante ||= Estudiante.new(usuario_id: usuario.ci)
@@ -392,10 +389,10 @@ class Estudiante < ApplicationRecord
 							if fields[:enviar_correo] and !usuario.email.blank?
 								p '  ---- ENVIANDO CORREOS ---- '.center 800, '#'
 								begin
-									grado.delay.enviar_correo_bienvenida(usuario, ip)
+									grado.delay.enviar_correo_bienvenida(usuario, current_ip)
 									# total_correos_enviados += 1
 								rescue Exception => e
-									# total_correos_no_enviados += 1
+									return [0,0, "error enviando correo: #{e}"]	
 								end
 							end
 
@@ -404,8 +401,6 @@ class Estudiante < ApplicationRecord
 							tipo = Bitacora::ACTUALIZACION
 							total_updated = 1
 						end
-
-						p "   ANTES DE LA SEGUNDA BITÁCORA. USUARIO_ID: #{current_usuario_id}. IP: #{current_ip}  ".center(1000, "$")
 
 						Bitacora.create!(
 							descripcion: desc, 

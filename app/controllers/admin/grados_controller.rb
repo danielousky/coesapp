@@ -178,7 +178,7 @@ module Admin
       else
         flash[:danger] = 'No se pudo pudo eliminar la escuela. Por favor, inténtelo de nuevo.'
       end
-      redirect_back fallback_location: usuario
+      redirect_to principal_admin_index_path
 
     end
     # Fin Eliminar
