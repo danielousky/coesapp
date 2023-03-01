@@ -688,7 +688,7 @@ class Inscripcionseccion < ApplicationRecord
 
   private
 
-  def self.import row, fields
+  def self.import row, fields, current_usuario_id, current_ip
 
     # fields[:periodo_id]
     # fields[:escuela_id]
@@ -757,7 +757,6 @@ class Inscripcionseccion < ApplicationRecord
                 inscripcion.seccion_id = seccion.id
                 inscripcion.grado_id = grado.id
 
-                p " ESTOY AQUIIIII   ".center(500, "$")
               end
 
               if row[4] and !row[4].blank?
@@ -768,9 +767,24 @@ class Inscripcionseccion < ApplicationRecord
               if inscripcion.save!
                 if nuevo
                   total_newed = 1
+                  desc_us = "Inscripción de Usuario (#{usuario.ci}) vía migración."
+                  tipo_us = Bitacora::CREACION
                 else
                   total_updated = 1
+                  desc_us = "Actualización de Inscripción del usuario (#{usuario.ci}) vía migración."
+                  tipo_us = Bitacora::ACTUALIZACION
                 end
+
+                Bitacora.create!(
+                  descripcion: desc_us, 
+                  tipo: tipo_us,
+                  usuario_id: current_usuario_id,
+                  comentario: nil,
+                  id_objeto: inscripcion.id,
+                  tipo_objeto: 'Inscripcionseccion',
+                  ip_origen: current_ip
+                )
+
               else
                 no_registred = 'no fue posible guardar el registro'
               end

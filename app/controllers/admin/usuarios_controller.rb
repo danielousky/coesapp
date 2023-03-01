@@ -315,7 +315,8 @@ module Admin
                   flash[:success] = 'Estudiante creado con éxito.' 
                 end
 
-                if params[:enviar_correo]
+                if params[:enviar_correo] and !@usuario.email.blank?
+                  p '   CORREO ENVIADO    '.center(1000, "$")
                   begin
                     grado.enviar_correo_bienvenida(current_usuario.id, request.remote_ip)
                   rescue Exception => e

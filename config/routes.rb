@@ -90,6 +90,7 @@ Rails.application.routes.draw do
 
 
     get '/importador_xlsx/seleccionar_archivo_inscripciones'
+    get '/importador_xlsx/seleccionar_archivo_estudiantes'
     post '/importador_xlsx/entidades'
 
     get '/importador/index'

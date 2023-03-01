@@ -1,6 +1,6 @@
 class ImportXslx
 
-	def self.general_import fields
+	def self.general_import fields, current_usuario_id, current_ip
 		require 'simple_xlsx_reader'
 
 		errores_cabeceras = []
@@ -29,7 +29,7 @@ class ImportXslx
 					row_record = row
 					row_index = i
 
-					sum_newed, sum_updated, sum_errors = fields[:entity].singularize.camelize.constantize.import row, fields
+					sum_newed, sum_updated, sum_errors = fields[:entity].singularize.camelize.constantize.import row, fields, current_usuario_id, current_ip
 					unless sum_errors.blank?
 						sum_errors = "#{(65+sum_errors).chr}" if sum_errors.is_a? Integer and sum_errors >= 0 and sum_errors < 6
 						errors << "#{i+1}:#{sum_errors}"

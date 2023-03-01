@@ -17,14 +17,19 @@ module Admin
 
 		# ==== IMPORTADOR DE SECCIONES ===== #
 		def seleccionar_archivo_inscripciones
-			@titulo = "Importador de Archivos de Inscripciones"
+			@titulo = "Importador de Archivo de Inscripciones"
 		end
 
+		def seleccionar_archivo_estudiantes
+			@escuelas = current_admin ? current_admin.escuelas : Escuela.all
+			@titulo = "Importador de Archivo de Estudiantes"
+		end
+
+
 		def entidades
-		
 			if params[:entity]
 				begin
-					result = ImportXslx.general_import params
+					result = ImportXslx.general_import params, current_admin.id, request.remote_ip
 
 					flash[:success] = "Registros Procesados: "
 					flash[:success] += "#{result[0]}"+ " Nuevo".pluralize(result[0]) + " | "
