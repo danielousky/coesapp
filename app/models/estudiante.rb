@@ -392,7 +392,7 @@ class Estudiante < ApplicationRecord
 							if fields[:enviar_correo] and !usuario.email.blank?
 								p '  ---- ENVIANDO CORREOS ---- '.center 800, '#'
 								begin
-									grado.enviar_correo_bienvenida(usuario, ip)
+									grado.delay.enviar_correo_bienvenida(usuario, ip)
 									# total_correos_enviados += 1
 								rescue Exception => e
 									# total_correos_no_enviados += 1
