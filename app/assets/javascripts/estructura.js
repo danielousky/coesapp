@@ -25,7 +25,7 @@ function hexToRgbA (hex){
 function loadData(type, id, callback) {
 	let currentUrl = window.location.href
 	let controller = (currentUrl.includes('inscripcionsecciones')) ? 'inscripcionsecciones' : 'secciones'
-	if (type == 'asignatura' || ((controller == 'secciones') && (type == 'catedra' || id == 'pci'))){
+	if (type == 'asignatura' || ((controller == 'secciones') && (type == 'catedra' || id == 'pci'))){
 		getSecciones(type, id, controller)
 	}else{
 		paintTabObjects(type,id, controller, callback)
