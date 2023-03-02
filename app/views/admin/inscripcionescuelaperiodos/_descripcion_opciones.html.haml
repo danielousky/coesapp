@@ -29,11 +29,8 @@
 				Sin Reporte de Pago
 
 	- if ins_esc_per.escuela.periodo_activo.eql? ins_esc_per.periodo and ins_esc_per.inscrito? 
-		%td= btn_success 'download-alt', "#{constancia_inscripcion_descargar_path(ins_esc_per.id, :pdf)}", "Constancia de Inscripción", 'Constancia Inscripción'
+		= btn_success 'download-alt', "#{constancia_inscripcion_descargar_path(ins_esc_per.id, :pdf)}", "Constancia de Inscripción", 'Constancia Inscripción'
 
-
-- if ParametroGeneral.permitir_descargar_constancia_pre?
-	%td= btn_success 'download-alt', "#{constancia_preinscripcion_descargar_path(@estudiante.id)}?escuela_id=#{@escuela.id}", "Constancia de Preinscripción de #{@nickname}", 'Constancia Preinscripción'
 - if false #current_admin
 	%td= btn_toggle_modal 'plus', "Inscribir a #{@nickname} en una sección de esta escuela en periodo #{current_periodo.id}", "Inscribir en seccion del #{current_periodo.id}", "estudiante_seccion_#{@escuela.id}"
 	= render partial: '/admin/inscripcionsecciones/form'
