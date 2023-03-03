@@ -1,0 +1,71 @@
+%h5.titulo.text-center.mb-2= @titulo
+
+= link_to escuela_path(@escupe.escuela), class: 'btn btn-sm btn-success m-2' do
+  = glyph 'chevron-left'
+  Atrás 
+
+%table.table.dataTableOwn
+
+  %thead
+    %tr
+      %th Cédula
+      %th Estudiante
+      %th Ponderado
+      %th Simple
+      %th Eficiencia
+
+  %tbody
+    - @inscritos_ultimo_año.each do |ins| 
+      %tr
+        %td= ins.estudiante_id
+        %td= link_to ins.usuario.apellido_nombre, usuario_path(ins.usuario)
+        %td= ins.grado.calcular_promedio_ponderado @periodo_ultimo_año_ids
+        %td= ins.grado.calcular_promedio_simple @periodo_ultimo_año_ids
+        %td= ins.grado.calcular_eficiencia @periodo_ultimo_año_ids
+
+
+
+:javascript
+
+  $(document).ready(function() {
+
+      $('.dataTableOwn').DataTable( {
+          scrollY: 400,
+          fixedHeader: {
+              header: true,
+              footer: true
+          },
+          order: [[2, 'desc']],      
+          pageLength: 100,
+          // lengthChange: false,
+          paging: false,
+          dom: '<"html5buttons"B>lTfgitp',
+          buttons: [
+            {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `EstudiantesConInscripcionesEnPeriodo#{@escupe.periodo_id}-#{@escupe.escuela_id}`, className: 'btn btn-sm btn-outline-info'}
+          ],
+          language: 
+            {
+              "sZeroRecords":    "No se encontraron resultados",
+              "sEmptyTable":     "Ningún dato disponible en esta tabla",
+              "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+              "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+              "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+              "sSearch":         "Buscar:",
+              "sInfoThousands":  ",",
+              "sLoadingRecords": "Cargando...",
+              "oPaginate": {
+                "sFirst":    "Primero",
+                "sLast":     "Último",
+                "sNext":     "Siguiente",
+                "sPrevious": "Anterior"
+              },
+              "oAria": {
+                "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+              }
+            }
+
+
+      } );
+
+  } );

@@ -1,0 +1,16 @@
+%table.table.table-striped.table-sm.table-hover.table-bordered.responsive-table.tableDataPropia
+  %thead
+    %tr
+      %th Cédula
+      %th Apellidos y Nombres
+      %th Eficiencia
+      %th Promedio
+      %th Ponderado
+  %tbody
+    - grados.each do |grado, i|
+      %tr
+        %td= grado.estudiante_id
+        %td= link_to grado.usuario.nombre_completo, usuario_path(grado.usuario), target: '_black'
+        %td= grado.eficiencia
+        %td= grado.promedio_simple
+        %td= grado.promedio_ponderado

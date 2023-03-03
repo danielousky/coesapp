@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 .border.p-md-3
   .titulo
@@ -89,3 +90,102 @@
     $("#periodo_id").val('');
     $('#plan').removeClass('d-none');
   }
+=======
+
+.border.p-md-3
+  .titulo
+    %b Formato de las cabeceras: ci, apellidos, nombres, plan_id, email, telefono, telefono_habitacion (en minúscula y sin espacios):
+
+  .text-center
+    = image_tag image_url('ejem_csv_importar_estudiantes.png')
+    %p 
+      .float-right.text-success.ml-2 #campos opcionales
+      .float-right.text-danger.ml-2 #campos obligatorios
+      .float-right.text-info.ml-2 #nombres de la cabecera
+    %br
+
+.border.p-md-3.my-md-3  
+  = form_tag({controller: :importador, action: :importar_estudiantes}, multipart: true, class: 'form-horizontal') do
+    .form-group
+      - titulo =   "El formato del archivo a utilizar es <b> .csv </b>. "
+      - titulo +=   "Para obtener información de cómo exportar archivos .csv en Excel haga click en la ayuda"
+      .row
+        .col-md-1.mb-3
+          %a.btn.tooltip-btn.text-warning{href: 'https://support.office.com/es-es/article/importar-o-exportar-archivos-de-texto-txt-o-csv-5250ac4c-663c-47ce-937b-339e391393ba', target: '_blank', data: {toggle: :tooltip, html: 'true', title: titulo}}= glyph 'question-sign'
+        .col-md-11.mb-3
+          = file_field_tag :datafile, required: true, class: 'form-control', accept: ".csv"
+      %hr
+      
+      %h6.m-3.alert.alert-danger
+        !Atención! Los valores seleccionados a continuación se aplicarán a todos los registros que no incluyan la información (por defecto)
+        Si el registro ya existe en el sistema, los datos suministrado serán sobreescritos.
+      .col-md-12
+        = select(nil, :escuela_id, @escuelas.collect{|o| [ o.descripcion, o.id ] }, { include_blank: 'Selecciona Escuela...'}, {class: "form-control", required: true, onchange: 'set_escuela()'})
+
+        %br
+        #plan.d-none
+          = grouped_collection_select nil, :plan_id, @escuelas, :planes, :descripcion, :id, :descripcion_completa, {:prompt => "Selecciona planes por defecto..."}, { class: 'form-control mt-md-1', required: true}
+
+          = grouped_collection_select nil, :periodo_id, @escuelas, :periodos, :descripcion, :id, :id, {:prompt => "Selecciona el período de ingreso a la facultad..."}, { class: 'form-control mt-md-3', required: true}
+        .border.mt-3.p-3
+          %h6 Elija el Modalidad de Ingreso:
+          - Grado.tipos_ingreso.map do |k,v| 
+            %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
+              = radio_button_tag '[grado]tipo_ingreso', k, false, required: true, class: ''
+              = "#{k.upcase}"
+        .border.mt-3.p-3
+          %h6 Elija el Estado Inicial de Inscripción:
+
+          - Grado.estado_inscripciones.map do |k,v| 
+            %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
+              = radio_button_tag '[grado]estado_inscripcion', k, false, required: true, class: ''
+              = "#{k.upcase}"
+        .border.mt-3.p-3
+          %h6 Elija el Estado inicial según el tipo de estudiante:
+          - Grado.estados.map do |k,v| 
+            %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
+              = radio_button_tag '[grado]estado', k, false, required: true, class: ''
+              = "#{k.upcase}"
+        .border.mt-3.p-3
+          %h6 Elija el lugar (Estado) de procedencia del estudiante, si lo hubiera:
+          - Grado.regiones.map do |k,v| 
+            %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
+              = radio_button_tag '[grado]region', k, false, class: ''
+              = "#{k.upcase}"
+
+        .border.mt-3.p-3
+          %h6 
+            ¿Enviar Correo de Bienvenida?:
+            = check_box_tag 'enviar_correo', true, true 
+
+    .form-group
+      .col-md-offset-2.col-md-10
+        = submit_tag "Cargar", {class: 'btn btn-success', disable_with: "Cargando..."}
+
+:javascript
+  $('#incluirPlan').click(function(){
+    $('#plan_id').prop('disabled', $(this).is(":checked"));
+    // $('#plan').toggleClass('d-none')
+  })
+
+  $('#incluirEscuela').click(function(){
+    
+    $('#escuela_id').prop('disabled', $(this).is(":checked"))
+    // $('#escuela').toggleClass('d-none')
+    
+    // $('#plan_id').prop('disabled', $(this).is(":checked"));
+
+  })
+
+  function set_escuela(){
+
+    $("#plan_id optgroup").hide();
+    $("#periodo_id optgroup").hide();
+    var escuela = $("#escuela_id option:selected").text();
+    $("#plan_id optgroup[label='" + escuela + "']").show();
+    $("#periodo_id optgroup[label='" + escuela + "']").show();
+    $("#plan_id").val('');
+    $("#periodo_id").val('');
+    $('#plan').removeClass('d-none');
+  }
+>>>>>>> 7050be81cac4498c00dca402ed6e2dcdaed2406e

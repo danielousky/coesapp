@@ -1,3 +1,88 @@
 .border.m-3.p-3
-	= render partial: "form"
+
+  = form_for @usuario, html: { class: 'form-horizontal' } do |f|
+
+    %h6.titulo Datos Personales:
+
+    - # Cedula de Identidad:
+    .form-group.row
+      .col-md-3.text-right= f.label :ci, class: 'col-form-label', value: 'Cédula de Identidad:'
+      .col-md-9= f.text_field :ci, class: 'form-control ci required', required: true, autofocus: true
+
+    - # Nacionalidad: 
+    .form-group.row
+      .col-md-3.text-right= f.label 'nacionalidad', class: 'col-form-label', value: 'Nacionalidad:'
+      .col-md-9
+        - Usuario.nacionalidades.map do |k,v| 
+          %label.btn.btn-secondary.btn-sm
+            = radio_button_tag '[usuario]nacionalidad', k, (@usuario.nacionalidad.eql? k), required: true, class: 'required'
+            = k.upcase
+
+    - # Sexo:
+    .form-group.row
+      .col-md-3.text-right= f.label :sexo, class: 'col-form-label', value: 'Sexo:'
+      .col-md-9
+        - Usuario.sexos.map do |k,v| 
+          %label.btn.btn-secondary.btn-sm.tooltip-btn{'data_toggle': :tooltip, title: k.titleize}
+            = radio_button_tag '[usuario]sexo', k, (@usuario.sexo.eql? k), required: true, class: 'required'
+            = k[0].upcase
+
+    - # Nombres:
+    .form-group.row
+      .col-md-3.text-right= f.label :nombres, class: 'col-form-label', value: 'Nombres:'
+      .col-md-9= f.text_field :nombres, class: 'form-control upcase required', required: true
+
+    - # Apellidos:
+    .form-group.row
+      .col-md-3.text-right= f.label :apellidos, class: 'col-form-label', value: 'Apellidos:'
+      .col-md-9= f.text_field :apellidos, class: 'required form-control upcase required', required: true
+
+    - # Correo:
+    .form-group.row
+      .col-md-3.text-right= f.label :email, class: 'col-form-label', value: 'Correo Electrónico:'
+      .col-md-9
+        = f.email_field :email, class: 'form-control required', required: true
+        .text-warning.mt-2
+          %b Atención: 
+          = "Recuerde que el correo electrónico es el medio principal de comunicación para COESFHE, complételo de manera correcta.".html_safe
+
+    - # Teléfono Habitación:
+    .form-group.row
+      = f.label :telefono_habitacion, class: 'col-form-label col-md-3 text-right', value: 'Teléfono de Habitación:'
+      .col-md-9
+        = f.phone_field :telefono_habitacion, class: ' form-control'
+
+    - # Teléfono Móvil:
+    .form-group.row
+      .col-md-3.text-right= f.label :telefono_movil, class: 'col-form-label', value: 'Teléfono Móvil:'
+      .col-md-9= f.phone_field :telefono_movil, class: " form-control"
+
+    - if params[:estudiante]
+      = hidden_field_tag 'estudiante_set', true
+      = render '/admin/grados/form'
+    - if params[:profesor]
+      = render 'form_datos_profe'
+    - elsif params[:administrador]
+      = render 'form_datos_admin'
+
+    .form-group.row
+      .col-md-offset-3.col-md-9
+        = f.submit nil, class: 'btn btn-primary'
+
+:javascript
+
+  $('.upcase').on('input',function(evt){ 
+    var node = $(this);
+    node.val(node.val().toUpperCase());
+  });
+
+
+  $('.ci').on('input',function(evt){ 
+    var node = $(this);
+    node.val(node.val().replace(/[^0-9]/g,'') );
+    });
+
+
+
+
 

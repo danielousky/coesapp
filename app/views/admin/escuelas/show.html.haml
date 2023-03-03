@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 .float-right
   - if (current_admin and current_admin.autorizado? 'Escuelas', 'update')
@@ -56,3 +57,94 @@
         - @planes = @escuela.planes
         = render template: '/admin/planes/index'
 
+=======
+
+.float-right
+  - if (current_admin and current_admin.autorizado? 'Escuelas', 'update')
+    = link_to edit_escuela_path(@escuela), class: 'btn btn-primary btn-sm mr-2' do
+      = glyph 'pencil'
+      Editar
+  - if !(@escuela.inscripciones.any?)
+    = link_to escuela_path(@escuela), method: "delete", data: { confirm: t('.confirm', default: t("helpers.links.confirm", default: '¿Está seguro?')) }, class: 'btn btn-danger btn-sm' do
+      = glyph 'trash'
+      Eliminar
+  - else
+    .btn.btn-sm.disabled.btn-secondary.tooltip-btn{'data-toggle': :tooltip, title: 'Elimine las inscripciones para activar la opción', 'data-placement': :left}
+      = glyph 'trash'
+      Eliminar
+
+- if (current_admin and current_admin.autorizado? 'Escuela', 'show')
+  - if(current_admin and current_admin.autorizado?('grados', 'index_nuevos'))
+
+    = btn_toggle 'btn-success', 'list', "#{listado_completo_estudiante_descargar_path(1)}?estado=con_inscripcion_en_periodo&escuela=#{@escuela.descripcion}", "Descargar listado completo de inscritos en #{@escuelaperiodo.periodo_id}", 'Inscritos'
+
+  - if @escuelaperiodo and current_admin and current_admin.autorizado? 'Escuelaperiodo', 'ponderados'
+    
+    = btn_toggle 'btn-success', 'star', ponderados_escuelaperiodo_path(@escuelaperiodo), "Ponderados del #{@escuelaperiodo.periodos_ultimo_año_ids.to_sentence}", 'Ponderados Último Año'
+
+    - if false
+      = link_to ponderados_escuelaperiodo_path(@escuelaperiodo), class: 'btn btn-sm btn-success tooltip-btn mr-2', 'data-toggle': :tooltip, title: "Ponderados del #{@escuelaperiodo.periodos_ultimo_año_ids.to_sentence}" do
+        = glyph 'star'
+        = glyph 'education'
+        Ponderados Último Año
+
+  - if current_admin and current_admin.autorizado?('Escuela', 'arbol_prelaciones')
+    = link_to arbol_prelaciones_escuela_path(@escuela), class: 'btn btn-sm btn-success tooltip-btn mr-2', 'data-toggle': :tooltip, title: 'Ver árbol completo de prelaciones' do
+      = glyph 'tree-deciduous'
+      Árbol Prelaciones
+  - if @escuelaperiodo
+    - @ep_anterior = @escuelaperiodo.escuelaperiodo_anterior
+
+    - if @ep_anterior.inscripcionescuelaperiodos.any? and (current_admin and current_admin.autorizado? 'Escuelaperiodo', 'correr_reglamento')
+      - total = @ep_anterior.inscripcionescuelaperiodos.count
+      = link_to correr_reglamento_escuelaperiodo_path(@ep_anterior), class: 'btn btn-sm btn-info tooltip-btn', 'data-confirm': "Esta acción es irreversible y actualizará el estado de #{total} estudiantes inscritos en: Citahorarias, Eficiencia, Promedios y Normativa ¿Está seguro?", 'data-toggle': :tooltip, title: "Limpiar citas horarias anteriores, actualizar eficiencia, promedios y estado de la normativa de cada estudiante inscrito en el periodo #{@ep_anterior.periodo_id}" do
+        = glyph 'wrench'
+        Normativa
+        .badge.badge-dark= "Hasta #{@ep_anterior.periodo_id}"
+
+      = link_to index_reglamento_escuelaperiodo_path(@ep_anterior.id), class: 'btn btn-sm btn-success ml-2 mr-2' do
+        = glyph 'list'
+        Estudiantes por Normativa
+
+    = link_to "#{jornadacitahorarias_path}", class: 'btn btn-sm btn-success' do
+      = glyph 'calendar'
+      Jornanda de Cita Horaria
+  - else
+    %p.alert.alert-warning 
+      Para generar 
+      %b Citas Horarias y Correr Reglamento
+      escoja y seleccione un 
+      %b= link_to_if current_admin, "Período Actual", 'javascript:void(0)', {onclick: "return $('#cambiar_sesion_periodo').modal();", 'data_toggle': :modal, class: 'text-info nav-link font-weight-bold', style: "display:inline; padding:0px"}
+      perteneciente a la escuela
+
+%nav.mt-3
+  .nav.nav-tabs
+    - if (current_admin and current_admin.autorizado? 'Proefesor', 'create')
+      = link_to 'Profesores', "#profes", "data-toggle": :tab, class: "nav-item nav-link active"
+    - if (current_admin and current_admin.autorizado? 'Usuario', 'set_estudiante')
+      = link_to 'Estudiantes', "#estudiantes", "data-toggle": :tab, class: "nav-item nav-link"
+    - if (current_admin and current_admin.autorizado? 'Departamento', 'index')
+      = link_to 'Departamentos', "#dptos", "data-toggle": :tab, class: "nav-item nav-link"
+    - if (current_admin and current_admin.autorizado? 'Plan', 'index')        
+      = link_to 'Planes', "#planes", "data-toggle": :tab, class: "nav-item nav-link"
+  .tab-content
+    - if (current_admin and current_admin.autorizado? 'Proefesor', 'create')
+      .tab-pane#profes.border.p-3.border-top-0.active
+        = render partial: '/admin/profesores/index', locals: {profesores: @escuela.profesores}
+    - if (current_admin and current_admin.autorizado? 'Usuario', 'set_estudiante')
+      .tab-pane#estudiantes.border.p-3.border-top-0
+        -# @estudiantes = @escuela.estudiantes
+        - header = Usuario.attribute_names 
+        = render partial: '/layouts/tabla_cargable', locals: {tabla_id: "estudiantes#{@escuela.id}", heads: header , url: "/estudiantes.json?escuela_id=#{@escuela.id}", new_button: (current_admin and current_admin.autorizado? 'Estudiante', 'create'), new_url: "#{new_usuario_path}?estudiante=true", objeto: 'Estudiante'}
+    - if (current_admin and current_admin.autorizado? 'Departamento', 'index')    
+      .tab-pane#dptos.border.p-3.border-top-0
+        - @departamentos = @escuela.departamentos
+        = render template: '/admin/departamentos/index'
+
+        =# render partial: '/layouts/tabla_cargable', locals: {tabla_id: "dptos#{@escuela.id}", heads: ['Id', 'Descripción', 'T. Asigs Periodo Actual', 'T. Seccs Periodo Actual', 'T. Inscr Perio Actual'] , url: "/departamentos.json?escuela_id=#{@escuela.id}"}
+    - if (current_admin and current_admin.autorizado? 'Plan', 'index')        
+      .tab-pane#planes.border.p-3.border-top-0
+        - @planes = @escuela.planes
+        = render template: '/admin/planes/index'
+
+>>>>>>> 7050be81cac4498c00dca402ed6e2dcdaed2406e

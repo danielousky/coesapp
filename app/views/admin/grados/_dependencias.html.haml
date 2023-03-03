@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .border.p-md-3
 	%h5 Arbol de Dependencia:
 	%table.table
@@ -5,3 +6,12 @@
 			- @aprobadas_ids = @grado.inscripciones.aprobado.includes(:asignatura).map{|ins| ins.asignatura.id}
 			- @escuela.asignaturas.con_dependencias.order('orden ASC, id ASC').each do |asignatura| 
 				= render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: asignatura.dependencias}
+=======
+.border.p-md-3
+	%h5 Arbol de Dependencia:
+	%table.table
+		%tbody
+			- @aprobadas_ids = @grado.inscripciones.aprobado.includes(:asignatura).map{|ins| ins.asignatura.id}
+			- @escuela.asignaturas.con_dependencias.order('anno ASC, id ASC').each do |asignatura| 
+				= render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: asignatura.dependencias}
+>>>>>>> 7050be81cac4498c00dca402ed6e2dcdaed2406e

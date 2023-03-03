@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 - if dependientes.any?
   - dependientes.each do |dep| 
     - aprobada = (@aprobadas_ids and @aprobadas_ids.include? dep.asignatura_id) ? 'table-success' : ''
@@ -19,3 +20,25 @@
               %tbody
                 = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: dep.asignatura_dependiente.dependencias}
     
+=======
+- if dependientes.any?
+  - dependientes.each do |dep| 
+    - aprobada = (@aprobadas_ids and @aprobadas_ids.include? dep.asignatura_id) ? 'table-success' : ''
+    %tr{class: aprobada}
+      %td.pr-5
+        - unless aprobada.eql? ''
+          %span.badge.badge-success Aprobada
+        = descripcion_arbol(dep, adelante)
+
+        - if adelante 
+          - if dep.asignatura_dependiente.dependencias.any?
+            = link_to 'javascript:void(0)', onclick: "$('#arbol#{dep.id}').toggleClass('d-none'); $(this).toggleClass('gly-rotate-90');" do
+              = glyph 'chevron-right'
+            %div{id: "arbol#{dep.id}", class: 'd-none'}
+              %table.table-striped.table-hover.table-bordered.ml-5.m-3
+                %tbody
+                  = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: dep.asignatura_dependiente.dependencias, adelante: true}
+        - else
+          - if dep.asignatura.dependencia_hacia_atras.any?
+            = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: dep.asignatura.dependencia_hacia_atras, adelante: false}
+>>>>>>> 7050be81cac4498c00dca402ed6e2dcdaed2406e

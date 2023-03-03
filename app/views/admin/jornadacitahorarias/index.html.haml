@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 %h5.titulo.text-center.mb-2 
   Jornadas de Citas Horarias
 
@@ -70,4 +71,83 @@
         }
       }
     });
+=======
+%h5.titulo.text-center.mb-2 
+  Jornadas de Citas Horarias
+
+%nav
+  .nav.nav-tabs  
+    = link_to "#sinCita", "data-toggle": :tab, class: "nav-item nav-link active" do
+      = "#{@grados_sin_cita.count} Estudiantes válidos para la cita horaria "
+      .badge.badge-dark Regulares y Artículo 3
+    - @jornadacitahorarias.each do |cita| 
+      = link_to "#cita#{cita.id}", "data-toggle": :tab, class: "nav-item nav-link" do
+        =# l(cita.inicio, format: :short)
+        = I18n.l(cita.inicio, format: "%d/%m/%Y")
+        .badge.badge-dark= cita.grados_propios_ordenados.count
+    - if false #@grados_sin_cita and @grados_sin_cita.any?
+      = # ESTO NO TIENE SENTIDO PORQUE EL ENLACE ES PARA TODAS LAS JORNADACITAHORARIAS Y DEBERIA SER PARA CADA CITA HORARIA EJ: jornadacitahorarias_path(cita)
+      .tooltip-btn{'data-toggle': :tooltip, title: 'Limpiar Todas las Citas Horarias de las Escuela'}
+        = link_to "#{jornadacitahorarias_path}", method: :delete, data: {confirm: 'Confima que desea limpiar todas las citas horarias de la escuela'},class: "nav-item nav-link bg-danger text-white" do
+          = glyph 'erase'
+          Limpiar Citas
+    .tooltip-btn{'data-toggle': :tooltip, title: 'Agregar Nueva Jornada Horaria'}
+      = link_to new_jornadacitahoraria_path, class: "nav-item nav-link bg-success text-white" do
+        = glyph 'plus'
+        = glyph 'calendar'
+        Nueva Cita Horaria
+
+  .tab-content
+    .tab-pane#sinCita.active.border.border-top-0.p-3
+      - if @grados_sin_cita and @grados_sin_cita.any?
+        -# ep = @escuelaperiodo.escuela.periodo_anterior @escuelaperiodo.periodo_id
+        %h6.text-center.alert.alert-warning= "Estudiantes sin Cita Horaria e inscritos en Periodo Anterior: #{@escuelaperiodo_anterior.periodo_id}"
+        = render partial: '/admin/jornadacitahorarias/grados', locals: {grados: @grados_sin_cita}
+      - else
+        %h5.alert.alert-info Sin estudiantes por asignar cita horaria
+        = # AGREGAR BOTÓN LIMPIAR CITAS HORARIAS DE LOS GRADOS
+        =# link_to 'Limpiar todas las citas horarias', '', class: 'btn btn-sm btn-danger'
+    - @jornadacitahorarias.each do |cita| 
+      .tab-pane.border.border-top-0.p-3{id: "cita#{cita.id}"}
+        = render partial: '/admin/jornadacitahorarias/show', locals: {jornadacitahoraria: cita}
+
+:javascript
+  $(document).ready(function() {
+    $('.tableDataMia').DataTable({
+      scrollX: true,
+      scrollY: 460,
+      pageLength: 50,
+      // lengthChange: false,
+      paging: false,
+      dom: '<"html5buttons"B>lTfgitp',
+      buttons: [
+        {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `cita_horaria`, className: 'btn btn-sm btn-outline-info'}
+      ],      
+      language: 
+        {
+        "sProcessing":     "Procesando...",
+        "sLengthMenu":     "Mostrar _MENU_ registros",
+        "sZeroRecords":    "No se encontraron resultados",
+        "sEmptyTable":     "Ningún dato disponible en esta tabla",
+        "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+        "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+        "sInfoPostFix":    "",
+        "sSearch":         "Buscar:",
+        "sUrl":            "",
+        "sInfoThousands":  ",",
+        "sLoadingRecords": "Cargando...",
+        "oPaginate": {
+        "sFirst":    "Primero",
+        "sLast":     "Último",
+        "sNext":     "Siguiente",
+        "sPrevious": "Anterior"
+        },
+        "oAria": {
+          "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+          "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+        }
+      }
+    });
+>>>>>>> 7050be81cac4498c00dca402ed6e2dcdaed2406e
   })

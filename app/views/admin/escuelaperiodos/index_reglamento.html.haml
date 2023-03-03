@@ -1,0 +1,60 @@
+%h5.titulo.text-center.mb-2= @titulo
+
+= link_to escuela_path(@escupe.escuela), class: 'btn btn-sm btn-success m-2' do
+  = glyph 'chevron-left'
+  Atrás 
+%nav
+  .nav.nav-tabs
+    - Grado.reglamentos.each_pair do|v,k|
+      = link_to v.humanize, "#tab#{k}", "data-toggle": :tab, class: 'nav-item nav-link'
+      
+.tab-content
+  - Grado.reglamentos.each_pair do |v,k| 
+    .tab-pane{id: "tab#{k}"}
+      .border.mt-3.p-3
+        = render partial: 'tabla_estudiante_reglamento', locals: {grados: @grados_con_inscripciones_periodo_anterior.where(reglamento: v)}
+
+:javascript
+
+  $(document).ready(function() {
+
+      $('.tableDataPropia').DataTable( {
+          scrollX: true,
+          scrollY: 400,
+          fixedHeader: {
+              header: true,
+              footer: true
+          },      
+          pageLength: 100,
+          // lengthChange: false,
+          paging: false,
+          dom: '<"html5buttons"B>lTfgitp',
+          buttons: [
+            {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `EstudiantesConInscripcionesEnPeriodo#{@escupe.periodo_id}-#{@escupe.escuela_id}`, className: 'btn btn-sm btn-outline-info'}
+          ],
+          language: 
+            {
+              "sZeroRecords":    "No se encontraron resultados",
+              "sEmptyTable":     "Ningún dato disponible en esta tabla",
+              "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+              "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+              "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+              "sSearch":         "Buscar:",
+              "sInfoThousands":  ",",
+              "sLoadingRecords": "Cargando...",
+              "oPaginate": {
+                "sFirst":    "Primero",
+                "sLast":     "Último",
+                "sNext":     "Siguiente",
+                "sPrevious": "Anterior"
+              },
+              "oAria": {
+                "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+              }
+            }
+
+
+      } );
+
+  } );

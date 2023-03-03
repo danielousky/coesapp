@@ -1,0 +1,71 @@
+= link_to escuela_path(@escuela), class: 'btn btn-outline-success btn-sm tooltip-btn', 'data-toggle': :tooltip, title: "Ir a #{@escuela.descripcion}"  do
+  = glyph 'chevron-left'
+  Atrás
+.btn.btn-sm.btn-success.ml-2
+  Desplegar todos
+  = link_to 'javascript:void(0)', onclick: "$('.arbol').toggleClass('d-none'); $('.glyphicon-chevron-right').toggleClass('gly-rotate-90');" do
+    = glyph 'chevron-right'
+
+.mt-3.border{style: 'height:600px;overflow-x:scroll'}
+  %table.table
+    %thead
+      %tr.text-center
+        - @annos.each do |k,v| 
+          - if k.nil?
+            - title = "Sin Orden"
+            - bg = 'bg-danger'
+          - elsif k.eql? 0
+            - title = "Optativas"
+            - bg = 'bg-info'
+          - else
+            - title = "#{ordinalize_es(k)} "
+            - bg = ''
+          %th{class: bg}
+            = title
+            %span.badge.badge-dark= "Total #{v}"
+
+
+    %tbody
+      %tr
+        - @annos.each do |k,v| 
+          %td
+            .mt-3.border{style: 'height:480px;overflow-y:scroll'}
+
+              - if k.nil?
+                - table = 'table-danger'
+              - elsif k.eql? 0
+                - table = 'table-info'
+              - else
+                - table = ''
+
+
+              %table.table.table-sm
+                %thead
+                %tbody
+                  - asignaturas = @asignaturas.where(anno: k)
+                  - asignaturas.each do |asig| 
+                    %tr{class: table}
+                      %td.mouseover{mouseover: asig.id, class: asig.id}
+                        = simple_toggle asignatura_path(asig), nil, "Ir al detalle de " + asig.descripcion, :primary, 'zoom-in'
+                        %b= asig.descripcion_id
+                        - if asig.dependencias.any?
+                          = link_to 'javascript:void(0)', onclick: "$('#arbol#{asig.id}').toggleClass('d-none'); $(this).toggleClass('gly-rotate-90');" do
+                            = glyph 'chevron-right'
+                          %div{id: "arbol#{asig.id}", class: 'd-none arbol'}
+                            %table.table-striped.table-hover.table-bordered.ml-2
+                              %tbody
+                                - asig.dependencias.each do |dep|
+                                  %tr
+                                    %td.mouseover{mouseover: dep.asignatura_dependiente.id, class: dep.asignatura_dependiente.id}
+                                      = simple_toggle asignatura_path(dep.asignatura_dependiente), nil, "Ir al detalle de " + asig.descripcion, :primary, 'zoom-in'
+                                      = dep.asignatura_dependiente.descripcion_id
+
+:javascript
+
+  $(document).ready(function() {
+    $('.mouseover').hover( function(e){
+      let clase = $(this).attr( "mouseover" );
+
+      $('.'+clase).toggleClass('table-warning');
+    });
+  });

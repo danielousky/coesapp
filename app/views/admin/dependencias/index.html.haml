@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 - if (current_admin and current_admin.autorizado? 'Dependencias', 'create')
   .m-1
     = btn_toggle_modal :plus, 'Agregar Asignaturas dependientes', 'Agregar', 'agregarDependencias'
@@ -24,4 +25,35 @@
 
   - content = render partial: '/admin/dependencias/form'
   - title = 'Agregar Asignaturas Dependientes'
+=======
+- if (current_admin and current_admin.autorizado? 'Dependencias', 'create')
+  .m-1
+    = btn_toggle_modal :plus, 'Agregar Prelaciones', 'Agregar', 'agregarDependencias'
+
+- if @dependencia_hacia_atras.any? or @dependientes.any?
+  %h6.titulo.text-center.m-2= "Árbol de Prelaciones #{@asignatura.descripcion}"
+  .m-3
+    %table.table-striped.table-sm.table-hover.table-bordered
+      %tbody
+        - if @dependencia_hacia_atras.any?
+          = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: @dependencia_hacia_atras, adelante: false}
+        %tr.table-success
+          %td
+            = badge_orden_asignatura(@asignatura)
+            |
+            = @asignatura.descripcion_id
+        - if @dependientes.any?
+          = render partial: '/admin/dependencias/tabla_dependencias', locals: {dependientes: @dependientes, adelante: true}
+
+- else
+  .row
+    .m-3.alert.alert-warning.col-11 Sin asignaturas dependientes
+
+- if (current_admin and current_admin.autorizado? 'Dependencias', 'create')
+  - @dependencia = Dependencia.new
+  - @dependencia.asignatura = @asignatura
+
+  - content = render partial: '/admin/dependencias/form'
+  - title = 'Asignar Prelaciones'
+>>>>>>> 7050be81cac4498c00dca402ed6e2dcdaed2406e
   = render partial: '/layouts/modal_layout_with_form', locals: {id_modal: "agregarDependencias", title: title, content: content, width: nil}

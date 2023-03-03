@@ -1,10 +1,10 @@
-- if (current_estudiante and current_usuario.estudiante and (!current_usuario.estudiante.direccion or current_usuario.nacionalidad.blank? or current_usuario.fecha_nacimiento.blank? or current_usuario.pais_nacimiento.blank? or current_usuario.ciudad_nacimiento or current_usuario.estado_civil.blank? or current_usuario.email.blank? or current_usuario.telefono_movil.blank? or current_usuario.telefono_habitacion.blank?) or current_usuario.ci.eql? current_usuario.password)
+- if ((current_estudiante and current_usuario.estudiante and current_usuario.estudiante.direccion.nil?) or current_usuario.datos_incompletos?)
 	.modal.fade#actualizar_datos{'aria-labelledby': "myModalLabel", 'aria-hidden': false}
 		.modal-dialog.modal-lg
 			.modal-content
 				.alert.alert-info.text-center
 					%h5 Atención:
-					actualice sus datos para una mejor experiencia
+					Actualice sus datos para una mejor experiencia
 				= render 'layouts/messages'
 				- if current_usuario.ci.eql? current_usuario.password
 					.alert.alert-warning
@@ -21,7 +21,6 @@
 				$("#actualizar_datos").modal({keyboard: false, backdrop: 'static'});
 			});
 
-		%br
 		%br
 		%br
 		%br
