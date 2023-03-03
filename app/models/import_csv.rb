@@ -1085,29 +1085,32 @@ class ImportCsv
 
 					# BUSCAR PERIODO
 					if periodo_id.nil?
-						if row['periodo_id']
-
+						if !row['periodo_id']
+							return [0, "Error: No se encontró la cabecera periodo_id y no fue asociado un período por defecto. Revise el archivo e inténtelo nuevamente."]
+						else
 							row['periodo_id'].strip!
 							row['periodo_id'].upcase!
-							
-							unless Periodo.where(id: row['periodo_id']).any?
-								return [0, "Error: Periodo '#{row['periodo_id']}' es inválido. fila (#{i}): [#{row}]. Revise el archivo e inténtelo nuevamente."]
+
+							aux_period = Periodo.where(id: row['periodo_id']).first
+							if aux_period
+								periodo_id_aux = aux_period.id
+							else
+								return [0, "Error: Periodo '#{row['periodo_id']}' es inválido o no está creado. fila (#{i}): [#{row}]. Revise o cree el periodo respectivo e inténtelo nuevamente."]
 							end
 
-						else
-							return [0, "Sin período para la inscripción: #{row}. Por favor revise el archivo e inténtelo nuevamente."]
 						end
-						periodo_id = row['periodo_id']
+					else
+						periodo_id_aux = periodo_id
 					end
-
+						
 					# BUCAR ASIGNATURA
 					unless a = Asignatura.where(id_uxxi: row['id_uxxi']).first
 						asignaturas_inexistentes << row['id_uxxi']
 					else
 						# BUSCAR O CREAR SECCIÓN
-						s = Seccion.where(numero: row['numero'], periodo_id: periodo_id, asignatura_id: a.id).limit(1).first
+						s = Seccion.where(numero: row['numero'], periodo_id: periodo_id_aux, asignatura_id: a.id).limit(1).first
 						if s.nil?
-							total_nuevas_secciones += 1 if s = Seccion.create!(numero: row['numero'], periodo_id: periodo_id, asignatura_id: a.id, tipo_seccion_id: 'NF')
+							total_nuevas_secciones += 1 if s = Seccion.create!(numero: row['numero'], periodo_id: periodo_id_aux, asignatura_id: a.id, tipo_seccion_id: 'NF')
 						end
 
 						unless s
@@ -1126,11 +1129,12 @@ class ImportCsv
 									inscrip = s.inscripcionsecciones.where(estudiante_id: row['ci']).first
 									if inscrip.nil?
 										inscrip = Inscripcionseccion.new
-										escuelaperiodo = Escuelaperiodo.where(periodo_id: periodo_id, escuela_id: a.escuela.id).first
+										escuelaperiodo = Escuelaperiodo.where(periodo_id: periodo_id_aux, escuela_id: a.escuela.id).first
+										escuelaperiodo ||= Escuelaperiodo.create!(periodo_id: periodo_id_aux, escuela_id: a.escuela.id)
 										# BUSCAR O CREAR INSCRIPCIÓN_ESCUELA_PERIODO
 										unless inscrip_escuela_period = estu.inscripcionescuelaperiodos.where(escuelaperiodo_id: escuelaperiodo.id).first
 
-											inscrip_escuela_period = Inscripcionescuelaperiodo.create!(estudiante_id: row['ci'], escuelaperiodo_id: escuelaperiodo.id, tipo_estado_inscripcion_id: 'INS')
+											inscrip_escuela_period = Inscripcionescuelaperiodo.create!(estudiante_id: row['ci'], escuelaperiodo_id: escuelaperiodo.id, tipo_estado_inscripcion_id: 'INS', grado_id: grado.id)
 										end
 
 										inscrip.inscripcionescuelaperiodo_id = inscrip_escuela_period.id
@@ -1138,6 +1142,8 @@ class ImportCsv
 										inscrip.estudiante_id = estu.id
 										inscrip.escuela_id = escuela_id
 										inscrip.seccion_id = s.id
+										inscrip.grado_id = grado.id
+
 									end
 
 									# CALIFICAR:

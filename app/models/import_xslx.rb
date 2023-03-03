@@ -1,0 +1,56 @@
+class ImportXslx
+
+	def self.general_import fields, current_usuario_id, current_ip
+		require 'simple_xlsx_reader'
+
+		errores_cabeceras = []
+
+		begin
+			rows = SimpleXlsxReader.open(fields[:datafile].tempfile).sheets.first.rows
+		rescue Exception => e
+			errores_cabeceras << "Error al intentar abrir el archivo: #{e}"
+		end
+
+
+		if errores_cabeceras.any?
+			# errores_cabeceras << headers
+			return [0,0, errores_cabeceras]
+		else		
+			errors = []
+			error_type = 1
+			total_newed = 0
+			total_updated = 0
+			resumen = ""
+			row_record = ''
+			row_index = 0
+
+			begin
+				rows.each_with_index do |row, i|
+					row_record = row
+					row_index = i
+
+					sum_newed, sum_updated, sum_errors = fields[:entity].singularize.camelize.constantize.import row, fields, current_usuario_id, current_ip
+					unless sum_errors.blank?
+						sum_errors = "#{(65+sum_errors).chr}" if sum_errors.is_a? Integer and sum_errors >= 0 and sum_errors < 6
+						errors << "#{i+1}:#{sum_errors}"
+					end
+					total_newed += sum_newed
+					total_updated += sum_updated
+					
+					break if errors.count > 50
+					if i > 398
+						errors << 'limit_records'
+						break
+					end
+				end
+
+			rescue Exception => e
+				errors << "Fila #{row_index} #{e} "
+			end
+
+			return [total_newed, total_updated, errors.uniq]
+		end
+
+	end
+
+end

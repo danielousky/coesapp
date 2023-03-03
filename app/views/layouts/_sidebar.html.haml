@@ -27,7 +27,7 @@
         = sidebar_sub_item 'asig', 'Asignaturas', 'modal-window'
         #asigSubMenu.list-subgroup.list-group-flush.d-none
           -# current_admin.escuelas.joins(:escuelaperiodos).where('escuelaperiodos.periodo_id = ?', current_admin.periodo_activo.id).each do |esc| 
-          - current_admin.escuelas.joins(:escuelaperiodos).where('escuelaperiodos.periodo_id = ?', current_periodo.id).each do |esc| 
+          - current_admin.escuelas.joins(:escuelaperiodos).where('escuelaperiodos.periodo_id = ?', current_periodo.id).each do |esc|
             = sidebar_link_to_item "Asignaturas de #{esc.descripcion}", "#{asignaturas_path}?escuela_id=#{esc.id}"
 
     - if (current_admin.autorizado? 'Secciones', 'index') or (current_admin.autorizado? 'Grados', 'citas_horarias') or (current_admin.autorizado? 'Grados', 'index_nuevos') 
@@ -40,10 +40,12 @@
       #importSubMenu.list-subgroup-item.list-subgroup.d-none
         - if (current_admin.autorizado? 'Importador', 'importar_profesores')
           = sidebar_link_to_item 'Migrar Profesores', {controller: 'importador', action: 'seleccionar_archivo_profesores'}
-        - if (current_admin.autorizado? 'Importador', 'importar_estudiantes')
+        - if false # (current_admin.autorizado? 'Importador', 'importar_estudiantes')
           = sidebar_link_to_item 'Migrar Estudiantes', {controller: 'importador', action: 'seleccionar_archivo_estudiantes'}
         - if (current_admin.autorizado? 'Importador', 'importar_seccion')
-          = sidebar_link_to_item 'Migrar Inscripciones', {controller: 'importador', action: 'seleccionar_archivo_inscripciones'}
+          = sidebar_link_to_item 'Migrar Estudiantes', {controller: 'importador_xlsx', action: 'seleccionar_archivo_estudiantes'}
+        - if (current_admin.autorizado? 'Importador', 'importar_seccion')
+          = sidebar_link_to_item 'Migrar Inscripciones', {controller: 'importador_xlsx', action: 'seleccionar_archivo_inscripciones'}
     - if (current_admin.autorizado? 'Usuarios', 'create') and (current_admin.autorizado? 'Usuarios', 'set_estudiante') or (current_admin.autorizado? 'Usuarios', 'set_profesor')
       = sidebar_sub_item 'usuario', 'Usuarios', 'user'
       #usuarioSubMenu.list-subgroup-item.list-subgroup.list-group-flush.d-none

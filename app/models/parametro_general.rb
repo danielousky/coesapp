@@ -2,6 +2,12 @@ class ParametroGeneral < ApplicationRecord
   # SET GLOBALES:
   self.table_name = 'parametros_generales'
 
+  # PERMITIR DESCARGAR CONSTANCIA DE PREINSCRIPCION
+  def self.permitir_descargar_constancia_pre?
+    aux = ParametroGeneral.where(id: "PERMITIR_DESCARGAR_CONSTANCIA_PREINSC").first
+    (aux and (aux.valor.casecmp("SI") == 0 or aux.valor.casecmp("SÍ") == 0)) ? true : false
+  end
+
   # FECHA TOPE INGRESO
   def self.max_fecha_ingreso_nuevos
     ParametroGeneral.where(id: "MAX_FECHA_INGRESO_NUEVOS").first

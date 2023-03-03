@@ -124,6 +124,8 @@ module Admin
 			@titulo = "Importador de Archivos de Inscripciones"
 		end
 		def importar_inscripciones
+			
+			params[:periodo_id]	= nil if params[:periodo_en_archivo]
 
 			resultado = ImportCsv.importar_inscripciones params[:datafile].tempfile, params[:escuela_id], params[:periodo_id]
 

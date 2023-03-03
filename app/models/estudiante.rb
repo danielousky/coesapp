@@ -614,5 +614,134 @@ class Estudiante < ApplicationRecord
 		
 	end
 
+
+	def self.import row, fields, current_usuario_id, current_ip
+		# fields: "escuela_id"=>"ARTE", "plan_id◊"=>"G394", "periodo_id◊"=>"2019-01S", "grado"=>{"tipo_ingreso"=>"OPSU◊", "estado_inscripcion◊"=>"preinscrito", "estado◊"=>"pregrado", "region◊"=>"no_aplica"}, "enviar_correo◊"=>"true"
+
+		# row[0] = ci
+		# row[1] = nombres
+		# row[2] = apellidos
+		# row[3] = emails
+
+		total_newed = total_updated = 0
+		no_registred = nil
+
+		hay_usuario = false
+
+		# row[0] = ci
+		# row = row[0] if not row[0].nil?
+		row[0].strip!
+		row[0].delete! '^0-9'
+
+		unless usuario = Usuario.where(ci: row[0]).first
+			usuario = Usuario.new
+			usuario.ci = row[0]
+			usuario.password = usuario.ci
+		end
+		usuario.nombres = limpiar_cadena row[1]	# row[1] = nombres
+		usuario.apellidos = limpiar_cadena row[2] # row[2] = apellidos
+		usuario.email = row[3] # row[3]= Email
+
+		nuevo = usuario.new_record?
+
+		if usuario.save
+
+			if nuevo
+				desc_us = "Creacion de Usuario vía migración con CI: #{usuario.ci}"
+				tipo_us = Bitacora::CREACION
+			else
+				desc_us = "Actualizacion de Usuario vía migración con CI: #{usuario.ci}"
+				tipo_us = Bitacora::ACTUALIZACION
+			end
+
+			Bitacora.create!(
+				descripcion: desc_us, 
+				tipo: tipo_us,
+				usuario_id: current_usuario_id,
+				comentario: nil,
+				id_objeto: usuario.id,
+				tipo_objeto: 'Usuario',
+				ip_origen: current_ip
+			)
+
+			estudiante = Estudiante.where(usuario_id: usuario.ci).first
+			estudiante ||= Estudiante.new(usuario_id: usuario.ci)
+
+			nuevo_estudiante = estudiante.new_record?
+
+			if estudiante.save
+				if plan = Plan.where(id: fields[:plan_id]).first
+					unless grado = estudiante.grados.where(escuela_id: plan.escuela_id).first
+						grado = Grado.new
+						grado.plan_id = fields[:grado][:plan_id]
+						grado.estudiante_id = estudiante.id
+						grado.escuela_id = plan.escuela_id
+					end
+
+					grado.tipo_ingreso = fields[:grado][:tipo_ingreso]
+					grado.iniciado_periodo_id = fields[:periodo_id]
+					grado.region = fields[:grado][:region]
+					grado.estado_inscripcion = fields[:grado][:estado_inscripcion]
+					grado.estado = fields[:grado][:estado]
+					
+					nuevo_grado = grado.new_record?
+
+					if grado.save
+
+						if nuevo_grado
+							desc = "Estudiante #{estudiante.id} registrado en #{grado.escuela.descripcion}"
+							tipo = Bitacora::CREACION
+							total_newed = 1
+
+							if fields[:enviar_correo] and !usuario.email.blank?
+								p '  ---- ENVIANDO CORREOS ---- '.center 800, '#'
+								begin
+									grado.enviar_correo_bienvenida(current_usuario_id, current_ip)
+									# total_correos_enviados += 1
+								rescue Exception => e
+									return [0,0, "error enviando correo: #{e}"]	
+								end
+							end
+
+						else
+							desc = "Actualizada carrera de #{estudiante.id} en #{grado.escuela.descripcion}"
+							tipo = Bitacora::ACTUALIZACION
+							total_updated = 1
+						end
+
+						Bitacora.create!(
+							descripcion: desc, 
+							tipo: tipo,
+							usuario_id: current_usuario_id,
+							comentario: nil,
+							id_objeto: grado.id,
+							tipo_objeto: 'Grado',
+							ip_origen: current_ip
+						)
+
+					else
+						return [0,0, 'error grado']	
+					end
+				else
+					return [0,0, 'error plan']
+				end
+
+			else
+				return [0,0, 'error estudiante']
+			end
+		else
+			return [0,0, "error usuario: #{row}"]
+		end
+
+		[total_newed, total_updated, no_registred]
+	end
+
+
+	def self.limpiar_cadena cadena
+		cadena.delete! '^0-9|^A-Za-z|áÁÄäËëÉéÍÏïíÓóÖöÚúÜüñÑ '
+		cadena.strip!
+		return cadena
+	end
+
 end
 >>>>>>> 7050be81cac4498c00dca402ed6e2dcdaed2406e

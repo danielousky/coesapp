@@ -1,0 +1,30 @@
+.border.p-md-3
+  .alert.alert-info
+    %b Formato de las cabeceras: ci, id_uxxi, numero_seccion (en minúscula, sin espacios ni acentos):
+
+  .text-center
+    %p Ejemplo:
+    =# image_tag 'ejem_csv_importar_estudiantes_secciones'
+    = image_tag image_url('ejem_csv_importar_estudiantes_secciones_xls.png')
+    %p 
+      .float-right.text-success #CAMPOS OPCIONALES
+      .float-right.text-danger #CAMPOS OBLIGATORIOS
+      .float-right.text-info #NOMBRES DE LAS CABECERAS
+
+.border.p-md-3.mt-md-3
+
+  = form_tag({controller: :importador_xlsx, action: :entidades}, multipart: true, class: 'form-horizontal') do
+    = hidden_field_tag :entity, 'inscripcionsecciones'
+    .form-group
+      .col-md-12.mb-3
+
+        .alert.alert-info
+          %b Seleccione Archivo EXCEL
+        = file_field_tag :datafile, required: true, class: 'form-control', accept: ".xlsx"
+      .col-md-12
+        = select(nil, :escuela_id, current_admin.escuelas.order("id ASC").collect{|o| [ o.descripcion, o.id ] }, { include_blank: 'Selecciona Escuela...'}, {class: "form-control", required: true, onchange: 'set_escuela()'})
+      %b.col-md-12.text-muted Las inscripciones del archivo serán cargadas en la escuela seleccionada
+
+    .form-group
+      .col-md-offset-2.col-md-10
+        = submit_tag "Cargar", {class: 'btn btn-outline-success btn-sm', disable_with: "Cargando..."}
