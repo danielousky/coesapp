@@ -15,4 +15,8 @@ class EstudianteMailerPreview < ActionMailer::Preview
     EstudianteMailer.preinscrito(Usuario.where(ci: 25872065).first, Inscripcionescuelaperiodo.last)
   end
 
+  def cita_horaria
+    EstudianteMailer.cita_horaria(Grado.con_cita_horarias.last, '2023-01S')
+  end
+
 end

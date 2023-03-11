@@ -25,7 +25,14 @@ Rails.application.routes.draw do
   end
 
   scope module: :admin do
-    resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas, :bitacoras, :reportepagos, :bancos, :jornadacitahorarias, :dependencias
+    resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas, :bitacoras, :reportepagos, :bancos, :dependencias
+
+    resources :jornadacitahorarias do
+      member do
+        get 'enviar_correo_citas_horarias'
+      end
+    end
+
 
 
     resources :escuelaperiodos, only: :show do
