@@ -1,41 +1,3 @@
-<<<<<<< HEAD
-= render partial: '/admin/grados/opciones_descargables'
-%b Resumen Académico:
-
-- cursados = @inscripciones.total_creditos_cursados
-- aprobados = @inscripciones.total_creditos_aprobados
-%table.table.table-sm.table-hover
-	%tr
-		%td Créditos Inscritos:
-		%th= @grado.total_creditos
-	%tr
-		%td Créditos Cursados:
-		%th= cursados
-	%tr
-		%td Créditos Aprobados (Sin Equivalencias):
-		%th= @inscripciones.sin_equivalencias.total_creditos_aprobados
-	%tr
-		%td Créditos Equivalencia:
-		%th= @inscripciones.por_equivalencia.total_creditos
-	%tr
-		%td Total Créditos Aprobados:
-		%th= aprobados
-	%tr
-		%td Eficiencia:
-		%th= @grado.eficiencia
-	%tr
-		%td Promedio Simple:
-		%th= @grado.promedio_simple
-	%tr
-		%td Promedio Simple Aprobado:
-		%th= @grado.calcular_promedio_simple_aprobado
-	%tr
-		%td Promedio Ponderado Aprobado:
-		%th= @grado.calcular_promedio_ponderado_aprobado
-	%tr
-		%td Promedio Ponderado:
-		%th= @grado.promedio_ponderado
-=======
 
 = render partial: '/admin/grados/opciones_descargables'
 %b Resumen Académico:
@@ -76,4 +38,3 @@
 		%td Promedio Ponderado:
 		- @grado.update(promedio_ponderado: @grado.calcular_promedio_ponderado)
 		%th= @grado.promedio_ponderado
->>>>>>> 7050be81cac4498c00dca402ed6e2dcdaed2406e
