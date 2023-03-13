@@ -1,5 +1,4 @@
-- if current_admin and (current_admin.autorizado? 'Descargar', 'constancia_preinscripcion_facultad') or (ParametroGeneral.permitir_descargar_constancia_pre? and @grado and @grado.escuela and @grado.escuela.periodo_activo.eql? @grado.periodo_ingreso)
-
+- if current_admin and (current_admin.autorizado? 'Descargar', 'constancia_preinscripcion_facultad')
 	.float-right.ml-2
 		= btn_success 'download-alt', constancia_preinscripcion_facultad_descargar_path(@grado.id, format: :pdf), "Constancia de Preinscripción de #{@nickname}", 'C. Preinscripción'
 - if @grado.inscripciones.any?

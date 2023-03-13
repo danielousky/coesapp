@@ -740,27 +740,6 @@ class Grado < ApplicationRecord
 		) if EstudianteMailer.bienvenida(self).deliver_later
 	end
 
-	def enviar_correo_cita_horaria(usuario_id, ip, periodo_id)
-		if self.estudiante.usuario.email
-			if EstudianteMailer.cita_horaria(self, periodo_id).deliver_later
-				Bitacora.create!(
-					descripcion: "Correo de citahoraria de estudiante: #{self.estudiante_id} enviado.", 
-					tipo: Bitacora::CREACION,
-					usuario_id: usuario_id,
-					comentario: nil,
-					id_objeto: self.id,
-					tipo_objeto: self.class.name,
-					ip_origen: ip
-				)
-				return true
-			else 
-				return false
-			end
-		else
-			return false
-		end
-	end
-
 	private
 
 	def set_default

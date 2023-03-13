@@ -103,17 +103,6 @@ class EstudianteMailer < ActionMailer::Base
     @asignado = grado.asignado?
     mail(to: grado.estudiante.usuario.email, subject: "¡Bienvenidos a COES-FHE!")
   end
-
-  def cita_horaria(grado, periodo_id)
-    @nombre = grado.estudiante.usuario.primer_nombre_apellido
-    @genero = grado.estudiante.usuario.genero
-    @periodo_id = periodo_id
-    @cita_horaria = I18n.l(grado.citahoraria, format: "%d/%m/%Y") if grado.citahoraria
-    @escuela_nombre = grado.escuela.descripcion.upcase
-    @desde = I18n.l(grado.citahoraria, format: '%I:%M %P') if grado.citahoraria
-    @hasta = I18n.l(grado.citahoraria+grado.duracion_franja_horaria.minutes, format: '%I:%M %P') if grado.citahoraria
-    mail(to: grado.estudiante.usuario.email, subject: "¡Cita horaria para el procesos de inscripción #{periodo_id} en COES-FHE!")
-  end  
   # No se están enviando los email por este método.
   # Hay que personalizar el método, Custom Jobs https://github.com/collectiveidea/delayed_job#custom-jobs
   # Esto para serealizar los valores ya que no es compatible con el método por defecto.
