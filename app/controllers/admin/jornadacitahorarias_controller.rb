@@ -114,9 +114,22 @@ module Admin
     before_action :filtro_administrador
     before_action :filtro_autorizado
 
-    before_action :set_jornadacitahoraria, only: %i[ show edit update destroy ]
-    before_action :set_escuelaperiodo, only: %i[ index new create]
+    before_action :set_jornadacitahoraria, only: %i[ show edit update destroy enviar_correo_citas_horarias]
+    before_action :set_escuelaperiodo, only: %i[ index new create enviar_correo_citas_horarias]
     before_action :set_grados_sin_cita, only: %i[ index new]
+
+    
+    def enviar_correo_citas_horarias
+      total = 0
+      @jornadacitahoraria.grados_propios_ordenados.each do |grado|
+        total += 1 if grado.enviar_correo_cita_horaria(current_usuario.id, request.remote_ip, @escuelaperiodo.periodo_id)
+      end
+
+      flash[:success] = "Se enviaron un total de #{total} correos "
+
+      redirect_to jornadacitahorarias_path
+
+    end
 
     def index
       @jornadacitahorarias = @escuelaperiodo.jornadacitahorarias
