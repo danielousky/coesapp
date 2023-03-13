@@ -24,11 +24,21 @@ Rails.application.routes.draw do
   end
 
   scope module: :admin do
-    resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas, :bitacoras, :reportepagos, :bancos, :jornadacitahorarias, :dependencias
+    resources :tipo_secciones, :tipoasignaturas, :tipo_calificaciones, :tipo_estado_inscripciones, :bloquehorarios, :restringidas, :bitacoras, :reportepagos, :bancos, :dependencias
+
+    resources :jornadacitahorarias do
+      member do
+        get 'enviar_correo_citas_horarias'
+      end
+    end
+
 
 
     resources :escuelaperiodos, only: :show do
       member do
+        get 'index_reglamento'
+        get 'ponderados'
+        get 'correr_reglamento'        
         get 'borrar_ausentes'
       end
     end
@@ -38,7 +48,13 @@ Rails.application.routes.draw do
         post 'autorizar_usuario'
       end
     end
-    resources :inscripcionescuelaperiodos, only: :index
+
+    resources :inscripcionescuelaperiodos, only: :index do
+      member do
+        get :confirmacion_masiva
+      end
+    end
+
     resources :parametros_generales, only: :index do 
       member do
         post :update
@@ -80,8 +96,10 @@ Rails.application.routes.draw do
       end
     end
 
-    get '/importador/seleccionar_archivo'
     get '/importador/index'
+    get '/importador_xlsx/seleccionar_archivo_inscripciones'
+    get '/importador_xlsx/seleccionar_archivo_estudiantes'
+    post '/importador_xlsx/entidades'    
     get '/importador/seleccionar_archivo_inscripciones'
     get '/importador/seleccionar_archivo_profesores'
     get '/importador/seleccionar_archivo_estudiantes'
@@ -115,6 +133,7 @@ Rails.application.routes.draw do
     resources :escuelas do 
       member do
         get 'periodos'
+        get 'arbol_prelaciones'
         post 'set_periodo_inscripcion'
         get 'update_dependencias'
         get 'set_habilitar_retiro_asignaturas'
