@@ -59,7 +59,7 @@
           = "Recuerde que el correo electrónico es el medio principal de comunicación para COESFHE, complételo de manera correcta.".html_safe
 
     - # Contraseña:
-    - if current_admin.nil? and @usuario.ci.eql? @usuario.password
+    - if @usuario.ci.eql? @usuario.password
       .alert.alert-warning
         .form-group.row
           .col-md-3.text-right= f.label :password, class: 'col-form-label ', value: 'Contraseña:'
