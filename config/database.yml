@@ -4,7 +4,7 @@ development:
   encoding: utf8
   pool: 5
   username: root
-  password: d15573230
+  password: 123123
   #socket: /tmp/mysql.sock
 
 production:
