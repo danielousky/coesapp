@@ -74,7 +74,7 @@ class Asignatura < ApplicationRecord
 
 	def arbol_completo_dependencias
 		aux = []
-		aux = arbol_dependencias
+		aux << arbol_dependencias
 		aux << arbol_dependencias_hacia_atras
 		return aux.flatten.uniq
 	end
