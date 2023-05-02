@@ -225,6 +225,12 @@ module ApplicationHelper
 
 	end
 
+	def tooltip_label title_tooltip, label
+		content_tag :b, class: 'tooltip-btn', 'data_toggle': :tooltip, title: title_tooltip do
+			label
+		end
+	end	
+
 
 	def btn_tooltip_link_to title_tooltip, title, icon_name, btn_type, path
 		content_tag :b, class: 'tooltip-btn', 'data_toggle'=> :tooltip, title: title_tooltip do

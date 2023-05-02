@@ -12,8 +12,11 @@
       %th Departamento
       %th Correo
       %th Sexo
-      %th Califi
-      %th Pendient
+      - if current_periodo
+        %th
+          = tooltip_label "Secciones Asignadas para el período #{current_periodo.id}", "Asig#{current_periodo.id}"
+        %th= "Califi #{current_periodo.id}"
+        %th= "Pendient #{current_periodo.id}"
 
   %tbody
     - profesores.each do |profesor| 
@@ -26,10 +29,14 @@
         %td= profesor.departamento.descripcion.upcase if profesor.departamento
         %td= profesor.usuario.email
         %td= profesor.usuario.sexo
-        %td
-          %span.badge.badge-info= profesor.secciones.sin_calificar.count
-        %td
-          %span.badge.badge-info= profesor.secciones.sin_calificar.count
+        - if current_periodo
+          - secciones = profesor.secciones.del_periodo(current_periodo.id)
+          %td
+            %span.badge.badge-info= secciones.count
+          %td
+            %span.badge.badge-success= secciones.calificadas.count
+          %td
+            %span.badge.badge-danger= secciones.sin_calificar.count
 
 :javascript
   $(document).ready(function(){
@@ -43,25 +50,28 @@
       scrollX: true,
       scrollY: 300,
       paging: false,
-    responsive: true,
-    dom: '<"html5buttons"B>lTfgitp',
-    buttons: [
-      {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `Profesores-#{@escuela.descripcion.titleize}`, className: 'btn btn-sm btn-outline-info'},
-      {extend: 'pdf', text: "<span class='glyphicon glyphicon-download'></span> PDF", title: `PDF-profesores-#{@escuela.descripcion.titleize}`, className: 'btn btn-sm btn-outline-info'},
-      {extend: 'print', 
-        text: "<span class='glyphicon glyphicon-download'></span> Imprimir", title: `Profesores #{@escuela.descripcion.titleize}`, className: 'btn btn-sm btn-outline-info mr-3',
-        customize: function (win){
-          $(win.document.body).addClass('white-bg');
-          $(win.document.body).css('font-size', '10px');
+      fixedHeader: {
+          header: true,
+          footer: true
+      }, 
+      responsive: true,
+      dom: '<"html5buttons"B>lTfgitp',
+      buttons: [
+        {extend: 'excel', text: "<span class='glyphicon glyphicon-download'></span> Excel", title: `Profesores-#{@escuela.descripcion.titleize}`, className: 'btn btn-sm btn-outline-info'},
+        {extend: 'pdf', text: "<span class='glyphicon glyphicon-download'></span> PDF", title: `PDF-profesores-#{@escuela.descripcion.titleize}`, className: 'btn btn-sm btn-outline-info'},
+        {extend: 'print', 
+          text: "<span class='glyphicon glyphicon-download'></span> Imprimir", title: `Profesores #{@escuela.descripcion.titleize}`, className: 'btn btn-sm btn-outline-info mr-3',
+          customize: function (win){
+            $(win.document.body).addClass('white-bg');
+            $(win.document.body).css('font-size', '10px');
 
-          $(win.document.body).find('table')
-            .addClass('compact')
-            .css('font-size', 'inherit');
+            $(win.document.body).find('table')
+              .addClass('compact')
+              .css('font-size', 'inherit');
+          }
         }
-      }
-    ],
-    language: 
-      {
+      ],
+      language: {
         "sProcessing":     "Procesando...",
         "sLengthMenu":     "Mostrar _MENU_ profesores",
         "sZeroRecords":    "No se encontraron resultados",
@@ -85,7 +95,5 @@
           "sSortDescending": ": Activar para ordenar la columna de manera descendente"
         }
       }
-
-
     });
   })

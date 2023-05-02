@@ -14,7 +14,7 @@
       Eliminar
 
 - if (current_admin and current_admin.autorizado? 'Escuela', 'show')
-  - if(current_admin and current_admin.autorizado?('grados', 'index_nuevos'))
+  - if(current_admin and current_admin.autorizado?('grados', 'index_nuevos') and @escuelaperiodo)
 
     = btn_toggle 'btn-success', 'list', "#{listado_completo_estudiante_descargar_path(1)}?estado=con_inscripcion_en_periodo&escuela=#{@escuela.descripcion}", "Descargar listado completo de inscritos en #{@escuelaperiodo.periodo_id}", 'Inscritos'
 
