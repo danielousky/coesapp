@@ -43,11 +43,12 @@
               - secciones = secciones.select{|s| s.hay_cupos? or s.estudiante_inscrito? @estudiante.id }
 
               - if secciones.any?
-                = collection_select("secciones", nil, secciones, :id, :descripcion_con_cupos, {selected: value, include_blank: 'Seleccione'}, {class: "form-control selectInscripcion", style: 'width: 90%', titulo: asig.desc_confirm_inscripcion, creditos: asig.creditos, asigId: asig.id, estudianteId: @estudiante.id, pci: pcis, gradoId: @grado.id})
+
+                = collection_select("secciones", nil, secciones, :id, :descripcion_con_cupos, {selected: value, include_blank: 'Seleccione'}, {class: "form-control selectInscripcion", style: 'width: 100%', titulo: asig.desc_confirm_inscripcion, creditos: asig.creditos, asigId: asig.id, estudianteId: @estudiante.id, pci: pcis, gradoId: @grado.id, name: "cursoperiodo_id_#{asig.id}", id: "cursoperiodo_id_#{asig.id}", onchange: "addHorario(this.value, '#{asig.id}');"})
               - else
                 %b.pl-3.text-muted
-                  = collection_select(nil, nil, secciones, nil, nil, { prompt: 'Sin Cupos'}, {class: "form-control selectInscripcion", style: 'width: 90%', disabled: true, readonly: true})
+                  = collection_select(nil, nil, secciones, nil, nil, { prompt: 'Sin Cupos'}, {class: "form-control", style: 'width: 90%', disabled: true, readonly: true, name: "sin_cupo#{asig.id}", id: "sin_cupo#{asig.id}"})
 
             - else
               %b.pl-3.text-muted
-                = collection_select(nil, nil, secciones, nil, nil, { prompt: 'Sin Secciones'}, {class: "form-control selectInscripcion", style: 'width: 90%', disabled: true, readonly: true})
+                = collection_select(nil, nil, secciones, nil, nil, { prompt: 'Sin Secciones'}, {class: "form-control", style: 'width: 90%', disabled: true, readonly: true, name: "seccion_vacia_#{asig.id}", id: "seccion_vacia_#{asig.id}"})

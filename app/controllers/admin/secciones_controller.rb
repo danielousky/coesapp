@@ -2,9 +2,9 @@ module Admin
   class SeccionesController < ApplicationController
     # Privilegios
     before_action :filtro_logueado
-    before_action :filtro_administrador, except: [:show, :calificar]
+    before_action :filtro_administrador, except: [:show, :calificar, :get_bloquehorario]
     before_action :filtro_admin_profe, only: [:show, :calificar]
-    before_action :filtro_autorizado, except: [:show, :calificar]#, except: [:show, :get_tab_objects, :get_secciones, :index2, :new, :edit, :seleccionar_profesor]
+    before_action :filtro_autorizado, except: [:show, :calificar, :get_bloquehorario]#, except: [:show, :get_tab_objects, :get_secciones, :index2, :new, :edit, :seleccionar_profesor]
 
 
     #if es profesor y profesor de session 
@@ -20,6 +20,11 @@ module Admin
     before_action :profesor_no_es_el_titular?, only: [:show, :calificar]
     # GET /secciones
     # GET /secciones.json
+
+    def get_bloquehorario
+      bloques = @seccion.horario ? @seccion.horario.bloques_schedule.to_json : []
+      render json: {bloques: bloques, status: :success}
+    end
 
     def get_profesores
       if escuela = current_admin.pertenece_a_escuela

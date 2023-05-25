@@ -67,7 +67,7 @@
     pluginName = 'jqs';
 
   $('.jqs-period-time').change(function(e){
-    console.log(e)
+    console.log(`Valor de ele en ${e}`)
   })
 
   // function getValue(e){
@@ -425,8 +425,8 @@
           '"></div>';
       }
 
-      var periodTitle = '<div class="jqs-period-title">' + options.title + '</div>';
-      var periodTime = '<div class="jqs-period-time">' + this.periodInit(position, position + height) + '</div>';
+      var periodTitle = '<div class="jqs-period-title text-muted">' + options.title + '</div>';
+      var periodTime = '<div class="jqs-period-time text-muted">' + this.periodInit(position, position + height) + '</div>';
       var period = $('<div class="jqs-period">' +
         '<div class="jqs-period-container">' + periodTime + periodTitle + periodRemove + periodDuplicate + '</div>' +
         '</div>').css({
@@ -442,40 +442,47 @@
 
       // period validation
 
-      var periodCurrentId = this.isVali2(period)
+      // var periodCurrentId = this.isVali2(period)
       
-      if ((options.import == true) & (periodCurrentId != true)) {
-        let asignatura_id = options.title.split(" ")[0]
-        let seccion_numero = options.title.split(" ")[1]
+      // if ((options.import == true) & (periodCurrentId != true)) {
+      //   let asignatura_id = options.title.split(" ")[0]
+      //   let seccion_numero = options.title.split(" ")[1]
 
-        let itemAux = document.getElementById(periodCurrentId)
-        let dayAux = itemAux.parentElement
-        let indice = $( ".jqs-day" ).index( dayAux )
-        console.log(indice)
+      //   let itemAux = document.getElementById(periodCurrentId)
+      //   let dayAux = itemAux.parentElement
+      //   let indice = $( ".jqs-day" ).index( dayAux )
+      //   console.log(`Valor de indice en add if import: ${indice}`)
 
-        let weekday = new Array(7);
-        weekday[0] = "Lunes";
-        weekday[1] = "Martes";
-        weekday[2] = "Miércoles";
-        weekday[3] = "Jueves";
-        weekday[4] = "Viernes";
+      //   let weekdays = new Array('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', '', '');
 
+      //   let dia = weekdays[indice];
+      //   let desc = `${dia} ${itemAux.innerText}`
+      //   // limpiarHorarioASignatura(asignatura_id)
+      //   alert(`No se puede agregar la sección ${seccion_numero} de la asignatura ${asignatura_id}, hay un solapamiento de horarios en ${desc}. \n Por favor inténtelo con otra sección o realice los cambios pertinentes.`)
 
-        let dia = weekday[indice];
-        let desc = `${dia} ${itemAux.innerText}`
-        // limpiarHorarioASignatura(asignatura_id)
-        alert(`No se puede agregar la sección ${seccion_numero} de la asignatura ${asignatura_id}, hay un solapamiento de horarios en ${desc}. \n Por favor inténtelo con otra sección o realice los cambios pertinentes.`)
-        $(period).remove();
+      //   if (this.settings.mode === 'edit') $(period).remove();
 
-        return false;
+      //   return false;
 
-      }
+      // }
 
       if (!this.isValid(period)) {
+
+        let period_id = $(period).attr('id');
+
+        let itemAux = document.getElementById(period_id)
+        let dayAux = itemAux.parentElement
+        let indice = $( ".jqs-day" ).index( dayAux )
+
+        let weekdays = new Array('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', '', '');
+
+        let dia = weekdays[indice];
+        let desc = `${dia} ${itemAux.innerText}`
+
+        alert(`Hay solapamiento de horarios en ${desc}. \n Por favor, inténtelo con otra sección o realice los cambios pertinentes.`)
+
         // console.error('Invalid period', this.periodInit(position, position + height));
-
-        $(period).remove();
-
+        if (this.settings.mode === 'edit') $(period).remove();
         return false;
       }
 
@@ -902,108 +909,36 @@
       var end = 0;
       var check = true;
 
-      // console.log(currentStart)
-      // console.log(currentEnd)
+      // console.log(currentStart);
+      // console.log(currentEnd);
 
       if (currentEnd - currentStart < 30) {
           check = false
       }else{      
-        $('.jqs-period', $(current).parent()).each(function (index, period) {
+        $('.jqs-period, .jqs-period-info', $(current).parent()).each(function (index, period) {
+          // Se verifica que los periodos no son el mismo
           if (current.attr('id') !== $(period).attr('id')) {
             start = Math.round($(period).position().top);
             end = Math.round($(period).position().top + $(period).height());
 
-            if (start > currentStart && start < currentEnd) {
-              check = false;
-            }
+            // Casos de Solapamiento:
+            // Inicia dentro del horario 
+            if (start > currentStart && start < currentEnd) check = false;
 
-            if (end > currentStart && end < currentEnd) {
-              check = false;
-            }
+            // Finaliza dentro del horario 
+            if (end > currentStart && end < currentEnd) check = false;
 
-            if (start < currentStart && end > currentEnd) {
-              check = false;
-            }
+            // Inicia correcto pero finaliza dentro de otro horario
+            if (start < currentStart && end > currentEnd) check = false;
 
-            if (start === currentStart || end === currentEnd) {
-              check = false;
-            }
+            // Mismo inicio o mismo final
+            if (start === currentStart || end === currentEnd) check = false;
+
           }
         });
       }
-
-
       return check;
     },
-
-
-    isVali2: function (current) {
-      var currentStart = Math.round(current.position().top);
-      var currentEnd = Math.round(current.position().top + current.height());
-
-      var start = 0;
-      var end = 0;
-      var check = true;
-
-      // console.log(currentStart)
-      // console.log(currentEnd)
-
-      if (currentEnd - currentStart < 30) {
-          check = false
-      }else{      
-        $('.jqs-period', $(current).parent()).each(function (index, period) {
-          if (current.attr('id') !== $(period).attr('id')) {
-            start = Math.round($(period).position().top);
-            end = Math.round($(period).position().top + $(period).height());
-
-            if (start > currentStart && start < currentEnd) {
-              check = false;
-            }
-
-            if (end > currentStart && end < currentEnd) {
-              check = false;
-            }
-
-            if (start < currentStart && end > currentEnd) {
-              check = false;
-            }
-
-            if (start === currentStart || end === currentEnd) {
-              check = false;
-            }
-          }
-        });
-
-        $('.jqs-period-info', $(current).parent()).each(function (index, period) {
-          if (current.attr('id') !== $(period).attr('id')) {
-            start = Math.round($(period).position().top);
-            end = Math.round($(period).position().top + $(period).height());
-
-            if (start > currentStart && start < currentEnd) {
-              check = $(period).attr('id');
-            }
-
-            if (end > currentStart && end < currentEnd) {
-              check = $(period).attr('id');
-            }
-
-            if (start < currentStart && end > currentEnd) {
-              check = $(period).attr('id');
-            }
-
-            if (start === currentStart || end === currentEnd) {
-              check = $(period).attr('id');
-            }
-          }
-        });
-
-      }
-
-
-      return check;
-    },
-
-
     /**
      * Export data to JSON string
      * @returns {string}

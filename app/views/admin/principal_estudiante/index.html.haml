@@ -77,27 +77,11 @@
 					- # OJO: ESTA CONDICION INCLUYE 2 PERIODOS ANTERIORES. PREGUNTAR SI DEBE SER ASÍ O NO
 					- # inscripcion_regular_permitida = (@grado.autorizar_inscripcion_en_periodo_id.eql? @periodo_inscripcion.id) or ((@grado.confirmado? or @grado.reincorporado?) and (!@grado.inscripciones.any? or @grado.inscripciones.del_periodo(periodo_anterior.id).any? or @grado.inscripciones.del_periodo(periodo_anteanterior.id).any? ))
 					
-					-if autorizado_especial or (permitida and inscripcion_permitida_por_citahoraria or inscripcion_regular_permitida)
+					- if autorizado_especial or (permitida and inscripcion_permitida_por_citahoraria or inscripcion_regular_permitida)
 
-						- if @escuela.dependencias_habilitadas?
-							- asignaturas_ofertables_segun_dependencia = @grado.asignaturas_ofertables_segun_dependencia
-							- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc)
-							- asignaturas_ofertadas_x_escuela = asignaturas_ofertadas_x_escuela.merge(asignaturas_ofertables_segun_dependencia)
-
-						- else
-							- asignaturas_ofertadas_x_escuela = @escuela.asignaturas.activas(@periodo_inscripcion.id).order(anno: :asc )
-
-						- @aprobadas = @inscripciones.aprobadas.includes(:seccion).map{|s| [s.id, s.seccion.asignatura_id]}.uniq.flatten
-						-# inscripciones = @inscripciones.del_periodo(current_periodo.id)
-						- titulo_modal = "Proceso de Preinscripción #{@periodo_inscripcion.id}"
-						- titulo_btn = "Preinscribirse"
-						- msgDanger = "Seleccione las asignaturas que desea preinscribir. Recuerde mover el scroll para ver todas las asignaturas ofertadas."
-						- url = '/inscripcionsecciones/preinscribirse'
-						- idModal = "preinscripcion#{@escuela.id}"
-						= render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {asignaturas_ofertadas: asignaturas_ofertadas_x_escuela, url: url, id_modal: idModal, title: titulo_modal, msgDanger: msgDanger, title_btn: titulo_btn}
-						- if false #@inscripcionperiodo and @inscripcionperiodo.reservado?
-							:javascript
-								$(`##{idModal}`).modal();
+						= link_to oferta_academica_principal_estudiante_path(grado.id), class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
+							= glyph 'education'
+							= "Preinscribirse en #{@escuela.descripcion_filtro} el periodo #{@periodo_inscripcion.id}"
 
 					- elsif !jornada_horaria_actual
 						.alert.alert-warning

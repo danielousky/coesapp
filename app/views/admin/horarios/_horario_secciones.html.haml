@@ -4,9 +4,11 @@
 - if @asignatura and controller_name.eql? 'asignaturas'
   %h6.titulo.m-2= "Horarios de las secciones de Asignatura:"
   - @url = "#{get_bloques_horario_path(@asignatura.id)}?asignatura=true"
+- elsif @grado
+  - @url = "#{get_bloques_horario_path(@grado.id)}?grado=true"
 - elsif @seccion
   - @url = "#{get_bloques_horario_path(@seccion.id)}"
-- elsif @estudiante and @profesor.nil?#(controller_name.eql? 'inscripcionsecciones' or controller_name.eql? 'principal_estudiante')
+- elsif @estudiante and @profesor.nil?#(controller_name.eql? 'inscripcionsecciones' or controller_name.eql? 'principal_estudiante') 
   - @url = "#{get_bloques_horario_path(@estudiante.id)}?estudiante=true"
 - elsif @profesor
   - if controller_name.eql? 'horarios'
@@ -28,7 +30,7 @@
       dataType: 'json', 
       beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
       success: function (data) {
-        // console.log(data)
+        // console.log(data.bloques);
         $("#bloquesHorarios").jqs({
           mode: "read",
           daysList: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
@@ -45,29 +47,23 @@
   })
 
   function limpiarHorarioASignatura(asignatura_id){
-    $('.jqs-period').each(function(){
+    $('.jqs-period, .jqs-period-info').each(function(){
       let valor = this.innerText
-      if (valor.includes(asignatura_id)){
-        this.remove();
-      }
+      if (valor.includes(asignatura_id)) this.remove();
     })
   }
 
-  function addHorario(bloques, asignatura_id){
-    limpiarHorarioASignatura(asignatura_id)
-
-    let result = $("#bloquesHorarios").jqs('import', bloques)
-    result = JSON.parse(result)
-
-    for (i = 0; i < result.length; i++){
-
-      if (result[i].status == false){
-        // limpiarHorarioASignatura(asignatura_id);
-        borrarSeleccion(asignatura_id);
-        return false
-      }
+  function addHorario(seccion_id, asignatura_id){
+    limpiarHorarioASignatura(asignatura_id);
+    if (seccion_id != ''){
+      $.ajax({
+        url: `/secciones/${seccion_id}/get_bloquehorario`,
+        type: 'GET',
+        dataType: 'json', 
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        success: function (data) {
+          $("#bloquesHorarios").jqs('import', JSON.parse(data.bloques));
+        }
+      });
     }
-
-
-
   }

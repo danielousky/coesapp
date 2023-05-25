@@ -2,7 +2,7 @@
 = hidden_field_tag 'total_asignaturas', @totalAsignaturasReservadas
 - tableColor = (@totalCreditosReservados > @limiteCreditos or @totalAsignaturasReservadas > @limiteAsignaturas) ? 'table-danger' : 'table-success'
 
-%table.table.table-sm.responsive-table
+%table.table.table-sm
   %tbody
     %tr{class: tableColor}
       %td{style: 'width: 66%;text-align:right;'} Total Créditos Seleccionados:

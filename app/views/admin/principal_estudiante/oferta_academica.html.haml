@@ -1,0 +1,21 @@
+- url = '/inscripcionsecciones/preinscribirse'
+- idModal = "preinscripcion#{@escuela.id}"
+
+.border.p-2
+
+  = alert_reglamento(@grado).html_safe
+  
+  .alert.alert-info.text-center
+    %h5= "Preinscripción #{@estudiante.usuario.descripcion_apellido}"
+    %h5= "#{@escuela.descripcion_filtro} #{@periodo_inscripcion.id}"
+  %h4.text-center= "Jornada por Cita Horaria Activa" unless @jornada_horaria_actual.nil?
+        
+  .row
+    .col-md-7
+      = render partial: 'admin/inscripcionsecciones/seleccionar_preinscripcion_form', locals: {url: url, id_modal: idModal}
+    .col-md-5
+      .border.p-3
+        %h5.text-center.titulo Horarios Seleccionados
+        .alert.alert-warning Tenga en cuenta que el solapamiento de horarios es responsabilidad absoluta del estudiante. 
+        = render partial: '/admin/horarios/horario_secciones'
+

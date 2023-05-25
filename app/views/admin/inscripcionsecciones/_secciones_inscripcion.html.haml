@@ -52,7 +52,7 @@
 								-# aux[:asig] = {id: a.id, cred: a.creditos, desc: a.descripcion, dpto: a.departamento.descripcion, cat: a.catedra.descripcion}
 								-# aux[:sec] = {num: seccion.numero, id: seccion.id, periodo_id: seccion.periodo_id}
 								
-								= radio_button_tag seccion.asignatura_id, seccion.id, false, id: seccion.id, class: seccion.asignatura_id, onchange: "agregarASeleccionas(#{aux.to_json}); addHorario(#{bloques}, '#{seccion.asignatura_id}');"
+								= radio_button_tag seccion.asignatura_id, seccion.id, false, id: seccion.id, class: seccion.asignatura_id, onchange: "agregarASeleccionas(#{aux.to_json}); addHorario(#{seccion.id}, '#{seccion.asignatura_id}');"
 =# render partial: '/admin/inscripcionsecciones/tabla_selecciones', locals: {escuelas: @escuelas}
 
 =# render partial: '/admin/horarios/horario_secciones'

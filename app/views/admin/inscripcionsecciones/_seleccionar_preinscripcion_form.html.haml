@@ -1,42 +1,29 @@
+.border.p-3
+  = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
+    %h5.text-center.titulo Oferta Académica
+    .alert.alert-warning.text-center
+      Seleccione las asignaturas que desea preinscribir. Recuerde mover el scroll para ver todas las asignaturas ofertadas.
+      %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} &times;
+    %div{style: 'overflow-y:scroll;max-height:280px'}
+      = hidden_field_tag 'estudiante_id', @estudiante.id
+      = hidden_field_tag 'escuelaperiodo_id', @escupe.id
 
--# Este botón puede eliminarse si decidimos desplegar la modal al inicio
-= link_to 'javascript:void(0)', onclick: "$('##{id_modal}').modal();", class: 'btn btn-block btn-lg btn-success tooltip-btn mb-2' do
-  = glyph 'education'
-  = "#{title_btn} en #{@escuela.descripcion_filtro} el periodo #{@periodo_inscripcion.id}"
+      = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: @asignaturas_ofertadas_x_escuela, pcis: false}
 
-.modal.fade{'aria-hidden': false, role: :dialog, id: id_modal, data: {backdrop: 'static', keyboard: :false} }
-  .modal-dialog.modal-lg
-    .modal-content
-      .alert.alert-info
-        .text-center{id: "#{id_modal}Title"}
-          %h4= title
-          %h5= "Escuela de #{@escuela.descripcion_filtro}"
-          %h5= "Período Académico #{@periodo_inscripcion.id}"
-      .alert.alert-warning.text-center
-        = msgDanger.html_safe
-        %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} &times;
-      = form_tag(url, id: "#{id_modal}Form", class: 'form-horizontal', multipart: true) do
-        .modal-body.border.p-2{style: 'overflow-y:scroll;max-height:280px'}
-          = hidden_field_tag 'estudiante_id', @estudiante.id
-          = hidden_field_tag 'escuelaperiodo_id', @escupe.id
+      - unless (@escuela.id.eql? 'POST')
+        - pcis = Asignatura.pcis(@periodo_inscripcion.id).sin_la_escuela(@escuela.id)
+        - if pcis.any?
 
-          = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: asignaturas_ofertadas, pcis: false}
+          %hr
+          %h4 Asignaturas PCI 
+          = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: pcis, pcis: true}
 
-          - unless (@escuela.id.eql? 'POST')
-            - pcis = Asignatura.pcis(@periodo_inscripcion.id).sin_la_escuela(@escuela.id)
-            - if pcis.any?
+    = render partial: '/admin/inscripcionsecciones/total_creditos'
+    
+    - enableSubmit = (@totalCreditosReservados > 0 and @totalCreditosReservados <= @limiteCreditos and @totalAsignaturasReservadas > 0 and @totalAsignaturasReservadas <= @limiteAsignaturas)
 
-              %hr
-              %h4 Asignaturas PCI 
-              = render partial: '/admin/inscripcionsecciones/asignaturas_ofertadas', locals: {asignaturas: pcis, pcis: true}
-
-        = render partial: '/admin/inscripcionsecciones/total_creditos'
-        .modal-footer
-          / %a.btn.btn-sm.btn-outline-light{data: {dismiss: 'modal'}} Cancelar
-          - enableSubmit = (@totalCreditosReservados > 0 and @totalCreditosReservados <= @limiteCreditos and @totalAsignaturasReservadas > 0 and @totalAsignaturasReservadas <= @limiteAsignaturas)
-
-          - disabledClass = enableSubmit ? '' : 'disabled'
-          = submit_tag title_btn, class: "#{disabledClass} btn btn-success btn-sm", id: 'submitBtn', 'data-disable-with': 'Enviando', disabled: !enableSubmit
+    - disabledClass = enableSubmit ? '' : 'disabled'
+    = submit_tag 'Preinscribirse', class: "#{disabledClass} btn btn-success btn-sm", id: 'submitBtn', 'data-disable-with': 'Enviando', disabled: !enableSubmit
 
 :javascript
 
@@ -68,7 +55,6 @@
         toastr.error(json["responseJSON"].data);
         ev.preventDefault();
       }
-      console.log('responseJSON: '+json["responseJSON"]);
       opcion.text(json["responseJSON"].cupo);
       $('#cargando').modal('hide');
     }
@@ -78,8 +64,6 @@
 
 
   function totalizar() {
-
-    // let selecteds = $(".selectInscripcion :selected");
     let selecteds = $(".selectInscripcion option:selected");
 
     let totalCredSel = 0;
@@ -129,8 +113,6 @@
   $('#submitBtn').on('click', function(event){
     let selected = '\n';
     let selecteds = $(".selectInscripcion option:selected");
-    // let selecteds = $('.selectInscripcion option')
-    //let selecteds = $(".selectInscripcion option[value!='']:selected")
     let msg;
     let total = 0;
     

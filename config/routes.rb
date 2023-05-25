@@ -126,6 +126,9 @@ Rails.application.routes.draw do
     resources :principal_profesor, only: :index 
     resources :principal_estudiante, only: :index do
       post 'actualizar_idiomas'
+      member do
+        get 'oferta_academica'
+      end
     end
 
 
@@ -210,6 +213,7 @@ Rails.application.routes.draw do
         get 'importar_secciones'
       end
       member do
+        get 'get_bloquehorario'
         get 'desasignar_profesor_secundario'
         get 'seleccionar_profesor'
         post :calificar
