@@ -479,7 +479,7 @@
         let dia = weekdays[indice];
         let desc = `${dia} ${itemAux.innerText}`
 
-        alert(`Hay solapamiento de horarios en ${desc}. \n Por favor, inténtelo con otra sección o realice los cambios pertinentes.`)
+        alert(`Hay solapamiento de horarios en ${desc}. \n Por favor, realice los cambios pertinentes.`)
 
         // console.error('Invalid period', this.periodInit(position, position + height));
         if (this.settings.mode === 'edit') $(period).remove();
