@@ -66,9 +66,9 @@
     },
     pluginName = 'jqs';
 
-  $('.jqs-period-time').change(function(e){
-    console.log(`Valor de ele en ${e}`)
-  })
+  // $('.jqs-period-time').change(function(e){
+  //   console.log(`Valor de ele en ${e}`)
+  // })
 
   // function getValue(e){
   //   let day = e[0].parentElement.parentElement.cellIndex
@@ -291,7 +291,7 @@
      * Generate periods from data option
      */
     generate: function () {
-      if (this.settings.data.length > 0) {
+      if (this.settings.data != null && this.settings.data.length > 0) {
         var $this = this;
 
         $.each(this.settings.data, function (index, data) {
@@ -318,7 +318,7 @@
         });
       }
 
-      if (this.settings.dataEditable.length > 0) {
+      if (this.settings.dataEditable != null && this.settings.dataEditable.length > 0) {
         var $this = this;
 
         $.each(this.settings.dataEditable, function (index, data) {
@@ -502,7 +502,7 @@
           },
           stop: function (event, ui) {
             if (!$this.isValid($(ui.helper))) {
-              alert('Los períodos de tiempo deben ser de al menos 90 minutos y no soparse entre sí')
+              alert('Los períodos de tiempo deben ser de al menos 90 minutos y no solaparse entre sí')
 
               $(ui.helper).css('top', Math.round(ui.originalPosition.top));
             }
@@ -909,11 +909,12 @@
       var end = 0;
       var check = true;
 
-      // console.log(currentStart);
-      // console.log(currentEnd);
+      console.log(`CurrentStrt: ${currentStart}`);
+      console.log(`CurrentEnd: ${currentEnd}`);
 
       if (currentEnd - currentStart < 30) {
           check = false
+          console.log(`En currentEnd - currentStart < 30`);
       }else{      
         $('.jqs-period, .jqs-period-info', $(current).parent()).each(function (index, period) {
           // Se verifica que los periodos no son el mismo
@@ -923,16 +924,27 @@
 
             // Casos de Solapamiento:
             // Inicia dentro del horario 
-            if (start > currentStart && start < currentEnd) check = false;
+            if (start > currentStart && start < currentEnd) {
+              console.log('Inicia dentro del horario ');
+              check = false;
+            }
 
             // Finaliza dentro del horario 
-            if (end > currentStart && end < currentEnd) check = false;
+            if (end > currentStart && end < currentEnd) {
+              console.log('Finaliza dentro del horario');
+              check = false;
+            }
 
             // Inicia correcto pero finaliza dentro de otro horario
-            if (start < currentStart && end > currentEnd) check = false;
+            if (start < currentStart && end > currentEnd) {
+              console.log('Inicia correcto pero finaliza dentro de otro horario');
+              check = false;
+            }
 
             // Mismo inicio o mismo final
-            if (start === currentStart || end === currentEnd) check = false;
+            if (start === currentStart || end === currentEnd) {
+              check = false;
+            }
 
           }
         });

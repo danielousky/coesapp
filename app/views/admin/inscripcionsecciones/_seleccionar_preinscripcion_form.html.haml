@@ -23,7 +23,11 @@
     - enableSubmit = (@totalCreditosReservados > 0 and @totalCreditosReservados <= @limiteCreditos and @totalAsignaturasReservadas > 0 and @totalAsignaturasReservadas <= @limiteAsignaturas)
 
     - disabledClass = enableSubmit ? '' : 'disabled'
-    = submit_tag 'Preinscribirse', class: "#{disabledClass} btn btn-success btn-sm", id: 'submitBtn', 'data-disable-with': 'Enviando', disabled: !enableSubmit
+    = submit_tag 'Preinscribirse', class: "#{disabledClass} btn btn-success btn-sm float-right", id: 'submitBtn', 'data-disable-with': 'Enviando', disabled: !enableSubmit
+
+    - if false 
+      = link_to principal_estudiante_index_path, class: 'btn btn-sm btn-secondary' do
+        Cancelar
 
 :javascript
 
