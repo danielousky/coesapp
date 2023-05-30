@@ -409,7 +409,7 @@
       if (height <= 0 || position >= this.periodHeight || height < 3) {
         // console.error('Invalid period');
 
-        alert('Los períodos de tiempo deben ser de al menos 45 minutos y no soparse entre sí')
+        alert('Los períodos de tiempo deben ser de al menos 45 minutos y no solaparse entre sí')
 
         return false;
       }
@@ -519,7 +519,7 @@
           },
           stop: function (event, ui) {
             if (!$this.isValid($(ui.helper))) {
-              alert('Los períodos de tiempo deben ser de al menos 90 minutos y no soparse entre sí')
+              alert('Los períodos de tiempo deben ser de al menos 90 minutos y no solaparse entre sí')
 
               $(ui.helper).css({
                 'height': Math.round(ui.originalSize.height),
