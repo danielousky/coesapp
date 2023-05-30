@@ -32,4 +32,4 @@
 			#notificarEmail.btn-sm.btn-warning.m-2.tooltip-btn{'data-toggle': :tooltip, title: 'Notifica la acción al estudiante vía correo'}
 				= check_box_tag :notificar, true, true
 				Enviar Notificación
-			= submit_tag 'Guardar inscripción', class: 'btn btn-large btn-block btn-success', 'data-confirm': "¿Confirma que desea completar el proceso de inscripción en el estudiante: #{@estudiante.usuario.descripcion_apellido} para el Período #{current_periodo.id} y para #{@escuela.descripcion}?", disabled: disabledConfirmar, id: 'btn-confirmacion'
+			= submit_tag 'Guardar inscripción', class: 'btn btn-large btn-block btn-success', 'data-confirm': "¿Confirma que desea completar el proceso de inscripción de #{@estudiante.usuario.descripcion_apellido} para el Período #{current_periodo.id} de #{@escuela.descripcion}?", disabled: disabledConfirmar, id: 'btn-confirmacion'
