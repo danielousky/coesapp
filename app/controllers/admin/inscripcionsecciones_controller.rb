@@ -130,7 +130,7 @@ module Admin
 				any_error = true
 			end
 			inscripcionescuelaperiodo.destroy if any_error
-			redirect_back fallback_location: '/principal_estudiante'
+			redirect_to principal_estudiante_index_path
 		end
 
 		# def preinscribirse_original

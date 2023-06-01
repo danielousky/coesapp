@@ -5,9 +5,10 @@
 %h4.titulo.text-center= @seccion.descripcion_escuela 
 .border.p-3
   .text-center
-    .alert.alert-info
+    %h5.alert.alert-warning
       %b Atención:
       Seleccione el o los bloques de horario más conveniente para la sección. Adicionalmente puede asociar el profesor correspondiente a dicho bloque. Los bloques de horarios ya ocupados son de caracter informativo.
+
   = form_for @horario, html: { class: 'form-horizontal', id: 'formHorarios' } do |f|
     #bloquesHorarios
     = f.hidden_field :seccion_id
@@ -27,8 +28,8 @@
       type: 'GET',
       dataType: 'json', 
       beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-      success: function (data) {
-        // console.log(data)
+      success: function (data_origen) {
+        // console.log(data_origen);
         $("#bloquesHorarios").jqs({
           daysList: ['Lunes ', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
           hour: 12,
@@ -36,20 +37,23 @@
           periodDuration: 15,
           periodOptions: false,
 
-          data: data.bloques,
-          dataEditable: data.bloquesEditables,
+          data: data_origen.bloques,
+          dataEditable: data_origen.bloquesEditables,
 
           onAddPeriod: function(e){
+            let profes, virtual, elem;
+            elem = e.find('.jqs-period-container');
             
-            console.log(`#{@profesores.any?}`)
-            let aux;
+            virtual = `#{select_tag 'bloquehorarios[modalidad][]', options_for_select(Bloquehorario.modalidades.keys{|mo| mo.titleize }) , class: ' form-control form-control-sm'}`
+
             if(`#{@profesores.any?}` == 'true'){
-              aux = `#{collection_select nil, 'bloquehorarios[profesores][]', @profesores, :id, :descripcion, {selected: ((@profesores.count.eql?(1)) ? @profesores.first.id : ''), include_blank: 'Ningún Profesor'}, { class: ' form-control form-control-sm'}}`
+              profes = `#{collection_select nil, 'bloquehorarios[profesores][]', @profesores, :id, :descripcion, {selected: ((@profesores.count.eql?(1)) ? @profesores.first.id : ''), include_blank: 'Ningún Profesor'}, { class: ' form-control form-control-sm'}}`
 
             }else{
-              aux = `<b> Sin profesor asignado a la sección </b>`
+              profes = `<b> Sin profesor asignado a la sección </b>`
             }
-            e.find('.jqs-period-container').append(aux);
+            elem.append(profes);
+            elem.append(virtual);
 
           }
 

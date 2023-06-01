@@ -3,16 +3,16 @@
     %thead
       %tr.text-center
         - if historico
-          %th Período
+          %th.align-middle Período
         %th.align-middle Tipo
-        %th Sec
-        %th Horario
-        %th Profesor Principal
-        %th Profesores Secundarios
-        %th Estado
+        %th.align-middle Sec
+        %th.align-middle Horario
+        %th.align-middle Profesor Principal
+        %th.align-middle Profesores Secundarios
+        %th.align-middle Estado
 
     %tbody
-      - secciones.each do |seccion| 
+      - secciones.each do |seccion|
         - bgHorario = (seccion.horario and !historico) ? seccion.horario.color : ''
         - conHorario = seccion.horario ? 'conHorario' : ''
         %tr.align-middle{id: seccion.numero, class: conHorario}

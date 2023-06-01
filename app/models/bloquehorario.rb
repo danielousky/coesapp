@@ -3,6 +3,7 @@ class Bloquehorario < ApplicationRecord
   # CONSTANTES
 
   DIAS = %w(Lunes Martes Miércoles Jueves Viernes)
+  MODOS = ['--', 'Presencial', 'Virtual']
   # ASOCIACIONES
 
   belongs_to :profesor, optional: true
@@ -19,6 +20,7 @@ class Bloquehorario < ApplicationRecord
   validates :dia, presence: true
 
   enum dia: DIAS
+  enum modalidad: MODOS
 
   # Scope
   scope :del_periodo, lambda { |periodo_id| joins(:periodo).where "periodos.id = ?", periodo_id}
@@ -47,6 +49,12 @@ class Bloquehorario < ApplicationRecord
   # end
 
 
+  def select_de_modalidad
+
+    "#{ApplicationController.helpers.select_tag 'bloquehorarios[modalidad][]', ApplicationController.helpers.options_for_select(Bloquehorario.modalidades.keys{|mo| mo.titleize}, self.modalidad) , class: ' form-control form-control-sm'}"
+    
+  end
+
   def descripcion_seccion_para_profesores
     aux =  profesor ? "#{profesor.descripcion_usuario} <br>" : ""
     aux += " #{horario.descripcion_seccion} : #{horario.seccion.asignatura.descripcion}"
@@ -59,6 +67,21 @@ class Bloquehorario < ApplicationRecord
     else
 
       "#{profesor.usuario.nombres} está ocupad#{profesor.usuario.genero} en éste horario con #{horario.seccion.numero} de #{horario.seccion.asignatura_id}" 
+    end
+  end
+
+  def titulo
+    aux = self.virtual_letra.blank? ? "" : "- #{self.virtual_letra}" 
+    "#{self.horario.descripcion_seccion} #{aux}"
+  end
+
+  def virtual_letra
+    if self.Presencial?
+      return 'P'
+    elsif self.Virtual?
+      return 'V'
+    else
+      return ''
     end
   end
 

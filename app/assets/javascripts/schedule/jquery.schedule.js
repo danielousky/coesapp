@@ -298,7 +298,7 @@
           $.each(data.periods, function (index, period) {
 
             var parent = $('.jqs-day', $this.element).eq(data.day);
-            var options = {};
+            var options = {title: data.title, backgroundColor: data.color};
             var height, position;
             if ($.isArray(period)) {
               position = $this.positionFormat(period[0]);
@@ -313,7 +313,7 @@
               height = $this.periodHeight;
             }
 
-            $this.addInitial(parent, position, height - position, options, data.title, data.color);
+            $this.addInitial(parent, position, height - position, options);
           });
         });
       }
@@ -322,15 +322,28 @@
         var $this = this;
 
         $.each(this.settings.dataEditable, function (index, data) {
-          $.each(data.periods, function (index, period) {
+          // ESTA ES LA MANERA CORRECTA PERO HAY QUE MODIFICAR EL get_bloque DE horario_controller, EN LUGAR DE SER ARRAYS DE ARRAY LOS @bloques Y @bloquesEditables DEBEN SER SOLO ARRAY
+          // var parent = $('.jqs-day', $this.element).eq(data.day);
+          // var options = {};
+          // var height, position;
 
+          // position = $this.positionFormat(data.periods[0]);
+          // height = $this.positionFormat(data.periods[1]);
+
+          // if (height === 0) height = $this.periodHeight;
+
+          // $this.add(parent, position, height - position, options, data.title, data.color);
+
+          $.each(data.periods, function (index, period) {
             var parent = $('.jqs-day', $this.element).eq(data.day);
-            var options = {};
+            var options = {title: data.title, backgroundColor: data.color};
             var height, position;
             if ($.isArray(period)) {
+              
               position = $this.positionFormat(period[0]);
               height = $this.positionFormat(period[1]);
             } else {
+              console.log('Period No es un Array');
               position = $this.positionFormat(period.start);
               height = $this.positionFormat(period.end);
               options = period;
@@ -340,7 +353,7 @@
               height = $this.periodHeight;
             }
 
-            $this.add(parent, position, height - position, options, data.title, data.color);
+            $this.add(parent, position, height - position, options);
           });
         });
       }
@@ -355,7 +368,7 @@
      * @param {int} height
      * @param options
      */
-    addInitial: function (parent, position, height, options, title, color) {
+    addInitial: function (parent, position, height, options) {
 
       // if (height <= 0 || position >= this.periodHeight) {
       //   console.error('Invalid period');
@@ -367,7 +380,7 @@
 
       // new period
 
-      var periodTitle = '<div class="jqs-period-title-info text-muted">' + title + '</div>';
+      var periodTitle = '<div class="jqs-period-title-info text-muted">' + options.title + '</div>';
       var periodTime = '<small><div class="jqs-period-time-info text-muted"></small>' + this.periodInit(position, position + height) + '</div>';
       var period = $('<div class="jqs-period-info">' +
         '<div class="jqs-period-container-info">' + periodTime + periodTitle + '</div>').css({
@@ -376,7 +389,7 @@
       }).attr('id', this.uniqId()).attr('title', options.title).appendTo(parent);
 
       $('.jqs-period-container-info', period).css({
-        'background-color': color,
+        'background-color': options.backgroundColor,
         'border-color': options.borderColor,
         'color': options.textColor
       });
@@ -424,7 +437,6 @@
         periodDuplicate = '<div class="jqs-period-duplicate" title="' + this.settings.periodDuplicateButton +
           '"></div>';
       }
-
       var periodTitle = '<div class="jqs-period-title text-muted">' + options.title + '</div>';
       var periodTime = '<div class="jqs-period-time text-muted">' + this.periodInit(position, position + height) + '</div>';
       var period = $('<div class="jqs-period">' +
@@ -908,13 +920,8 @@
       var start = 0;
       var end = 0;
       var check = true;
-
-      console.log(`CurrentStrt: ${currentStart}`);
-      console.log(`CurrentEnd: ${currentEnd}`);
-
       if (currentEnd - currentStart < 30) {
           check = false
-          console.log(`En currentEnd - currentStart < 30`);
       }else{      
         $('.jqs-period, .jqs-period-info', $(current).parent()).each(function (index, period) {
           // Se verifica que los periodos no son el mismo
@@ -924,27 +931,16 @@
 
             // Casos de Solapamiento:
             // Inicia dentro del horario 
-            if (start > currentStart && start < currentEnd) {
-              console.log('Inicia dentro del horario ');
-              check = false;
-            }
+            if (start > currentStart && start < currentEnd) {check = false;}
 
             // Finaliza dentro del horario 
-            if (end > currentStart && end < currentEnd) {
-              console.log('Finaliza dentro del horario');
-              check = false;
-            }
+            if (end > currentStart && end < currentEnd) {check = false;}
 
             // Inicia correcto pero finaliza dentro de otro horario
-            if (start < currentStart && end > currentEnd) {
-              console.log('Inicia correcto pero finaliza dentro de otro horario');
-              check = false;
-            }
+            if (start < currentStart && end > currentEnd) {check = false;}
 
             // Mismo inicio o mismo final
-            if (start === currentStart || end === currentEnd) {
-              check = false;
-            }
+            if (start === currentStart || end === currentEnd) {check = false;}
 
           }
         });

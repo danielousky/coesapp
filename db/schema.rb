@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_06_200353) do
+ActiveRecord::Schema.define(version: 2023_05_31_153104) do
 
-  create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
     t.bigint "record_id", null: false
@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  create_table "active_storage_blobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "active_storage_blobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "key", null: false
     t.string "filename", null: false
     t.string "content_type"
@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "administradores", primary_key: "usuario_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "administradores", primary_key: "usuario_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "rol", null: false
     t.string "departamento_id"
     t.string "escuela_id"
@@ -44,7 +44,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["usuario_id"], name: "index_administradores_on_usuario_id"
   end
 
-  create_table "asignaturas", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asignaturas", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "descripcion"
     t.integer "anno"
     t.integer "orden"
@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["tipoasignatura_id"], name: "index_asignaturas_on_tipoasignatura_id"
   end
 
-  create_table "autorizadas", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "autorizadas", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "restringida_id", null: false
     t.string "usuario_id", null: false
     t.datetime "created_at", null: false
@@ -75,14 +75,14 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["usuario_id"], name: "index_autorizadas_on_usuario_id"
   end
 
-  create_table "bancos", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "bancos", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "nombre"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_bancos_on_id"
   end
 
-  create_table "bitacoras", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "bitacoras", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.text "comentario"
     t.string "descripcion"
     t.string "usuario_id"
@@ -95,7 +95,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["usuario_id"], name: "index_bitacoras_on_usuario_id"
   end
 
-  create_table "bloquehorarios", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "bloquehorarios", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "dia"
     t.time "entrada"
     t.time "salida"
@@ -103,20 +103,21 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.bigint "horario_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "modalidad", default: 0
     t.index ["horario_id", "dia", "entrada"], name: "index_bloquehorarios_on_horario_id_and_dia_and_entrada", unique: true
     t.index ["horario_id", "dia", "salida"], name: "index_bloquehorarios_on_horario_id_and_dia_and_salida", unique: true
     t.index ["horario_id"], name: "index_bloquehorarios_on_horario_id"
     t.index ["profesor_id"], name: "fk_rails_26c329a0d2"
   end
 
-  create_table "carteleras", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "carteleras", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.text "contenido"
     t.boolean "activa", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "catedradepartamentos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "catedradepartamentos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "departamento_id"
     t.string "catedra_id"
     t.integer "orden"
@@ -128,7 +129,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["departamento_id"], name: "index_catedradepartamentos_on_departamento_id"
   end
 
-  create_table "catedras", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "catedras", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "descripcion"
     t.integer "orden"
     t.datetime "created_at", null: false
@@ -136,13 +137,13 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["id"], name: "index_catedras_on_id"
   end
 
-  create_table "citahorarias", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "citahorarias", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.datetime "fecha", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "combinaciones", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "combinaciones", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "estudiante_id"
     t.string "periodo_id"
     t.string "idioma1_id"
@@ -157,7 +158,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["periodo_id"], name: "index_combinaciones_on_periodo_id"
   end
 
-  create_table "comentarios", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "comentarios", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.text "contenido"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -165,7 +166,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.boolean "habilitado", default: true
   end
 
-  create_table "delayed_jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "delayed_jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
     t.text "handler", null: false
@@ -180,7 +181,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "departamentos", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "departamentos", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "descripcion"
     t.string "escuela_id", null: false
     t.datetime "created_at", null: false
@@ -189,7 +190,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["id"], name: "index_departamentos_on_id"
   end
 
-  create_table "dependencias", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "dependencias", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "asignatura_id", null: false
     t.string "asignatura_dependiente_id", null: false
     t.datetime "created_at", null: false
@@ -198,7 +199,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["asignatura_id"], name: "index_dependencias_on_asignatura_id"
   end
 
-  create_table "direcciones", primary_key: "estudiante_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "direcciones", primary_key: "estudiante_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "estado"
     t.string "municipio"
     t.string "ciudad"
@@ -209,7 +210,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["estudiante_id"], name: "index_direcciones_on_estudiante_id"
   end
 
-  create_table "escuelaperiodos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "escuelaperiodos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "periodo_id"
     t.string "escuela_id"
     t.datetime "created_at", null: false
@@ -222,7 +223,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["periodo_id"], name: "index_escuelaperiodos_on_periodo_id"
   end
 
-  create_table "escuelas", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "escuelas", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "descripcion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -237,7 +238,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["periodo_inscripcion_id"], name: "fk_rails_5f0f1fec52"
   end
 
-  create_table "estudiantes", primary_key: "usuario_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "estudiantes", primary_key: "usuario_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "tipo_estado_inscripcion_id"
     t.boolean "activo", default: false
     t.datetime "created_at", null: false
@@ -252,7 +253,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["usuario_id"], name: "index_estudiantes_on_usuario_id"
   end
 
-  create_table "grados", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "grados", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "escuela_id"
     t.string "estudiante_id"
     t.datetime "created_at", null: false
@@ -283,7 +284,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["reportepago_id"], name: "index_grados_on_reportepago_id"
   end
 
-  create_table "historialplanes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "historialplanes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "estudiante_id"
     t.string "periodo_id"
     t.string "plan_id"
@@ -300,7 +301,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["plan_id"], name: "index_historialplanes_on_plan_id"
   end
 
-  create_table "horarios", primary_key: "seccion_id", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "horarios", primary_key: "seccion_id", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "titulo"
     t.string "color"
     t.datetime "created_at", null: false
@@ -308,7 +309,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["seccion_id"], name: "index_horarios_on_seccion_id"
   end
 
-  create_table "inscripcionescuelaperiodos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "inscripcionescuelaperiodos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "estudiante_id", null: false
     t.bigint "escuelaperiodo_id", null: false
     t.string "tipo_estado_inscripcion_id"
@@ -324,7 +325,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["tipo_estado_inscripcion_id"], name: "index_inscripcionescuelaperiodos_on_tipo_estado_inscripcion_id"
   end
 
-  create_table "inscripcionsecciones", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "inscripcionsecciones", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "seccion_id"
     t.string "estudiante_id"
     t.string "tipo_estado_calificacion_id"
@@ -358,7 +359,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["tipoasignatura_id"], name: "index_inscripcionsecciones_on_tipoasignatura_id"
   end
 
-  create_table "inscripcionsecciones_copy", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "inscripcionsecciones_copy", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "seccion_id"
     t.string "estudiante_id"
     t.string "tipo_estado_calificacion_id"
@@ -379,7 +380,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["tipoasignatura_id"], name: "index_inscripcionsecciones_on_tipoasignatura_id"
   end
 
-  create_table "inscripcionsecciones_copy1", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "inscripcionsecciones_copy1", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "seccion_id"
     t.string "estudiante_id"
     t.string "tipo_estado_calificacion_id"
@@ -409,7 +410,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["tipoasignatura_id"], name: "index_inscripcionsecciones_on_tipoasignatura_id"
   end
 
-  create_table "jornadacitahorarias", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "jornadacitahorarias", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "escuelaperiodo_id"
     t.datetime "inicio"
     t.integer "duracion_total_horas", limit: 1
@@ -420,27 +421,27 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["escuelaperiodo_id"], name: "index_jornadacitahorarias_on_escuelaperiodo_id"
   end
 
-  create_table "parametros_generales", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "parametros_generales", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "valor"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_parametros_generales_on_id"
   end
 
-  create_table "perfiles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "perfiles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "nombre"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "perfiles_restringidas", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "perfiles_restringidas", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "restringida_id", null: false
     t.bigint "perfil_id", null: false
     t.index ["perfil_id"], name: "perfiles_restringidas_perfile_id_fk"
     t.index ["restringida_id", "perfil_id"], name: "index_perfiles_restringidas_on_restringida_id_and_perfil_id", unique: true
   end
 
-  create_table "periodos", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "periodos", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.date "inicia"
     t.date "culmina"
     t.datetime "created_at", null: false
@@ -449,7 +450,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["id"], name: "index_periodos_on_id"
   end
 
-  create_table "planes", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "planes", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "descripcion"
     t.string "escuela_id", null: false
     t.datetime "created_at", null: false
@@ -459,13 +460,13 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["id"], name: "index_planes_on_id"
   end
 
-  create_table "profesores", primary_key: "usuario_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "profesores", primary_key: "usuario_id", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "departamento_id"
     t.index ["departamento_id"], name: "index_profesores_on_departamento_id"
     t.index ["usuario_id"], name: "index_profesores_on_usuario_id"
   end
 
-  create_table "programaciones", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "programaciones", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "asignatura_id"
     t.string "periodo_id"
     t.datetime "created_at", null: false
@@ -477,7 +478,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["periodo_id"], name: "index_programaciones_on_periodo_id"
   end
 
-  create_table "reportepagos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "reportepagos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "numero"
     t.float "monto"
     t.integer "tipo_transaccion"
@@ -488,7 +489,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["banco_origen_id"], name: "fk_rails_d6018c63f7"
   end
 
-  create_table "restringidas", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "restringidas", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.boolean "acceso_total", default: false
     t.string "nombre_publico", null: false
     t.string "controlador", null: false
@@ -500,7 +501,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["nombre_publico"], name: "index_restringidas_on_nombre_publico", unique: true
   end
 
-  create_table "seccion_profesores_secundarios", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "seccion_profesores_secundarios", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "profesor_id"
     t.bigint "seccion_id"
     t.datetime "created_at", null: false
@@ -511,7 +512,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["seccion_id"], name: "index_seccion_profesores_secundarios_on_seccion_id"
   end
 
-  create_table "secciones", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "secciones", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "numero"
     t.string "asignatura_id"
     t.string "periodo_id"
@@ -529,42 +530,42 @@ ActiveRecord::Schema.define(version: 2022_10_06_200353) do
     t.index ["tipo_seccion_id"], name: "index_secciones_on_tipo_seccion_id"
   end
 
-  create_table "tipo_calificaciones", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tipo_calificaciones", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "descripcion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_tipo_calificaciones_on_id"
   end
 
-  create_table "tipo_estado_calificaciones", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tipo_estado_calificaciones", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "descripcion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_tipo_estado_calificaciones_on_id"
   end
 
-  create_table "tipo_estado_inscripciones", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tipo_estado_inscripciones", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "descripcion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_tipo_estado_inscripciones_on_id"
   end
 
-  create_table "tipo_secciones", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tipo_secciones", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "descripcion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_tipo_secciones_on_id"
   end
 
-  create_table "tipoasignaturas", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tipoasignaturas", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "descripcion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_tipoasignaturas_on_id"
   end
 
-  create_table "usuarios", primary_key: "ci", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "usuarios", primary_key: "ci", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "nombres"
     t.string "apellidos"
     t.string "email"
