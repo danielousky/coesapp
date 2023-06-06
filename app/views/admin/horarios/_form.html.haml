@@ -31,10 +31,6 @@
       success: function (data_origen) {
         // console.log(data_origen);
         $("#bloquesHorarios").jqs({
-          daysList: ['Lunes ', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
-          hour: 12,
-          days: 5,
-          periodDuration: 15,
           periodOptions: false,
 
           data: data_origen.bloques,
@@ -62,7 +58,6 @@
       }
     });
   })
-
 
 
   $('#formHorarios').submit(function() {

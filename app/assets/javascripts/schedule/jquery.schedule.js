@@ -4,9 +4,9 @@
   // Defaults options
   var defaults = {
       mode: 'edit', // read
-      hour: 24, // 12
-      days: 7, // 7/5
-      periodDuration: 30, // 15/30/60
+      hour: 12, // 12
+      days: 5, // 7/5
+      periodDuration: 15, // 15/30/60
       data: [],
       periodOptions: true,
       periodColors: [],
@@ -22,59 +22,15 @@
         'Martes',
         'Miércoles',
         'Jueves',
-        'Viernes',
-        'Sábado',
-        'Domingo'
+        'Viernes'
       ],
       onInit: function () {},
-      onAddPeriod: function (e) {
-
-        // let bloque_id = getValue(e)
-
-        // $('<input>').attr({
-        //     type: 'text',
-        //     id: 'bloques_ids_',
-        //     name: 'bloques_ids[]',
-        //     value: bloque_id
-        // }).appendTo('#bloqueshorarios');
-
-        // let aux = $('#bloques_ids').val() || []
-        // aux = aux == '' ? [] : JSON.parse(aux)
-        // // aux = JSON.parse(aux)
-
-        // aux.push(bloque_id)
-        // console.log(aux)
-        // $('#bloques_ids').val(aux)
-      },
-      onRemovePeriod: function (e) {
-        // let bloque_id = getValue(e)
-        // $(`#bloqueshorarios :input[value="${bloque_id}"]`).remove()
-      },
+      onAddPeriod: function (e) {},
+      onRemovePeriod: function (e) {},
       onDuplicatePeriod: function () {},
-      onClickPeriod: function () {
-
-        // let bloque_id = getValue(e)
-
-        // $('<input>').attr({
-        //     type: 'text',
-        //     id: 'bloques_ids_',
-        //     name: 'bloques_ids[]',
-        //     value: bloque_id
-        // }).appendTo('#bloqueshorarios');
-
-      }
+      onClickPeriod: function () {}
     },
     pluginName = 'jqs';
-
-  // $('.jqs-period-time').change(function(e){
-  //   console.log(`Valor de ele en ${e}`)
-  // })
-
-  // function getValue(e){
-  //   let day = e[0].parentElement.parentElement.cellIndex
-  //   let hours = e[0].innerText
-  //   return `${day} - ${hours}`
-  // }
 
   // Plugin constructor
   function Plugin(element, options) {
