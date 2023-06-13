@@ -768,7 +768,7 @@ class Inscripcionseccion < ApplicationRecord
               end
 
               if row[4] and !row[4].blank?
-                row[4].strip!
+                # row[4].strip!
                 inscripcion.calificar row[4]
                 p "      CALIFICANDO ANDO!     ".center(400, '$')
               end
