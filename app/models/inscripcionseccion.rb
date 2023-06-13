@@ -703,8 +703,10 @@ class Inscripcionseccion < ApplicationRecord
     end
     row[3] = fields[:periodo_id] if row[3].blank?
 
+    p "      ROW: #{row}     ".center(400, '#')
+
     if periodo = Periodo.where(id: row[3]).first
-      p '      PERIODO     '.center(400, '$')
+      p "      PERIODO: #{periodo.id}     ".center(400, '$')
       # LIMPIAR CI
       if row[0]
         row[0].strip!
@@ -724,7 +726,7 @@ class Inscripcionseccion < ApplicationRecord
       asignatura ||= Asignatura.where(id: "0#{row[1]}").first
 
       if !asignatura.nil?
-        p '      ASIGNATURA     '.center(400, '$')
+        p "      ASIGNATURA: #{asignatura.id}     ".center(400, '$')
         seccion = asignatura.secciones.where(periodo_id: periodo.id, numero: row[2]).first
 
         if seccion.nil?
@@ -732,17 +734,23 @@ class Inscripcionseccion < ApplicationRecord
         end
 
         if seccion
-          p '      SECCIÓN     '.center(400, '$')
+          p "      SECCIÓN: #{seccion.id}     ".center(400, '$')
           if estudiante = Estudiante.where(usuario_id: row[0]).first
 
             if grado = estudiante.grados.where(escuela_id: fields[:escuela_id]).first
-              p '      GRADO     '.center(400, '$')
+              p "      GRADO: #{grado.id}     ".center(400, '$')
               if inscripcion = seccion.inscripcionsecciones.where(estudiante_id: estudiante.ci).first
                 nuevo = false
+                p "      USADO 🤭     ".center(400, '$')
+
               else
+                p "      NUEVO     ".center(400, '$')
+
                 nuevo = true
                 escuelaperiodo = Escuelaperiodo.where(periodo_id: periodo.id, escuela_id: fields[:escuela_id]).first
                 escuelaperiodo ||= Escuelaperiodo.create!(periodo_id: periodo.id, escuela_id: fields[:escuela_id])
+                p "      ¡ESCUELA PERIODO CREADA O ENCONTRADA!     ".center(400, '$')
+
 
                 # BUSCAR O CREAR INSCRIPCIÓN_ESCUELA_PERIODO
                 inscrip_escuela_period = estudiante.inscripcionescuelaperiodos.where(escuelaperiodo_id: escuelaperiodo.id).first
@@ -762,16 +770,19 @@ class Inscripcionseccion < ApplicationRecord
               if row[4] and !row[4].blank?
                 row[4].strip!
                 inscripcion.calificar row[4]
+                p "      CALIFICANDO ANDO!     ".center(400, '$')
               end
 
               if inscripcion.save!
+                p "      INSCRIPCIÓN GUARDADA!     ".center(400, '$')
+
                 if nuevo
                   total_newed = 1
-                  desc_us = "Inscripción de Usuario (#{usuario.ci}) vía migración."
+                  desc_us = "Inscripción de Usuario (#{current_usuario_id}) vía migración."
                   tipo_us = Bitacora::CREACION
                 else
                   total_updated = 1
-                  desc_us = "Actualización de Inscripción del usuario (#{usuario.ci}) vía migración."
+                  desc_us = "Actualización de Inscripción del usuario (#{current_usuario_id}) vía migración."
                   tipo_us = Bitacora::ACTUALIZACION
                 end
 
