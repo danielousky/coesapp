@@ -147,7 +147,7 @@ module Admin
 		# 		periodo_id = current_periodo.id
 		# 	end
 		# 	if periodo_id.nil?
-		# 		flash[:error] = "Usted no posse inscripciones en la escuela solicidata"
+		# 		flash[:error] = "Usted no posee inscripciones en la escuela solicidata"
 		# 		redirect_back fallback_location: root_path
 		# 	else
 		# 		pdf = ExportarPdf.hacer_constancia_inscripcion_primera params[:id], periodo_id, params[:escuela_id]

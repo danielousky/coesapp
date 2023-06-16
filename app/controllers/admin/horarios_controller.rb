@@ -89,7 +89,7 @@ module Admin
       @seccion = Seccion.find params[:seccion_id]
 
       if @seccion.inscripciones.any?
-        flash[:danger] = 'Posse inscripciones en ésta seccion. Elimínelas para poder agregar o modificar horarios'
+        flash[:danger] = 'Posee inscripciones en ésta seccion. Elimínelas para poder agregar o modificar horarios'
         redirect_back fallback_location: seccion_path(@seccion)
       else
         @horario.seccion_id = @seccion.id
@@ -127,7 +127,7 @@ module Admin
       @seccion = @horario.seccion
 
       if @seccion.inscripciones.any?
-        flash[:danger] = 'Posse inscripciones en esta seccion. Elimínelas para poder agregar o modificar horarios'
+        flash[:danger] = 'Posee inscripciones en esta seccion. Elimínelas para poder agregar o modificar horarios'
         redirect_back fallback_location: seccion_path(@seccion)
       else
         @horario.seccion_id = @seccion.id

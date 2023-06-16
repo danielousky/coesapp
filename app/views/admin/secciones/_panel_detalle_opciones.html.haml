@@ -5,7 +5,7 @@
 		- else
 			= badge_icon_tooltip "#{new_horario_path}?seccion_id=#{seccion.id}", 'badge-success btn-sm ml-md-1 p-md-1', 'Agregar Horario','time', 'plus' if current_admin.autorizado?('Horarios', 'create')
 	- else
-		.badge.p-md-1.align-middle.text-center.tooltip-btn.bg-secondary.text-white{'data-toggle': 'tooltip', title: "Posse inscripciones. Elimínelas para poder agregar o modificar horarios"}= glyph 'time'
+		.badge.p-md-1.align-middle.text-center.tooltip-btn.bg-secondary.text-white{'data-toggle': 'tooltip', title: "Posee inscripciones. Elimínelas para poder agregar o modificar horarios"}= glyph 'time'
 
 - if current_admin
 	= badge_icon_tooltip notas_seccion_descargar_path(seccion.id, :pdf), 'badge-info btn-sm p-md-1', 'Descargar Acta PDF', 'file'
