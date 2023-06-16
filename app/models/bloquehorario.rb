@@ -113,10 +113,10 @@ class Bloquehorario < ApplicationRecord
 
   def self.hora_descripcion hora
     if hora
-      if (hora.strftime '%M').eql? '00'
-        return (hora).strftime '%I%P'
+      if I18n.l(hora, format: '%M').eql? '00'
+        return I18n.l(hora, format: '%I%P')
       else
-        return (hora).strftime '%I:%M%P'
+        return I18n.l(hora, format: '%I%M%P')
       end
     else
       return ""
