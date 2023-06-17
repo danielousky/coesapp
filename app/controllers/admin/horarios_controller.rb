@@ -27,7 +27,7 @@ module Admin
           aux += 1 unless (h_id.eql? bh.horario_id)
           primero = (!(h_id.eql? bh.horario_id) and bh.mismo_bloque? h_id) ? aux : 0
 
-          @bloques << {day: Bloquehorario.dias[bh.dia], periods: [["#{bh.entrada_to_schedule}", "#{bh.salida_to_schedule}"]], title: "#{'</br>'*aux}#{bh.horario.seccion.numero} #{bh.virtual_letra} <div class='profDesc d-none'>#{bh.desc_to_asig}</div>", color: bh.horario.color}
+          @bloques << {day: Bloquehorario.dias[bh.dia], periods: [["#{bh.entrada_to_schedule}", "#{bh.salida_to_schedule}"]], title: "#{bh.horario.seccion.numero} #{bh.virtual_letra} #{bh.desc_to_asig}", color: bh.horario.color}
           h_id = bh.horario_id
         end
       elsif params[:profesor]
