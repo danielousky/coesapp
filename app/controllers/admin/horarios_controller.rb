@@ -61,7 +61,7 @@ module Admin
 
       elsif params[:grado]
         grado = Grado.find params[:id]
-        if periodo_inscripcion = grado.escuela.periodo_inscripcion
+        if periodo_inscripcion = current_periodo #grado.escuela.periodo_inscripcion
           secciones_ids = grado.secciones.where(periodo_id: periodo_inscripcion.id).ids 
         
           @bloques = Bloquehorario.where(horario_id: secciones_ids).collect{|bh| {day: Bloquehorario.dias[bh.dia], periods: [["#{bh.entrada_to_schedule}", "#{bh.salida_to_schedule}"]], title: "<small>#{bh.titulo}</small>", color: bh.horario.color}}
