@@ -37,12 +37,10 @@
           %td
             %table
               %tr
-                - asignatura.secciones.del_periodo(current_periodo).each do |s| 
-                  %td
-                    - if (current_admin and current_admin.autorizado? 'Secciones', 'show') 
-                      = link_to s.numero, seccion_path(s.id)
-                    - else
-                      = s.numero
+                - autorizado_vew_seccion = (current_admin&.autorizado?('Secciones', 'show')) 
+                
+                - asignatura.secciones.del_periodo(current_periodo).order(:numero).each do |s|
+                  %td= link_to_if autorizado_vew_seccion, s.numero, seccion_path(s.id)
 
                 - if (current_admin and current_admin.autorizado? 'Secciones', 'create')
                   %td= btn_plus_seccion_modal asignatura
