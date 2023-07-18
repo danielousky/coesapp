@@ -438,7 +438,7 @@ class ExportarPdf
 		if enlace
 
 			if post
-				pdf.text "Profa.  María Eugenia Martínez", size: 11, align: :center
+				pdf.text "Dra. María Josefina Barajas", size: 11, align: :center
 				pdf.text "Directora", size: 11, align: :center
 			else
 				imagen_qr = generar_codigo_qr enlace
