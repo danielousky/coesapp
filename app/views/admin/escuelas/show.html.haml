@@ -59,7 +59,7 @@
 
 %nav.mt-3
   .nav.nav-tabs
-    - if (current_admin and current_admin.autorizado? 'Proefesor', 'create')
+    - if (current_admin and current_admin.autorizado? 'Escuelas', 'index')
       = link_to 'Profesores', "#profes", "data-toggle": :tab, class: "nav-item nav-link active"
     - if (current_admin and current_admin.autorizado? 'Usuario', 'set_estudiante')
       = link_to 'Estudiantes', "#estudiantes", "data-toggle": :tab, class: "nav-item nav-link"
@@ -68,7 +68,7 @@
     - if (current_admin and current_admin.autorizado? 'Plan', 'index')        
       = link_to 'Planes', "#planes", "data-toggle": :tab, class: "nav-item nav-link"
   .tab-content
-    - if (current_admin and current_admin.autorizado? 'Proefesor', 'create')
+    - if (current_admin and current_admin.autorizado? 'Escuelas', 'index')
       .tab-pane#profes.border.p-3.border-top-0.active
         = render partial: '/admin/profesores/index', locals: {profesores: @escuela.profesores}
     - if (current_admin and current_admin.autorizado? 'Usuario', 'set_estudiante')
