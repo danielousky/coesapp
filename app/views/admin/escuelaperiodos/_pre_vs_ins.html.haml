@@ -19,6 +19,8 @@
 		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), rep, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=reported", class: 'tooltip-btn badge badge-warning', 'data-toggle': :tooltip, title: "Total Preinscritos con Reporte de Pago #{periodo.id}", 'data-placement': :right )
 		- rat = total_inscritos.inscritos.count 
 		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), rat, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=#{TipoEstadoInscripcion::INSCRITO}", class: 'tooltip-btn badge badge-success', 'data-toggle': :tooltip, title: "Total Confirmados #{periodo.id}", 'data-placement': :right )
+		- ins_sinpago = total_inscritos.inscritos.sin_reportepago.count 
+		= link_to_if((current_admin and current_admin.autorizado?('Inscripcionescuelaperiodos', 'index')), ins_sinpago, "#{inscripcionescuelaperiodos_path}?escuelaperiodo_id=#{escupe.id}&status=ins_sinpago", class: 'tooltip-btn badge badge-danger', 'data-toggle': :tooltip, title: "Total Confirmados Sin Reporte Pago #{periodo.id}", 'data-placement': :right )
 	- elsif periodo.id.eql? '2019-02A' and escuela.id.eql? 'IDIO'
 		- ins = escuela.inscripcionsecciones.del_periodo(periodo.id).por_confirmar.group(:estudiante_id).count
 		=# (escuela.inscripcionsecciones.del_periodo(periodo.id).group(:estudiante_id).count).count

@@ -26,6 +26,12 @@ module Admin
 					@inscripciones = @inscripciones.inscritos
 					@titulo = "Confirmados - #{@escuelaperiodo.periodo_id} - #{@escuelaperiodo.escuela.id}"
 					@titulo += " <span class='badge badge-success'>#{@inscripciones.count}</span>"
+				elsif params[:status].eql? 'ins_sinpago'
+					@inscripciones = @inscripciones.inscritos.sin_reportepago
+					@titulo = "Confirmados Sin Reporte de Pago - #{@escuelaperiodo.periodo_id} - #{@escuelaperiodo.escuela.id}"
+					@titulo += " <span class='badge badge-success'>#{@inscripciones.count}</span>"
+
+
 
 				end
 			else
