@@ -65,7 +65,7 @@ module ApplicationHelper
 		frase.split(" ").map{|a| a.length > 2 ? a.capitalize : a}.join(" ")
 	end	
 	def row_filter objetos, tipo
-		haml_tag :b, "#{tipo.titleize}:"
+		content_tag :b, "#{tipo.titleize}:"
 		capture_haml do
 			select_tag tipo, options_for_select(objetos), {class: 'text-field form-control filtrables', multiple: true}
 		end
@@ -73,7 +73,7 @@ module ApplicationHelper
 	end
 
 	def col_filter objetos
-		haml_tag :b, "#{objetos.name.titleize}:"
+		content_tag :b, "#{objetos.name.titleize}:"
 		capture_haml do 
 			collection_select(objetos.name.downcase, :id, objetos, :id, :descripcion_filtro, {}, {class: "text-field form-control #{objetos.name.downcase}Filtrables", multiple: true})
 		end
@@ -82,18 +82,18 @@ module ApplicationHelper
 	def filtros_etiquetas objetos
 		capture_haml do 
 			
-			haml_tag :p, "#{objetos.name.titleize}:"
+			content_tag :p, "#{objetos.name.titleize}:"
 
 			objetos.each do |e| 
 				colocar_etiqueta e
 			end
-			haml_tag :hr
+			content_tag :hr
 		end
 	end
 
 	def colocar_etiqueta objeto
 
-		haml_tag :label, objeto.id, class: 'tooltip-btn btn btn-primary btn-sm filtrable ml-sm-1', 'data_toggle': :tooltip, title: objeto.descripcion_filtro, id: objeto.id, class_name: objeto.class.to_s
+		content_tag :label, objeto.id, class: 'tooltip-btn btn btn-primary btn-sm filtrable ml-sm-1', 'data_toggle': :tooltip, title: objeto.descripcion_filtro, id: objeto.id, class_name: objeto.class.to_s
 
 	end
 
@@ -103,7 +103,7 @@ module ApplicationHelper
 			content_tag :div, class: 'onoffswitch' do
 				aux = check_box nil, :activa, checked: value, class: 'onoffswitch-checkbox switchGeneral', id: "switch#{id}", url: url
 				aux2 = content_tag :label, class: 'onoffswitch-label', for: "switch#{id}" do
-					capture_haml{"<span class='onoffswitch-inner'></span><span class='onoffswitch-switch'></span>"}
+					capture_haml{"<span class='onoffswitch-inner'></span><span class='onoffswitch-switch'></span>".html_safe}
 				end
 				capture_haml do
 					aux+aux2
@@ -123,7 +123,7 @@ module ApplicationHelper
 			# 	active = ''
 			# end
 			link_to url, class: "list-group-item list-group-item-action bg-dark text-light #{active}" do
-				capture_haml{"#{glyph icon if icon} #{nombre}"}
+				capture_haml{"#{glyph icon if icon} #{nombre}".html_safe}
 			end
 		end
 	end
@@ -133,7 +133,7 @@ module ApplicationHelper
 
 		active = (nombre.eql? controller_name.camelize) ? 'activeNavbar' : ''
 		link_to 'javascript:void(0)', class: "list-group-item list-group-item-action bg-dark text-light #{active}", id: "#{id}SubMenuLink" do
-			capture_haml{"#{glyph icon if icon} #{nombre} #{glyph 'chevron-right'}"}
+			capture_haml{"#{glyph icon if icon} #{nombre} #{glyph 'chevron-right'}".html_safe}
 		end
 	end
 
@@ -144,9 +144,9 @@ module ApplicationHelper
 
 	def add_card_header tipo, titulo
 		capture_haml do
-			haml_tag :div, class: 'card' do
-				haml_tag :div, class: 'card-header', id: "heading_#{tipo}" do
-					haml_tag :h5, class: 'mb-0' do
+			content_tag :div, class: 'card' do
+				content_tag :div, class: 'card-header', id: "heading_#{tipo}" do
+					content_tag :h5, class: 'mb-0' do
 						link_to titulo, "#collapse_#{tipo}", {"aria-controls": "collapse_#{tipo}", "aria-expanded": :true, "data-target": "#collapse_#{tipo}", "data-toggle": :collapse, class: "btn btn-link"}
 					end
 				end
@@ -159,11 +159,11 @@ module ApplicationHelper
 		# La inclusión del 'yield' en estos metodos puede ayudar a completarlo luego se llama el bloque con el 'content'
 
 		# def content_box
-		#   haml_tag :div, :class => "holder" do
-		#     haml_tag :div, :class => "top"
-		#     haml_tag :div, :class => "content" do
+		#   content_tag :div, :class => "holder" do
+		#     content_tag :div, :class => "top"
+		#     content_tag :div, :class => "content" do
 		#       yield
-		#     haml_tag :div, :class => "bottom"
+		#     content_tag :div, :class => "bottom"
 		#   end
 		# end
 		# and in haml
@@ -192,12 +192,12 @@ module ApplicationHelper
 
 		content_tag :b do "Seleccione #{name.titleize}" end
 		capture_haml do 
-			haml_tag :div, class: row do
-				haml_tag :div, class: col2 do
-					haml_tag :ul, class: "nav nav-pills mb-3 #{verti}", role: :tablist, "aria-orientation": orientacion, id: "pills-#{name}-tab" do
+			content_tag :div, class: row do
+				content_tag :div, class: col2 do
+					content_tag :ul, class: "nav nav-pills mb-3 #{verti}", role: :tablist, "aria-orientation": orientacion, id: "pills-#{name}-tab" do
 						capture_haml do 
 							objetos.each do |obj|
-								haml_tag :li, class: 'nav-item' do
+								content_tag :li, class: 'nav-item' do
 									activo = (session["#{name}_id"].eql? obj.id) ? "active" : ""
 									link_to obj.contenido, "##{name}_#{obj.id}", "data-toggle": :tab, onclick: "alert('#{name}_id', '#{obj.id}');", class: "nav-link #{activo}"
 									yield
@@ -220,7 +220,7 @@ module ApplicationHelper
 		end
 
 		link_to url, class: "tooltip-btn badge #{classes}", role: :button, 'data_toggle': :tooltip, title: title_tooltip, target: target do
-			capture_haml{"#{glyph icon1} #{glyph icon2 if icon2} #{title}"}
+			capture_haml{"#{glyph icon1} #{glyph icon2 if icon2} #{title}".html_safe}
 		end
 
 	end
@@ -235,7 +235,7 @@ module ApplicationHelper
 	def btn_tooltip_link_to title_tooltip, title, icon_name, btn_type, path
 		content_tag :b, class: 'tooltip-btn', 'data_toggle'=> :tooltip, title: title_tooltip do
 			link_to path, class: "btn #{btn_type}" do
-				capture_haml{"#{glyph icon_name} #{title}"}
+				capture_haml{"#{glyph icon_name} #{title}".html_safe}
 			end
 
 		end
@@ -279,7 +279,7 @@ module ApplicationHelper
 
 		target = (href.include? 'descargar') ? '_blank' : ''
 		link_to href, class: "btn btn-sm #{type} tooltip-btn", 'data_toggle': :tooltip,  title: title_tooltip, onclick: onclick_action, target: target do
-			capture_haml{"#{glyph icon} #{value}"}
+			capture_haml{"#{glyph icon} #{value}".html_safe}
 		end
 	end
 
@@ -295,7 +295,7 @@ module ApplicationHelper
 		target = (href.include? 'descargar') ? '_blank' : ''
 		content_tag :b, class: "tooltip-btn border p-1 border-#{color_type} rounded", 'data_toggle': :tooltip, title: title_tooltip do
 			link_to href, class: "text-#{color_type}", onclick: onclick_action, target: target do
-				capture_haml{"#{glyph icon} #{value}"}
+				capture_haml{"#{glyph icon} #{value}".html_safe}
 			end
 		end
 
@@ -318,7 +318,7 @@ module ApplicationHelper
 	def simple_toggle href, value, title_tooltip, color_type, icon, onclick_action = nil
 		target = (href.include? 'descargar') ? '_blank' : ''
 		link_to href, class: "tooltip-btn text-#{color_type}", onclick: onclick_action, target: target, 'data_toggle': :tooltip, title: title_tooltip do
-			capture_haml{"#{glyph icon} #{value}"}
+			capture_haml{"#{glyph icon} #{value}".html_safe}
 		end
 
 	end

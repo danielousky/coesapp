@@ -1,4 +1,4 @@
-.alert#message{role: :alert, style: 'display:none;position:absolute;left:50px; padding:5px; margin-top:15px'} 
+.alert#message{role: :alert, style: 'display:none;position:absolute;right: 300px; padding:5px; margin-top:15px'} 
 %br
 = form_tag(calificar_seccion_path) do
 	= hidden_field_tag "id", @seccion.id
@@ -147,7 +147,7 @@
 		.done(function( msg ) {
 
 			if (msg == true) {
-				messageSendData('alert-success', 'Calificación guardada dínamicamente')
+				messageSendData('alert-success', 'Calificación guardada dinámicamente')
 			}else{
 				messageSendData('alert-danger', 'Ocurrió un problema al intentar guardar. Por favor, intnete más tarde')
 			}
@@ -156,15 +156,14 @@
 	}
 	
 	function messageSendData(clase, msg) {
-		let elem = $('#message')
+		let elem = $('#message');
 
-		elem.removeClass()
-
-		elem.addClass(`alert ${clase}`)
-		elem.html(msg)
+		elem.removeClass();
+		elem.addClass(`alert ${clase}`);
+		elem.html(msg);
 		
-		elem.fadeIn()
-		elem.fadeOut(2000)
+		elem.fadeIn(2000);
+		elem.fadeOut();
 
 		/*
 		setTimeout(function(){

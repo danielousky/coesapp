@@ -21,7 +21,7 @@
           = btn_inscribir "/inscripcionsecciones/buscar_estudiante?escuela_id=#{escuelas.first.id}", "Inscribir en #{escuelas.first.descripcion}", nil
         - else
           - @muchas_escuelas = true
-          = btn_inscribir 'javascript:void(0)', 'Inscribir', nil , "$('#inscribirSelEscuela').modal('show');"
+          = (btn_inscribir 'javascript:void(0)', 'Inscribir', nil , "$('#inscribirSelEscuela').modal('show');").html_safe
 
     -if false 
       %small.pull-right.badge.badge-primary.mx-3= "Última Carga Vista: #{Time.zone.now.strftime('%d/%m/%Y %I:%M %p')}"

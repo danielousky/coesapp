@@ -2,8 +2,8 @@ module SeccionesHelper
 
 	def colocar_total_secciones_badge valor
 		capture_haml do
-			haml_tag :span, class: 'badge badge-light float-right tooltip-btn', 'data-toggle': :tooltip, title: 'Total Secciones' do
-				haml_concat "#{valor}"
+			content_tag :span, class: 'badge badge-light float-right tooltip-btn', 'data-toggle': :tooltip, title: 'Total Secciones' do
+				"#{valor}".html_safe
 			end
 		end
 		
@@ -17,11 +17,11 @@ module SeccionesHelper
 
 	def colocar_badge valor, tipo, tooltip_title = nil
 		if tooltip_title
-			haml_tag :span, class: "badge badge-#{tipo} tooltip-btn", 'data_toggle': :tooltip, title: tooltip_title do
-				haml_concat "#{valor}"
+			content_tag :span, class: "badge badge-#{tipo} tooltip-btn", 'data_toggle': :tooltip, title: tooltip_title do
+				"#{valor}".html_safe
 			end
 		else
-			haml_tag :span, class: "badge badge-#{tipo}" do haml_concat valor end
+			"<span class='badge badge-#{tipo}'>#{valor}</span>".html_safe
 		end
 
 	end
