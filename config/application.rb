@@ -14,7 +14,7 @@ module Coesapp
     config.i18n.fallbacks = [I18n.default_locale]
     config.assets.enabled = true
 
-    config.time_zone = 'Caracas'
+    config.time_zone = 'America/Caracas'
     config.active_record.default_timezone = :local # Or :utc
 
     config.assets.precompile += %w( application.css.scss ) 
