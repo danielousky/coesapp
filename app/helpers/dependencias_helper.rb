@@ -5,15 +5,12 @@ module DependenciasHelper
 
 	def badge_orden_asignatura(asignatura)
 
-		render_haml <<-HAML, asignatura: asignatura
-			- if asignatura.anno.eql? 0
-				- aux = asignatura.tipoasignatura ? asignatura.tipoasignatura.descripcion.titleize : 0
-			- else
-				- aux = asignatura.anno
+		if asignatura.anno.eql? 0
+			aux = asignatura.tipoasignatura ? asignatura.tipoasignatura.descripcion.titleize : 0
+		else
+			aux = asignatura.anno
 
-			%span.badge.badge-info.tooltip-btn{'data-toggle': :tooltip, title: 'Orden'}= aux
-
-		HAML
+		"<span class='badge badge-info tooltip-btn' data_toggle='tooltip', title='Orden'>#{aux}</span>"
 	end
 
 	def descripcion_arbol(dep, adelante)

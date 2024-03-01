@@ -11,10 +11,6 @@ module ApplicationHelper
  #    def is_active_action(action_name)
  #        params[:action] == action_name ? "active" : nil
  #    end
-	def render_haml(haml, locals = {})
-		Haml::Engine.new(haml.strip_heredoc, format: :html5).render(self, locals)
-	end
-
 
 	def ordinalize_es(numero)
 		case numero
@@ -42,23 +38,16 @@ module ApplicationHelper
 	end
 
 	def alert_reglamento(grado)
-		render_haml <<-HAML, grado: grado
-			- if grado.not_regular?
-				.alert.alert-danger 
-					%h5.text-center= Grado.normativa
-					%h5.alert Atención, usted ha incurrido en la siguiente falta:
-					%h6.alert.alert-warning.text-justify= grado.normativa_segun_articulo
-					- if grado.articulo_6? or grado.articulo_7?
-						%h5.alert Por favor comuníquese con el personal administrativo para solventar su situación.
-		HAML
+		- if grado.not_regular?
+			- if grado.articulo_6? or grado.articulo_7?
+				rr = "<h5 class='alert'> Por favor comuníquese con el personal administrativo para solventar su situación.</h5>" 
+			"<div class='alert alert-danger'><h5 class='text-center'>#{Grado.normativa}</h5><h5 class= 'alert'>Atención, usted ha incurrido en la siguiente falta:</h5><h6 class= 'alert alert-warning text-justify'>#{grado.normativa_segun_articulo}</h6>#{rr}</div>"
+
 	end	
 	
 
 	def label_bst(content)
-		render_haml <<-HAML, content: content
-			.badge.badge-success
-				= content
-		HAML
+		"<div class='badge badge-success'>#{content}</div>"
 	end	
 
 	def capitalize_all frase
