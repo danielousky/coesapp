@@ -38,14 +38,17 @@ module ApplicationHelper
 	end
 
 	def alert_reglamento(grado)
+		out = ""
 		if grado.not_regular?
 			if grado.articulo_6? or grado.articulo_7?
 				rr = "<h5 class='alert'> Por favor comuníquese con el personal administrativo para solventar su situación.</h5>" 
 			else
 				rr = ''
 			end
-			"<div class='alert alert-danger'><h5 class='text-center'>#{Grado.normativa}</h5><h5 class= 'alert'>Atención, usted ha incurrido en la siguiente falta:</h5><h6 class= 'alert alert-warning text-justify'>#{grado.normativa_segun_articulo}</h6>#{rr}</div>"
+			out = "<div class='alert alert-danger'><h5 class='text-center'>#{Grado.normativa}</h5><h5 class= 'alert'>Atención, usted ha incurrido en la siguiente falta:</h5><h6 class= 'alert alert-warning text-justify'>#{grado.normativa_segun_articulo}</h6>#{rr}</div>"
 		end
+		return out
+
 	end	
 	
 
