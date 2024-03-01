@@ -8,7 +8,7 @@ module DependenciasHelper
 			aux = asignatura.anno
 		end
 
-		"<span class='badge badge-info tooltip-btn' data_toggle='tooltip', title='Orden'>#{aux}</span>"
+		"<span class='badge badge-info tooltip-btn' data_toggle='tooltip', title='Orden'>#{aux}</span>".html_safe
 	end
 
 	def descripcion_arbol(dep, adelante)
@@ -25,7 +25,7 @@ module DependenciasHelper
 		out += " | "
 		out += asig.descripcion_id
 
-		return asig
+		return out
 	end
 
 
