@@ -14,7 +14,8 @@
       %span= glyph 'home'
       PRINCIPAL
   .list-group.list-group-flush.nav-item
-    = (sidebar_item current_admin, 'Secciones', 'index2', index2_secciones_path, 'star', 'COES-FHE').html_safe
+    - aux_sidebar_item = (sidebar_item current_admin, 'Secciones', 'index2', index2_secciones_path, 'star', 'COES-FHE')
+    = aux_sidebar_item.html_safe if aux_sidebar_item
     = sidebar_item current_admin, 'ParametrosGenerales', 'index', parametros_generales_path, 'cog', 'Control General'
     = sidebar_item current_admin, 'Periodos', 'index', periodos_path, 'calendar'
     = sidebar_item current_admin, 'Escuelas', 'index', escuelas_path, 'education'
