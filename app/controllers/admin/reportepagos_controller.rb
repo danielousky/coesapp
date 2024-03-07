@@ -137,7 +137,7 @@ module Admin
     def destroy
       @reportepago.destroy
       respond_to do |format|
-        format.html { redirect_to reportepagos_url, notice: 'Reportepago was successfully destroyed.' }
+        format.html { redirect_back fallback_location: reportepagos_url, notice: 'Reporte de pago eliminado' }
         format.json { head :no_content }
       end
     end

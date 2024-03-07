@@ -19,12 +19,15 @@
 				= glyph 'check'
 				= "Reporte de Pago: "
 				= ins_esc_per.reportepago.numero
-				- if current_admin and (current_admin.autorizado? 'Reportepagos', 'edit')
-					= link_to edit_reportepago_path(@reportepago), class: 'btn btn-primary btn-sm tooltip-btn ml-2', data: {toggle: :tooltip}, title: 'Editar Reporte de Pago'  do
-						= glyph 'pencil'
+			- if current_admin and (current_admin.autorizado? 'Reportepagos', 'edit')
+				= link_to edit_reportepago_path(@reportepago), class: 'btn btn-primary btn-sm tooltip-btn ml-2', data: {toggle: :tooltip}, title: 'Editar Reporte de Pago'  do
+					= glyph 'pencil'
+			- if (current_admin&.autorizado? 'Reportepagos', 'destroy')
+				= link_to reportepago_path(@reportepago), method: :delete, class: 'btn btn-danger btn-sm tooltip-btn ml-2', data: {toggle: :tooltip, confirm: 'Se eliminarán los archivos adjuntos ¿está seguro?'}, title: 'Eliminar Reporte de Pago' do
+					= glyph 'trash'
 
 		- else
-			= link_to new_reportepago_path(reportable_id: ins_esc_per.id, reportable_type: ins_esc_per.class.name), class: 'btn btn-sm btn-danger' do	
+			= link_to new_reportepago_path(reportable_id: ins_esc_per.id, reportable_type: ins_esc_per.class.name), class: 'btn btn-sm btn-warning' do	
 				= glyph 'remove'
 				Sin Reporte de Pago
 
