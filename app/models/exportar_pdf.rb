@@ -438,8 +438,8 @@ class ExportarPdf
 		if enlace
 
 			if post
-				pdf.text "Dra. María Josefina Barajas", size: 11, align: :center
-				pdf.text "Directora", size: 11, align: :center
+				pdf.text "Prof. Pedro Barrios Mota", size: 11, align: :center
+				pdf.text "Decano", size: 11, align: :center
 			else
 				imagen_qr = generar_codigo_qr enlace
 				pdf.image imagen_qr, width: 120, at: [10, (pdf.y)+40]
