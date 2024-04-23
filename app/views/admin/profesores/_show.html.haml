@@ -1,5 +1,5 @@
-- @secciones = @profesor.secciones.order('periodo_id DESC')
-- @secciones_secundarias = @profesor.secciones_secundarias.order('periodo_id DESC')
+-# @secciones = @profesor.secciones.order('periodo_id DESC')
+-# @secciones_secundarias = @profesor.secciones_secundarias.order('periodo_id DESC')
 = btn_toggle_modal 'clock', "Horario del semestre actual (#{current_periodo.id})", 'Horario', 'horarioActualProfe'
 
 =# render partial: '/admin/horarios/horario_secciones'
@@ -24,12 +24,12 @@
   #accordion
     - if @secciones_pendientes.count > 0
       - @secciones = @secciones_pendientes
-      = render partial: 'admin/profesores/card_seccion', locals: {tipo: 'pendientes', titulo: 'Como Profesor Principal'}
+      = render partial: 'admin/profesores/card_seccion', locals: {tipo: 'pendientes', titulo: "Como Profesor Principal <b class='badge badge-info'>#{@secciones_pendientes.count}</b>"}
 
     -if @secciones_secundarias and @secciones_secundarias.count > 0
       - @secciones = @secciones_secundarias
-      = render partial: 'admin/profesores/card_seccion', locals: {tipo: 'secundarias', titulo: 'Como Participante'}
+      = render partial: 'admin/profesores/card_seccion', locals: {tipo: 'secundarias', titulo: "Como Participante <b class='badge badge-info'>#{@secciones.count}</b>"}
 
     - if @secciones_calificadas.count > 0
       - @secciones = @secciones_calificadas
-      = render partial: 'admin/profesores/card_seccion', locals: {tipo: 'calificadas', titulo: 'Histórico de Calificadas'}
+      = render partial: 'admin/profesores/card_seccion', locals: {tipo: 'calificadas', titulo: "Histórico de Calificadas  <b class='badge badge-info'>#{@secciones.count}</b>"}

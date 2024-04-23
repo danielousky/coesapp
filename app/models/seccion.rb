@@ -6,6 +6,7 @@ class Seccion < ApplicationRecord
 	belongs_to :tipo_seccion
 	belongs_to :profesor, optional: true 
 	has_one :departamento, through: :asignatura
+	has_one :catedra, through: :asignatura
 	has_one :escuela, through: :departamento
 	has_one :horario, dependent: :delete
 	accepts_nested_attributes_for :horario
@@ -287,31 +288,31 @@ class Seccion < ApplicationRecord
 	end
 
 	def total_estudiantes
-		inscripciones_incluidas.count
+		inscripciones.count
 	end
 
 	def total_confirmados
-		inscripciones_incluidas.confirmados.count
+		inscripciones.confirmados.count
 	end
 
 	def total_aprobados
-		inscripciones_incluidas.aprobado.count
+		inscripciones.aprobado.count
 	end
 
 	def total_reprobados
-		inscripciones_incluidas.aplazado.count
+		inscripciones.aplazado.count
 	end
 
 	def total_retirados
-		inscripciones_incluidas.retirado.count
+		inscripciones.retirado.count
 	end
 
 	def total_perdidos
-		inscripciones_incluidas.perdidos.count
+		inscripciones.perdidos.count
 	end
 
 	def total_sin_calificar
-		inscripciones_incluidas.sin_calificar.count
+		inscripciones.sin_calificar.count
 	end
 
 
