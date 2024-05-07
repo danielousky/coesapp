@@ -1,3 +1,5 @@
+%span.badge.badge-info.tooltip-btn{'data-toogle': :tooltip, title: 'Inscripciones'}=seccion.inscripcionsecciones.count
+%span.badge.badge-success.tooltip-btn{'data-toogle': :tooltip, title: 'Confirmados'}=seccion.inscripcionsecciones.joins(:inscripcionescuelaperiodo).inscritos.count
 - if (current_admin and current_admin.autorizado? 'Secciones', 'cambiar_capacidad')
 	= form_tag(cambiar_capacidad_secciones_path, class: 'form-horizontal', authenticity_token: true, remote: true, type: :json ) do
 		= hidden_field_tag :id, seccion.id, id: "id#{seccion.id}"
